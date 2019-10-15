@@ -12,10 +12,10 @@
     <thead>
       <tr>
         <th>
-          Job ID
+          Job Name
         </th>
         <th>
-          Job Name
+          Job Path
         </th>
         <th>
           Flowchart
@@ -30,12 +30,12 @@
       <tr>
         <td class="sidebar-nav">
             <a class="nav-link p-0" href="job_details/id/{{ job.id }}" title="View Details">
-                {{ job.id }} </a>
+                {{ job.name }} </a>
         </td>
         <td class="">
-          {{ job.name }}
+          {{ job.path }}
         </td>
-        <td class="sidebar-nav">
+        <td class="text center sidebar-nav">
           <a class="nav-link p-0" href="flowchart_details/id/{{ job.flowchart.id }}">
             <i class="fas fa-project-diagram"></i><span class="d-none d-md-inline">&nbsp; View Flowchart Info</span></a>
         </td>
