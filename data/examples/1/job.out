@@ -1,0 +1,81 @@
+Running in directory '/Users/jessica/seamm/misc/flowcharts/demos/../../../jobs/1'
+
+Description of the flowchart
+----------------------------
+Step 0: Start  0.6.2
+
+Step 1: Custom  0.6
+Step 2: Table  0.6
+    read table
+
+Step 3: Table  0.6
+    print table
+
+Step 4: Join  0.6.2
+    Join threads together
+
+Step 5: Loop  0.6
+    For rows in table results
+   Step 5.0: from SMILES  0.6.2
+       Create the structure from the SMILES in the variable '$_row['SMILES']'.
+
+   Step 5.1: MOPAC  0.1.0
+
+      Step 5.1.1: Optimization
+          Geometry optimization using PM7 and default optimizer (EF for small systems,
+          L-BFGS for larger). The geometrical convergence is 1.0 kcal/mol/Å
+          kcal/mol/Å. The SCF will be converged to the 'precise' level of 1.0e-06
+          kcal/mol
+
+
+   Step 5.2: Table  0.6
+       print current row table
+
+
+Step 6: Table  0.6
+    save table
+
+Step 7: Table  0.6
+    print table
+
+
+Running the flowchart
+---------------------
+Step 0: Start  0.6.2
+
+
+Table 'results':
+                        SMILES  Exp HoF (kcal/mol)
+Name                                              
+methane                      C              -17.80
+ethane                      CC              -20.00
+propane                    CCC              -25.02
+n-butane                  CCCC              -30.03
+2-methylpropane         CC(C)C              -32.07
+n-pentane                CCCCC              -35.08
+2-methylbutane         CC(C)CC              -36.73
+2,2-dimethylpropane  CC(C)(C)C              -40.14
+
+Table 'results':
+                        SMILES  Exp HoF (kcal/mol)     area    dipole  heat_of_formation  ionization_potential   volume
+Name                                                                                                                   
+methane                      C              -17.80  54.8134  0.000021           -14.4041               13.7276  37.0458
+ethane                      CC              -20.00  75.9251  0.000027           -18.1980               11.9682  57.4443
+propane                    CCC              -25.02  95.9397  0.057116           -23.0877               11.3937  78.8950
+n-butane                  CCCC              -30.03  116.2180  0.000066           -28.2101               11.1766  101.2520
+2-methylpropane         CC(C)C              -32.07  114.3320  0.094160           -28.9480               11.2840  101.9480
+n-pentane                CCCCC              -35.08  136.2740  0.063146           -33.2865               11.0864  122.9430
+2-methylbutane         CC(C)CC              -36.73  131.8910  0.059230           -33.4624               11.1321  122.9970
+2,2-dimethylpropane  CC(C)(C)C              -40.14  130.3230  0.000398           -35.5278               11.3804  125.2000
+
+Table 'results':
+                        SMILES  Exp HoF (kcal/mol)      area    dipole  heat_of_formation  ionization_potential    volume
+Name                                                                                                                     
+methane                      C              -17.80   54.8134  0.000021           -14.4041               13.7276   37.0458
+ethane                      CC              -20.00   75.9251  0.000027           -18.1980               11.9682   57.4443
+propane                    CCC              -25.02   95.9397  0.057116           -23.0877               11.3937   78.8950
+n-butane                  CCCC              -30.03  116.2180  0.000066           -28.2101               11.1766  101.2520
+2-methylpropane         CC(C)C              -32.07  114.3320  0.094160           -28.9480               11.2840  101.9480
+n-pentane                CCCCC              -35.08  136.2740  0.063146           -33.2865               11.0864  122.9430
+2-methylbutane         CC(C)CC              -36.73  131.8910  0.059230           -33.4624               11.1321  122.9970
+2,2-dimethylpropane  CC(C)(C)C              -40.14  130.3230  0.000398           -35.5278               11.3804  125.2000

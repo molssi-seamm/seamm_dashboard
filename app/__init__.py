@@ -11,9 +11,9 @@ from flask_debugtoolbar import DebugToolbarExtension
 from flask_moment import Moment
 from . import logger
 
+from .database import db_session
 
 mail = Mail()
-db = MongoEngine()
 cors = CORS()
 # cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 # For: @app.route("/api/v1/users")
@@ -29,7 +29,7 @@ toolbar = DebugToolbarExtension()
 
 def create_app(config_name):
     """Flask app factory pattern
-       separately creating the extensions and later initializing"""
+      separately creating the extensions and later initializing"""
 
     # Setup logging levels
     logger.setup_logging(config_name=config_name)
@@ -39,7 +39,6 @@ def create_app(config_name):
 
     # init
     mail.init_app(app)
-    db.init_app(app)
     cors.init_app(app)
     bootstrap.init_app(app)
     # login_manager.init_app(app)
@@ -54,8 +53,12 @@ def create_app(config_name):
     # app.register_blueprint(auth_blueprint, url_prefix='/auth')
 
     from .main import main as main_blueprint
-    app.register_blueprint(main_blueprint)
+    from .jobs import jobs as jobs_blueprint
+    from .flowcharts import flowcharts as flowchart_blueprint
 
+    app.register_blueprint(main_blueprint)
+    app.register_blueprint(jobs_blueprint)
+    app.register_blueprint(flowchart_blueprint)
     # from .api import api as api_blueprint
     # app.register_blueprint(api_blueprint, url_prefix='/api/v1')
 
@@ -63,5 +66,8 @@ def create_app(config_name):
     # from app.admin import add_admin_views
     # add_admin_views()
 
-    return app
+    @app.teardown_appcontext
+    def shutdown_session(exception=None):
+        db_session.remove()
 
+    return app

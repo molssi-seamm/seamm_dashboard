@@ -1,50 +1,58 @@
-
-<script src="static/js/jobs_list.js"></script>
-<div class="row justify-content-end mb-2 mr-1">
-{#  <div class="col-sm-12 col-md-6 text-center text-md-right">#}
-{#    <a class="btn btn-info btn-outline-primary btn-nav-link icon" href="oamp/add_building.html">#}
-{#      <i class="fa fa-plus fa-lg"></i>&nbsp; Add Building#}
-{#    </a>#}
-{#  </div>#}
-</div>
-<div class="row">
-  <table id="jobs" class="table table-responsive-sm table-bordered table-striped table-sm">
-    <thead>
-      <tr>
-        <th>
-          Job ID
-        </th>
-        <th>
-          Job Name
-        </th>
-        <th>
-          Description
-        </th>
-        <th>
-          Actions
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-    {% for job in jobs %}
-      <tr>
-        <td class="sidebar-nav">
-            <a class="nav-link p-0" href="job_details/id/{{ job.id }}" title="View Details">
-                {{ job.id }} </a>
-        </td>
-        <td class="">
-          {{ job.name }}
-        </td>
-        <td class="">
-          {{ job.description }}
-        </td>
-        <td class="text-center"><a class="btn-sm btn-info icon mr-1 btn-nav-link" href="">
-            <i class="fa fa-edit"></i><span class="d-none d-md-inline">&nbsp; Edit</span></a>
-            <a class="btn-sm btn-danger icon btn-del-confirm" href="#">
-                <i class="fa fa-trash-o "></i><span class="d-none d-md-inline">&nbsp; Delete</span></a>
-        </td>
-      </tr>
-    {% endfor %}
-    </tbody>
-  </table>
-</div>
+  <script src="static/js/jobs_list.js"></script>
+  <div class="row justify-content-end mb-2 mr-1">
+      {#  <div class="col-sm-12 col-md-6 text-center text-md-right">#}
+      {#    <a class="btn btn-info btn-outline-primary btn-nav-link icon" href="oamp/add_building.html">#}
+      {#      <i class="fa fa-plus fa-lg"></i>&nbsp; Add Building#}
+      {#    </a>#}
+      {#  </div>#}
+      </div>
+  <div class="row">
+    <table id="jobs" class="table table-responsive-sm table-bordered table-striped table-sm">
+      <thead>
+          <th>
+            Job Name
+            </th>
+          <th>
+            Job Location
+          </th>
+          <th>
+            Job Submission Date
+          </th>
+          <th>
+            Flowchart
+          </th>
+          <th>
+            Actions
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for job in jobs %}
+        <tr>
+          <td class="sidebar-nav">
+              <a class="nav-link p-0" href="job_details/id/{{ job.id }}" title="View Details">
+                  {{ job.name }} </a>
+          </td>
+          <td class="">
+              {{ job.path }}
+            </td>
+          <td class="">
+            {{ job.submission_date.date() }}
+          </td>
+          <td class="sidebar-nav">
+              <a class="nav-link p-0" href="flowchart_details/id/{{ job.flowchart.id }}">
+                  <i class="fas fa-project-diagram"></i><span class="d-none d-md-inline">&nbsp; View Flowchart Info</span></a>
+            
+          </td>
+          <td class="sidebar-nav">
+            <a class="btn-sm btn-info icon mr-1 btn-nav-link" href="views/edit_job/id/{{ job.id }}" title="Edit Job Info">
+              <i class="fa fa-edit"></i><span class="d-none d-md-inline">&nbsp; Edit</span></a>
+              
+              <a class="btn-sm btn-danger icon btn-del-confirm" href="#">
+                  <i class="fa fa-trash-o "></i><span class="d-none d-md-inline">&nbsp; Delete</span></a>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
