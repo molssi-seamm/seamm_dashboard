@@ -13,7 +13,6 @@ from . import main
 #import seamm
 import subprocess
 
-from app import db_session
 from app.models.sqlalchemy.models import Job, Flowchart
 
 
@@ -28,11 +27,10 @@ def index():
 def get_sample(id):
     return "<h3> this is id: " + id + "</h3>"
 
-
 @main.route('/views/<path:path>')
 @main.route('/views//<path:path>')
 def send_view(path):
-    print('innnnnnnnn send view')
+    print(F'SEND VIEW\nSEND VIEW\nSEND VIEW\nSEND VIEW\nSEND VIEW\nSEND VIEW\n\nviews/{path}')
     return render_template('views/' + path)
 
 @main.route('/static/<path:path>')

@@ -7,7 +7,7 @@ from datetime import datetime
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 
-from app.database import Base
+from app import Base
 
 class Flowchart(Base):
     __tablename__ = 'flowcharts'
@@ -74,7 +74,7 @@ class JobProject(Base):
     __tablename__ = "project_jobs"
 
     job_path = Column(String, ForeignKey('jobs.path'), primary_key=True)
-    project = Column(String, ForeignKey('projects.name', primary_key=True))
+    project = Column(String, ForeignKey('projects.name'), primary_key=True)
 
 class User(Base):
     __tablename__ = "users"

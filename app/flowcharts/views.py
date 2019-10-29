@@ -11,7 +11,6 @@ import random
 #import seamm
 #import subprocess
 
-from app import db_session
 from app.jobs.forms import EditJob
 from app.models.sqlalchemy import Job, Flowchart
 

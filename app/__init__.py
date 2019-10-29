@@ -11,7 +11,9 @@ from flask_debugtoolbar import DebugToolbarExtension
 from flask_moment import Moment
 from . import logger
 
-from .database import db_session
+from sqlalchemy import create_engine
+from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
 
 mail = Mail()
 cors = CORS()
@@ -25,6 +27,7 @@ bootstrap = Bootstrap()
 # login_manager.login_view = 'auth.login'   # endpoint name for the login view
 moment = Moment()
 toolbar = DebugToolbarExtension()
+Base = declarative_base()
 
 
 def create_app(config_name):
@@ -45,6 +48,13 @@ def create_app(config_name):
     # app_admin.init_app(app)
     moment.init_app(app)
     # toolbar.init_app(app)
+
+    # Connect app to sqlalchemy
+    engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'],
+                       convert_unicode=True)
+    db_session = scoped_session(
+    sessionmaker(autocommit=False, autoflush=False, bind=engine))
+    Base.query = db_session.query_property()
 
     # jinja template
     app.jinja_env.filters['empty'] = replace_empty

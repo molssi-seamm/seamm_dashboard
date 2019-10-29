@@ -13,7 +13,6 @@ from . import jobs
 #import seamm
 import subprocess
 
-from app import db_session
 from app.jobs.forms import EditJob
 from app.models.sqlalchemy import Job, Flowchart
 
@@ -22,6 +21,7 @@ from app.models.sqlalchemy import Job, Flowchart
 @jobs.route('/views//jobs_list/')
 def jobs_list():
     jobs = Job.query.all()
+    #jobs = []
     
     return render_template('views/jobs_list.html', jobs=jobs)
 
@@ -46,7 +46,7 @@ def edit_job(job_id):
     if form.validate_on_submit():
         job.name = form.name.data
         job.notes = form.notes.data
-        db_session.commit()
+        current_app.db.commit()
         flash('Job updated successfully.', 'successs')
         return redirect(url_for('jobs.jobs_list'))
     elif request.method == 'GET':
