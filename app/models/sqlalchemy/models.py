@@ -33,9 +33,9 @@ class Job(Base):
     path = Column(String, nullable=False)
     flowchart_id = Column(String, ForeignKey("flowcharts.id"))
     submission_date = Column(DateTime, nullable=False, default=datetime.utcnow)
-    author = Column(String(50), nullable=True)
-    name = Column(String(100), nullable=True)
-    notes = Column(String(1000), nullable=True)
+    author = Column(String, nullable=True)
+    name = Column(String, nullable=True)
+    notes = Column(String, nullable=True)
 
     flowchart = relationship('Flowchart', back_populates='jobs')
 
@@ -46,19 +46,19 @@ class Job(Base):
         try:
             self.author = kwargs['author']
         except KeyError:
-            # Allow the author project name to not be specified.
+            # Allow the author to not be specified.
             pass
 
         try:
-            self.author = kwargs['name']
+            self.name = kwargs['name']
         except KeyError:
-            # Allow the author project name to not be specified.
+            # Allow the job name to not be specified.
             pass
 
         try:
-            self.author = kwargs['notes']
+            self.notes = kwargs['notes']
         except KeyError:
-            # Allow the author project name to not be specified.
+            # Allow job notes to not be specified.
             pass
     
     def __repr__(self):
@@ -67,8 +67,8 @@ class Job(Base):
 class Project(Base):
     __tablename__ = "projects"
 
-    name = Column(String(100), nullable=False, primary_key=True)
-    description = Column(String(1000), nullable=True, unique=False)
+    name = Column(String, nullable=False, primary_key=True)
+    description = Column(String, nullable=True, unique=False)
 
 class JobProject(Base):
     __tablename__ = "project_jobs"
@@ -78,7 +78,7 @@ class JobProject(Base):
 
 class User(Base):
     __tablename__ = "users"
-    username = Column(String(20), unique=True, nullable=False, primary_key=True)
+    username = Column(String, unique=True, nullable=False, primary_key=True)
     email = Column(String(120), unique=True, nullable=False)
     password = Column(String(60), nullable=False)
 
