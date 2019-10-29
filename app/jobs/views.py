@@ -21,7 +21,6 @@ from app.models.sqlalchemy import Job, Flowchart
 @jobs.route('/views//jobs_list/')
 def jobs_list():
     jobs = Job.query.all()
-    #jobs = []
     
     return render_template('views/jobs_list.html', jobs=jobs)
 

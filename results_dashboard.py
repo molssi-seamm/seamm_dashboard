@@ -14,13 +14,10 @@ app = create_app(config_name)
 def create_datastore(location):
 
     location = os.path.abspath(location)
-
     datastore_location = os.path.join(location, 'molssi_jobstore.db')
-
     db = DataStore(datastore_location)
 
     for job in os.listdir(location):
-        
         job_path = os.path.abspath(os.path.join(location, job))
         
         if os.path.isdir(job_path):

@@ -11,7 +11,6 @@ class BaseConfig:
     EDIT_SOFTWARE_SALT = 'ThisIsAnotherSalt'
 
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(_basedir, 'data', 'examples', 'molssi_jobstore.db')
-    print(SQLALCHEMY_DATABASE_URI)
     THREADS_PER_PAGE = 8
 
 
