@@ -13,7 +13,7 @@ from . import logger
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
+from .models.sqlalchemy import Base
 
 mail = Mail()
 cors = CORS()
@@ -27,7 +27,7 @@ bootstrap = Bootstrap()
 # login_manager.login_view = 'auth.login'   # endpoint name for the login view
 moment = Moment()
 toolbar = DebugToolbarExtension()
-Base = declarative_base()
+#Base = declarative_base()
 
 
 def create_app(config_name):
@@ -54,6 +54,7 @@ def create_app(config_name):
                        convert_unicode=True)
     db_session = scoped_session(
     sessionmaker(autocommit=False, autoflush=False, bind=engine))
+    Base.metadata.create_all(engine)
     Base.query = db_session.query_property()
 
     # jinja template

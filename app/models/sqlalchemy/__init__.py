@@ -1,1 +1,1 @@
-from .models import Flowchart, Job
+from .models import Flowchart, Job, Base
