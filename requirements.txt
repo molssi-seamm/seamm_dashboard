@@ -38,3 +38,4 @@ WTForms
 flask_cors
 flask_mongoengine
 flask_debugtoolbar
+Flask-Login
