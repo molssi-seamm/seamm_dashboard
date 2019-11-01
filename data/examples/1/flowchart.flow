@@ -1,0 +1,675 @@
+#!/usr/bin/env run_flowchart
+!MolSSI flowchart 1.0
+
+{
+    "item": "object",
+    "module": "seamm.flowchart",
+    "class": "Flowchart",
+    "extension": null,
+    "nodes": [
+        {
+            "item": "object",
+            "module": "seamm.start_node",
+            "class": "StartNode",
+            "extension": null,
+            "attributes": {
+                "_uuid": 1,
+                "_title": "Start",
+                "_description": "This flowchart illustrates looping over a table and adding calculated results\n to the table. The initial table is created using a custom Python stage in\n order to make this flowchart self-contained. Normally one would input the\n table. The table has columns for the name of the molecule, its SMILES\n representation, and the experimental heat of formation from the NIST Webbook.\n\n The loop creates each structure from the SMILES string, then runs a MOPAC\n optimization. Various results such as the heat of formation and ionization\n potential are added to the table, and each row is printed as the iterations\n progress. Finally at the end the table is saved and printed in full.",
+                "_id": null,
+                "extension": null,
+                "_visited": true,
+                "parameters": null,
+                "x": 150,
+                "y": 35,
+                "w": 200,
+                "h": 50
+            }
+        },
+        {
+            "item": "object",
+            "module": "custom_step.custom",
+            "class": "Custom",
+            "extension": "Python",
+            "attributes": {
+                "script": "import shutil\nimport os.path\nimport os\n\ndata = '''Name,SMILES,\"Exp HoF (kcal/mol)\"\nmethane,C,-17.8\nethane,CC,-20.0\npropane,CCC,-25.02\nn-butane,CCCC,-30.03\n2-methylpropane,CC(C)C,-32.07\nn-pentane,CCCCC,-35.08\n2-methylbutane,CC(C)CC,-36.73\n\"2,2-dimethylpropane\",CC(C)(C)C,-40.14'''\n\nwith open('../hydrocarbons.csv', 'w') as fd:\n    fd.write(data)\n\nprint('Table input at start of flowchart')\n\n",
+                "_uuid": 334533442609456439663275816612733859638,
+                "_title": "Custom",
+                "_description": "",
+                "_id": null,
+                "extension": "Python",
+                "_visited": true,
+                "parameters": null,
+                "x": 150,
+                "y": 105,
+                "w": 200,
+                "h": 50
+            }
+        },
+        {
+            "item": "object",
+            "module": "table_step.table",
+            "class": "Table",
+            "extension": "Table",
+            "attributes": {
+                "_method": "read",
+                "name": "results",
+                "filename": "hydrocarbons.csv",
+                "index_column": "Name",
+                "tmp_columns": [],
+                "column_index": "",
+                "row_index": "",
+                "value": "",
+                "variable_name": "",
+                "_uuid": 99669086889668936077019837452044852360,
+                "_title": "Table",
+                "_description": "",
+                "_id": null,
+                "extension": "Table",
+                "_visited": true,
+                "parameters": null,
+                "x": 150,
+                "y": 175,
+                "w": 200,
+                "h": 50
+            }
+        },
+        {
+            "item": "object",
+            "module": "seamm.join_node",
+            "class": "Join",
+            "extension": "Join",
+            "attributes": {
+                "_uuid": 332382701519578739062714223530219292801,
+                "_title": "Join",
+                "_description": "",
+                "_id": null,
+                "extension": "Join",
+                "_visited": true,
+                "parameters": null,
+                "x": 150,
+                "y": 315,
+                "w": 10,
+                "h": 10
+            }
+        },
+        {
+            "item": "object",
+            "module": "loop_step.loop",
+            "class": "Loop",
+            "extension": "Loop",
+            "attributes": {
+                "table_handle": null,
+                "table": null,
+                "_loop_value": null,
+                "_loop_length": null,
+                "_uuid": 195831502896880085515236684904304129798,
+                "_title": "Loop",
+                "_description": "",
+                "_id": null,
+                "extension": "Loop",
+                "_visited": true,
+                "parameters": {
+                    "__class__": "LoopParameters",
+                    "__module__": "loop_step.loop_parameters",
+                    "type": {
+                        "value": "For rows in table",
+                        "units": null
+                    },
+                    "variable": {
+                        "value": "i",
+                        "units": null
+                    },
+                    "start": {
+                        "value": "1",
+                        "units": null
+                    },
+                    "end": {
+                        "value": "10",
+                        "units": null
+                    },
+                    "step": {
+                        "value": "1",
+                        "units": null
+                    },
+                    "values": {
+                        "value": "",
+                        "units": null
+                    },
+                    "table": {
+                        "value": "results",
+                        "units": null
+                    },
+                    "where": {
+                        "value": "use all rows",
+                        "units": null
+                    }
+                },
+                "x": 150,
+                "y": 385,
+                "w": 200,
+                "h": 50
+            }
+        },
+        {
+            "item": "object",
+            "module": "from_smiles_step.from_smiles",
+            "class": "FromSMILES",
+            "extension": "FromSMILESStep",
+            "attributes": {
+                "_uuid": 107054132216584631323260886050000243182,
+                "_title": "from SMILES",
+                "_description": "",
+                "_id": null,
+                "extension": "FromSMILESStep",
+                "_visited": true,
+                "parameters": {
+                    "__class__": "FromSMILESParameters",
+                    "__module__": "from_smiles_step.from_smiles_parameters",
+                    "smiles string": {
+                        "value": "$_row['SMILES']",
+                        "units": null
+                    },
+                    "minimize": {
+                        "value": "no",
+                        "units": null
+                    },
+                    "forcefield": {
+                        "value": "UFF",
+                        "units": null
+                    }
+                },
+                "x": 450,
+                "y": 385,
+                "w": 200,
+                "h": 50
+            }
+        },
+        {
+            "item": "object",
+            "module": "mopac_step.mopac",
+            "class": "MOPAC",
+            "extension": "MOPAC",
+            "attributes": {
+                "_data": {},
+                "_uuid": 265264119009123826481730931398590769449,
+                "_title": "MOPAC",
+                "_description": "",
+                "_id": null,
+                "extension": "MOPAC",
+                "_visited": true,
+                "parameters": null,
+                "x": 450,
+                "y": 455,
+                "w": 200,
+                "h": 50
+            },
+            "subflowchart": {
+                "item": "object",
+                "module": "seamm.flowchart",
+                "class": "Flowchart",
+                "extension": null,
+                "nodes": [
+                    {
+                        "item": "object",
+                        "module": "seamm.start_node",
+                        "class": "StartNode",
+                        "extension": null,
+                        "attributes": {
+                            "_uuid": 1,
+                            "_title": "Start",
+                            "_description": "",
+                            "_id": null,
+                            "extension": null,
+                            "_visited": true,
+                            "parameters": null,
+                            "x": 150.0,
+                            "y": 35.0,
+                            "w": 200,
+                            "h": 50
+                        }
+                    },
+                    {
+                        "item": "object",
+                        "module": "mopac_step.optimization",
+                        "class": "Optimization",
+                        "extension": "Optimization",
+                        "attributes": {
+                            "_uuid": 15678146475335683190145767785262833811,
+                            "_title": "Optimization",
+                            "_description": "A structural optimization",
+                            "_id": null,
+                            "extension": "Optimization",
+                            "_visited": true,
+                            "parameters": {
+                                "__class__": "OptimizationParameters",
+                                "__module__": "mopac_step.optimization_parameters",
+                                "structure": {
+                                    "value": "default",
+                                    "units": null
+                                },
+                                "hamiltonian": {
+                                    "value": "PM7",
+                                    "units": null
+                                },
+                                "convergence": {
+                                    "value": "precise",
+                                    "units": null
+                                },
+                                "relative": {
+                                    "value": "0.1",
+                                    "units": null
+                                },
+                                "absolute": {
+                                    "value": "1.0E-07",
+                                    "units": "kcal/mol"
+                                },
+                                "extra keywords": {
+                                    "value": [],
+                                    "units": null
+                                },
+                                "results": {
+                                    "value": {
+                                        "AREA": {
+                                            "table": "results",
+                                            "column": "area"
+                                        },
+                                        "DIPOLE": {
+                                            "table": "results",
+                                            "column": "dipole"
+                                        },
+                                        "HEAT_OF_FORMATION": {
+                                            "table": "results",
+                                            "column": "heat_of_formation"
+                                        },
+                                        "IONIZATION_POTENTIAL": {
+                                            "table": "results",
+                                            "column": "ionization_potential"
+                                        },
+                                        "VOLUME": {
+                                            "table": "results",
+                                            "column": "volume"
+                                        }
+                                    },
+                                    "units": null
+                                },
+                                "create tables": {
+                                    "value": "yes",
+                                    "units": null
+                                },
+                                "method": {
+                                    "value": "default",
+                                    "units": null
+                                },
+                                "gnorm": {
+                                    "value": "1.0",
+                                    "units": "kcal/mol/\u00c5"
+                                },
+                                "cycles": {
+                                    "value": "unlimited",
+                                    "units": null
+                                },
+                                "recalc": {
+                                    "value": "never",
+                                    "units": null
+                                },
+                                "dmax": {
+                                    "value": "0.2",
+                                    "units": null
+                                }
+                            },
+                            "x": 150.0,
+                            "y": 105.0,
+                            "w": 200,
+                            "h": 50,
+                            "_long_header": "",
+                            "keywords": []
+                        }
+                    }
+                ],
+                "edges": [
+                    {
+                        "item": "edge",
+                        "node1": 1,
+                        "node2": 15678146475335683190145767785262833811,
+                        "edge_type": "execution",
+                        "edge_subtype": "next",
+                        "attributes": {
+                            "arrow_id": 8,
+                            "anchor1": "s",
+                            "anchor2": "n",
+                            "coords": [
+                                150,
+                                60,
+                                150,
+                                80
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "item": "object",
+            "module": "table_step.table",
+            "class": "Table",
+            "extension": "Table",
+            "attributes": {
+                "_method": "save",
+                "name": "results",
+                "filename": "",
+                "index_column": "default",
+                "tmp_columns": [],
+                "column_index": "",
+                "row_index": "",
+                "value": "",
+                "variable_name": "",
+                "_uuid": 233591084822304749068254322334840534705,
+                "_title": "Table",
+                "_description": "",
+                "_id": null,
+                "extension": "Table",
+                "_visited": true,
+                "parameters": null,
+                "x": 150,
+                "y": 595,
+                "w": 200,
+                "h": 50
+            }
+        },
+        {
+            "item": "object",
+            "module": "table_step.table",
+            "class": "Table",
+            "extension": "Table",
+            "attributes": {
+                "_method": "print current row",
+                "name": "results",
+                "filename": "",
+                "index_column": "default",
+                "tmp_columns": [],
+                "column_index": "",
+                "row_index": "",
+                "value": "",
+                "variable_name": "",
+                "_uuid": 226151018685604153637853441002966149066,
+                "_title": "Table",
+                "_description": "",
+                "_id": null,
+                "extension": "Table",
+                "_visited": true,
+                "parameters": null,
+                "x": 450,
+                "y": 525,
+                "w": 200,
+                "h": 50
+            }
+        },
+        {
+            "item": "object",
+            "module": "table_step.table",
+            "class": "Table",
+            "extension": "Table",
+            "attributes": {
+                "_method": "print",
+                "name": "results",
+                "filename": "",
+                "index_column": "default",
+                "tmp_columns": [],
+                "column_index": "",
+                "row_index": "",
+                "value": "",
+                "variable_name": "",
+                "_uuid": 33227495517725645533955535209728604501,
+                "_title": "Table",
+                "_description": "",
+                "_id": null,
+                "extension": "Table",
+                "_visited": true,
+                "parameters": null,
+                "x": 150,
+                "y": 665,
+                "w": 200,
+                "h": 50
+            }
+        },
+        {
+            "item": "object",
+            "module": "table_step.table",
+            "class": "Table",
+            "extension": "Table",
+            "attributes": {
+                "_method": "print",
+                "name": "results",
+                "filename": "",
+                "index_column": "default",
+                "tmp_columns": [],
+                "column_index": "",
+                "row_index": "",
+                "value": "",
+                "variable_name": "",
+                "_uuid": 138930809130548955438063473590094698323,
+                "_title": "Table",
+                "_description": "",
+                "_id": null,
+                "extension": "Table",
+                "_visited": true,
+                "parameters": null,
+                "x": 150,
+                "y": 245,
+                "w": 200,
+                "h": 50
+            }
+        }
+    ],
+    "edges": [
+        {
+            "item": "edge",
+            "node1": 1,
+            "node2": 334533442609456439663275816612733859638,
+            "edge_type": "execution",
+            "edge_subtype": "next",
+            "attributes": {
+                "arrow_id": 553,
+                "anchor1": "s",
+                "anchor2": "n",
+                "coords": [
+                    150,
+                    60,
+                    150,
+                    80
+                ]
+            }
+        },
+        {
+            "item": "edge",
+            "node1": 334533442609456439663275816612733859638,
+            "node2": 99669086889668936077019837452044852360,
+            "edge_type": "execution",
+            "edge_subtype": "next",
+            "attributes": {
+                "arrow_id": 554,
+                "anchor1": "s",
+                "anchor2": "n",
+                "coords": [
+                    150,
+                    130,
+                    150,
+                    150
+                ]
+            }
+        },
+        {
+            "item": "edge",
+            "node1": 332382701519578739062714223530219292801,
+            "node2": 195831502896880085515236684904304129798,
+            "edge_type": "execution",
+            "edge_subtype": "next",
+            "attributes": {
+                "arrow_id": 429,
+                "anchor1": "s",
+                "anchor2": "n",
+                "coords": [
+                    150,
+                    320,
+                    150,
+                    360
+                ]
+            }
+        },
+        {
+            "item": "edge",
+            "node1": 195831502896880085515236684904304129798,
+            "node2": 107054132216584631323260886050000243182,
+            "edge_type": "execution",
+            "edge_subtype": "loop",
+            "attributes": {
+                "arrow_id": 438,
+                "label_id": 439,
+                "label_bg_id": 440,
+                "anchor1": "e",
+                "anchor2": "w",
+                "coords": [
+                    250,
+                    385,
+                    350,
+                    385
+                ]
+            }
+        },
+        {
+            "item": "edge",
+            "node1": 107054132216584631323260886050000243182,
+            "node2": 265264119009123826481730931398590769449,
+            "edge_type": "execution",
+            "edge_subtype": "next",
+            "attributes": {
+                "arrow_id": 444,
+                "anchor1": "s",
+                "anchor2": "n",
+                "coords": [
+                    450,
+                    410,
+                    450,
+                    430
+                ]
+            }
+        },
+        {
+            "item": "edge",
+            "node1": 195831502896880085515236684904304129798,
+            "node2": 233591084822304749068254322334840534705,
+            "edge_type": "execution",
+            "edge_subtype": "exit",
+            "attributes": {
+                "arrow_id": 448,
+                "label_id": 449,
+                "label_bg_id": 450,
+                "anchor1": "s",
+                "anchor2": "n",
+                "coords": [
+                    150,
+                    410,
+                    150,
+                    570
+                ]
+            }
+        },
+        {
+            "item": "edge",
+            "node1": 265264119009123826481730931398590769449,
+            "node2": 226151018685604153637853441002966149066,
+            "edge_type": "execution",
+            "edge_subtype": "next",
+            "attributes": {
+                "arrow_id": 454,
+                "anchor1": "s",
+                "anchor2": "n",
+                "coords": [
+                    450,
+                    480,
+                    450,
+                    500
+                ]
+            }
+        },
+        {
+            "item": "edge",
+            "node1": 226151018685604153637853441002966149066,
+            "node2": 332382701519578739062714223530219292801,
+            "edge_type": "execution",
+            "edge_subtype": "next",
+            "attributes": {
+                "arrow_id": 455,
+                "anchor1": "s",
+                "anchor2": "e",
+                "coords": [
+                    450,
+                    550,
+                    450,
+                    560,
+                    590,
+                    560,
+                    590,
+                    315,
+                    155,
+                    315
+                ]
+            }
+        },
+        {
+            "item": "edge",
+            "node1": 233591084822304749068254322334840534705,
+            "node2": 33227495517725645533955535209728604501,
+            "edge_type": "execution",
+            "edge_subtype": "next",
+            "attributes": {
+                "arrow_id": 458,
+                "anchor1": "s",
+                "anchor2": "n",
+                "coords": [
+                    150,
+                    620,
+                    150,
+                    640
+                ]
+            }
+        },
+        {
+            "item": "edge",
+            "node1": 99669086889668936077019837452044852360,
+            "node2": 138930809130548955438063473590094698323,
+            "edge_type": "execution",
+            "edge_subtype": "next",
+            "attributes": {
+                "anchor1": "s",
+                "anchor2": "n",
+                "coords": [
+                    150,
+                    200,
+                    150,
+                    220
+                ],
+                "arrow_id": 511
+            }
+        },
+        {
+            "item": "edge",
+            "node1": 138930809130548955438063473590094698323,
+            "node2": 332382701519578739062714223530219292801,
+            "edge_type": "execution",
+            "edge_subtype": "next",
+            "attributes": {
+                "anchor1": "s",
+                "anchor2": "n",
+                "coords": [
+                    150,
+                    270,
+                    150,
+                    310
+                ],
+                "arrow_id": 512
+            }
+        }
+    ]
+}
