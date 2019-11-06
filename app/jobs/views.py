@@ -22,7 +22,7 @@ from app.models.sqlalchemy import Job, Flowchart
 def jobs_list():
     jobs = Job.query.all()
     
-    return render_template('views/jobs_list.html', jobs=jobs)
+    return render_template('jobs/jobs_list.html', jobs=jobs)
 
 @jobs.route('/views/job_detail/id/<id>')
 @jobs.route('/views//job_details/id/<id>')
@@ -53,4 +53,4 @@ def edit_job(job_id):
             form.name.data = job.name
         if job.notes is not None:
             form.notes.data = job.notes
-    return render_template('views/edit_job.html', title='Edit Job', form=form)
+    return render_template('jobs/edit_job.html', title='Edit Job', form=form)
