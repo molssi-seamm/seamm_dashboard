@@ -13,7 +13,7 @@ from . import jobs
 #import seamm
 import subprocess
 
-from app.jobs.forms import EditJob
+from app.routes.jobs.forms import EditJob
 from app.models.sqlalchemy import Job, Flowchart
 
 
