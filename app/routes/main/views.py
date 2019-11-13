@@ -31,7 +31,9 @@ def get_sample(id):
 @main.route('/views//<path:path>')
 def send_view(path):
     print(F'SEND VIEW\nSEND VIEW\nSEND VIEW\nSEND VIEW\nSEND VIEW\nSEND VIEW\n\nviews/{path}')
-    return render_template('views/' + path)
+    jobs = Job.query.all()
+    flowcharts = Flowchart.query.all()
+    return render_template('views/' + path, jobs=jobs, flowcharts=flowcharts)
 
 @main.route('/static/<path:path>')
 def send_js(path):

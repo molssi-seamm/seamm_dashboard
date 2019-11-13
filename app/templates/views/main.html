@@ -20,7 +20,7 @@
         </div>
         <div class="chart-wrapper mt-3 px-3" style="height:175px;">
           <div class="text-value">0</div>running
-          <div class="text-value">1</div>completed
+          <div class="text-value">{{ jobs|length }}</div>completed
           <div class="text-value">0</div>in queue<br><br>
 
             
@@ -44,7 +44,7 @@
           <div class="text-value-lg"><a class='nav-link' href="#" style="color:white">My Flowcharts</a></div>
         </div>
         <div class="chart-wrapper mt-3 px-3" style="height:175px;">
-          <div class="text-value">1</div>flowcharts in library
+          <div class="text-value">{{ flowcharts|length }}</div>flowcharts in library
           <div class="text-value"></div><br><br>
         </div>
       </div>
