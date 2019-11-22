@@ -1,0 +1,49 @@
+name: seamm-dashboard
+channels:
+  - conda-forge
+  - default
+dependencies:
+- pip
+- alembic
+- bleach
+- blinker
+- click
+- dominate
+- Flask>=1.0.0
+- Flask-HTTPAuth
+- Flask-Login
+- Flask-Mail
+- Flask-Migrate
+- Flask-Moment
+- Flask-SQLAlchemy
+- Flask-WTF
+- Flask-Assets
+- html5lib
+- cssmin
+- lesscpy
+- pyScss
+- jsmin
+- itsdangerous
+- Jinja2
+- Mako
+- Markdown
+- MarkupSafe
+- python-dateutil
+- python-dotenv
+- python-editor
+- six
+- SQLAlchemy
+- visitor
+- webencodings
+- Werkzeug
+- WTForms
+- flask-cors
+- flask-debugtoolbar
+- Flask-Login
+
+# Javascript package
+- nodejs
+  # Pip-only installs
+- pip:
+  - flask-pagedown
+  - Flask-Bootstrap4
