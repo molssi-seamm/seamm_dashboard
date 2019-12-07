@@ -1,3 +1,47 @@
+@import "style.css";
+@import "../images/briefcase.svg";
+
 body{
     background-color: white;
 }
+
+.bg-jobs {
+    background-color: #20a8d8 !important;
+    background: url("../images/briefcase.svg");
+    background-repeat: no-repeat;
+    background-size: 200px auto;
+    background-position: 75% 50%;
+
+}
+
+.card.bg-jobs {
+    border-color: #187da0;
+  }
+
+.bg-flowcharts {
+    background-color: #ffc107  !important;
+    background: url("../images/project-diagram.svg");
+    background-repeat: no-repeat;
+    background-size: 250px auto;
+    background-position: 75% 50%;
+
+}
+
+.card.bg-flowcharts {
+    border-color: #c69500;
+}
+
+.bg-projects {
+    background-color: #f86c6b  !important;
+    background: url("../images/object-group.svg");
+    background-repeat: no-repeat;
+    background-size: 250px auto;
+    background-position: 75% 50%;
+
+}
+
+.card.bg-projects {
+    border-color: #f5302e;
+}
+
+  
