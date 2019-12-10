@@ -8,7 +8,8 @@ The server runs Flask on Passenger and Apache, or can run flask testing server.
 Use `conda` to create an environment from the included environment yaml file, then activate the environment.
 
 ```
-conda env create -f seamm-dashboard.ymlconda activate seamm-dashboard
+conda env create -f seamm-dashboard.yml
+conda activate seamm-dashboard
 ```
 
 Next, navigate to `app/static` to install the necessary javascript plugins
