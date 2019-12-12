@@ -1,0 +1,119 @@
+Running in directory '/Users/jessica/SEAMM/projects/MyProject/Job_000001'
+
+Description of the flowchart
+----------------------------
+Step 0: Start  0.65
+
+Step 1: Forcefield  0.6.1
+    Read the forcefield file 'pcff2018.frc' and use the default forcefield.
+
+Step 2: from SMILES  0.6.2
+    Create the structure from the SMILES '[Ar]'
+
+Step 3: Packmol  0.6
+    Creating a cubic supercell with a density of 1.0 g/ml containing about 1000
+    atoms
+
+Step 4: LAMMPS  0.6
+
+   Step 4.1: Initialization
+       Initialize the calculation with a cutoff of 10.0 Å. If the system is
+       periodic the best k-space acceleration method for the  molecular system will
+       be chosen. The accuracy goal is 1.00E-05.
+
+   Step 4.2: Velocities
+       Set the velocities to give a temperature 130.00 K by using a random
+       distribution. LAMMPS will remove any translational and, for molecular
+       systems, rotational momentum (default).. The random number generator will be
+       initialized randomly.
+
+   Step 4.3: NVT dynamics
+       100.0 ps of canonical (NVT) dynamics at 130.00 K using a Nose-Hoover
+       thermostat. The thermostat will use a drag factor of 0.0.
+
+   Step 4.4: NPT dynamics
+       200.0 ps of canonical (NPT) dynamics at 130.00 K using a Nose-Hoover
+       thermostat. The thermostat will use a drag factor of 0.0.
+
+
+
+Running the flowchart
+---------------------
+Step 0: Start  0.65
+
+Step 1: Forcefield  0.6.1
+    Reading the forcefield file 'pcff2018.frc'
+    Using the default forcefield 'pcff'.
+
+Step 2: from SMILES  0.6.2
+    Create the structure from the SMILES '[Ar]'
+    Created a molecular structure with 1 atoms.
+
+Step 3: Packmol  0.6
+    Creating a cubic supercell with a density of 1.0 gram / milliliter
+    containing about 1000 atoms
+
+    Created a cubic cell 40.481 Å on a side with 1000 molecules for a total of
+    1000 atoms in the cell and a density of 1.0 g/ml.
+
+Step 4: LAMMPS  0.6
+   LAMMPS using the serial version.
+
+   Step 4.1: Initialization
+ 
+       Setup for a periodic (crystalline or fluid) system. The nonbonded
+       interactions will be evaluated using a cutoff of 10.0 Å. Since there are
+       no charges on the atoms, no long-range coulomb method will be used. The
+       van der Waals terms will be shifted to zero energy at the cutoff
+       distance. A long-range correction for the van der Waals terms will be
+       added.
+ 
+   Step 4.2: Velocities
+       Set the velocities to give a temperature 130.0 K by using a random
+       distribution. LAMMPS will remove translational but not rotational momentum.
+       The random number generator will be initialized with the seed '2035323452'.
+
+ 
+   Step 4.3: NVT dynamics
+       100.0 ps of canonical (NVT) dynamics at 130.0 K using a Nose-Hoover
+       thermostat. The thermostat will use a chain of 3 thermostats with 1
+       subcycles and a drag factor of 0.0.
+
+ 
+       The run will be 25,000 steps of dynamics sampled every 25 steps.
+ 
+       Analysis of trajectory_nvt_4_3.txt
+
+               Property           Value       stderr  tau   ineff
+          --------------------   ---------   ------- ------ ------
+                             T =   131.731 ±   0.883  27.7    1.6
+                             P =   276.316 ± 160.273  25.2    1.5
+                          Etot =  -478.936 ±  43.299  42.3    1.8
+                           Eke =   392.273 ±   2.629  27.7    1.6
+                           Epe =  -911.350 ±  21.717  13.8    1.3
+                         Epair =  -911.350 ±  21.717  13.8    1.3
+   Step 4.4: NPT dynamics
+       200.0 ps of canonical (NPT) dynamics at 130.0 K using a Nose-Hoover
+       thermostat. The thermostat will use a chain of 3 thermostats with 1
+       subcycles and a drag factor of 0.0.
+
+ 
+       The run will be 50,000 steps of dynamics sampled every 25 steps.
+ 
+       Analysis of trajectory_npt_4_4.txt
+
+               Property           Value       stderr  tau   ineff
+          --------------------   ---------   ------- ------ ------
+                             T =   130.215 ±   0.267   5.5    1.1
+                             P =    98.684 ±   5.300  47.3    1.9
+                       density =     1.176 ±   0.005 414.0    9.3
+                             a =    38.363 ±   0.054 412.4    9.2
+                             b =    38.363 ±   0.054 412.4    9.2
+                             c =    38.363 ±   0.054 412.4    9.2
+                          Etot =  -722.735 ±   4.585 371.1    8.4
+                           Eke =   387.759 ±   0.795   5.5    1.1
+                           Epe = -1110.063 ±   4.773 472.0   10.4
+                         Epair = -1110.063 ±   4.773 472.0   10.4
+
+Process time: 0:00:14.724268 (14.724 s)
+Elapsed time: 0:01:27.645213 (87.645 s)

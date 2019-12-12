@@ -13,7 +13,7 @@ from . import main
 #import seamm
 import subprocess
 
-from app.models.sqlalchemy.models import Job, Flowchart
+from app.models.sqlalchemy.models import Job, Flowchart, Project
 
 
 @main.route('/')
@@ -33,7 +33,8 @@ def send_view(path):
     print(F'SEND VIEW\nSEND VIEW\nSEND VIEW\nSEND VIEW\nSEND VIEW\nSEND VIEW\n\nviews/{path}')
     jobs = Job.query.all()
     flowcharts = Flowchart.query.all()
-    return render_template('views/' + path, jobs=jobs, flowcharts=flowcharts)
+    projects = Project.query.all()
+    return render_template('views/' + path, jobs=jobs, flowcharts=flowcharts, projects=projects)
 
 @main.route('/static/<path:path>')
 def send_js(path):

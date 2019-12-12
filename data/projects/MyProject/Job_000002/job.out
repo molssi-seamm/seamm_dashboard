@@ -1,0 +1,84 @@
+Running in directory '/Users/jessica/SEAMM/projects/MyProject/Job_000002'
+
+Description of the flowchart
+----------------------------
+Step 0: Start  0.65
+
+Step 1: Custom  0.6.1
+Step 2: Table  0.6
+    read table
+
+Step 3: Table  0.6
+    print table
+
+Step 4: Join  0.65
+    Join threads together
+
+Step 5: Loop  0.6
+    For rows in table results
+   Step 5.0: from SMILES  0.6.2
+       Create the structure from the SMILES in the variable '$_row['SMILES']'.
+
+   Step 5.1: MOPAC  0.1.0
+
+      Step 5.1.1: Optimization
+          Geometry optimization using PM7 and default optimizer (EF for small systems,
+          L-BFGS for larger). The geometrical convergence is 1.0 kcal/mol/Å
+          kcal/mol/Å. The SCF will be converged to the 'precise' level of 1.0e-06
+          kcal/mol
+
+
+   Step 5.2: Table  0.6
+       print current row table
+
+
+Step 6: Table  0.6
+    save table
+
+Step 7: Table  0.6
+    print table
+
+
+Running the flowchart
+---------------------
+Step 0: Start  0.65
+
+
+Table 'results':
+                        SMILES  Exp HoF (kcal/mol)
+Name                                              
+methane                      C              -17.80
+ethane                      CC              -20.00
+propane                    CCC              -25.02
+n-butane                  CCCC              -30.03
+2-methylpropane         CC(C)C              -32.07
+n-pentane                CCCCC              -35.08
+2-methylbutane         CC(C)CC              -36.73
+2,2-dimethylpropane  CC(C)(C)C              -40.14
+
+Table 'results':
+                        SMILES  Exp HoF (kcal/mol)     area    dipole  heat_of_formation  ionization_potential   volume
+Name                                                                                                                   
+methane                      C              -17.80  54.8134  0.000009           -14.4041               13.7276  37.0435
+ethane                      CC              -20.00  75.9047  0.000018           -18.1980               11.9681  57.4786
+propane                    CCC              -25.02  95.9103  0.057165           -23.0876               11.3935  79.2128
+n-butane                  CCCC              -30.03  116.2190  0.000415           -28.2100               11.1765  101.2640
+2-methylpropane         CC(C)C              -32.07  114.3570  0.094337           -28.9480               11.2843  102.1380
+n-pentane                CCCCC              -35.08  136.2370  0.063273           -33.2861               11.0864  123.5560
+2-methylbutane         CC(C)CC              -36.73  131.9580  0.058917           -33.4625               11.1318  122.9790
+2,2-dimethylpropane  CC(C)(C)C              -40.14  130.2510  0.000248           -35.5278               11.3804  125.3770
+
+Table 'results':
+                        SMILES  Exp HoF (kcal/mol)      area    dipole  heat_of_formation  ionization_potential    volume
+Name                                                                                                                     
+methane                      C              -17.80   54.8134  0.000009           -14.4041               13.7276   37.0435
+ethane                      CC              -20.00   75.9047  0.000018           -18.1980               11.9681   57.4786
+propane                    CCC              -25.02   95.9103  0.057165           -23.0876               11.3935   79.2128
+n-butane                  CCCC              -30.03  116.2190  0.000415           -28.2100               11.1765  101.2640
+2-methylpropane         CC(C)C              -32.07  114.3570  0.094337           -28.9480               11.2843  102.1380
+n-pentane                CCCCC              -35.08  136.2370  0.063273           -33.2861               11.0864  123.5560
+2-methylbutane         CC(C)CC              -36.73  131.9580  0.058917           -33.4625               11.1318  122.9790
+2,2-dimethylpropane  CC(C)(C)C              -40.14  130.2510  0.000248           -35.5278               11.3804  125.3770
+
+Process time: 0:00:15.790372 (15.790 s)
+Elapsed time: 0:00:20.721491 (20.721 s)

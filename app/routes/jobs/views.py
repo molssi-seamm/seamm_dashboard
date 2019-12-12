@@ -26,7 +26,7 @@ def jobs_list():
 
 @jobs.route('/views/job_detail/id/<id>')
 @jobs.route('/views//job_details/id/<id>')
-def jobs_details(id):
+def job_details(id):
 
     #job = dict(id=id,
     #           name="My Job " + str(random.randint(1, 100)),
