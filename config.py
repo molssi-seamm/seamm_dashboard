@@ -35,6 +35,29 @@ class BaseConfig:
     GOOGLE_ANALYTICS_GTAG_submit = 'UA-116673029-2'
     WTF_CSRF_ENABLED = True   # it's true by default, important to prevent CSRF attacks
 
+class SEAMMConfig(BaseConfig):
+    _seamm_home = os.path.join(os.path.expanduser("~"), ".seamm")
+
+    _seamm_ini = os.path.join(_seamm_home, "seamm.ini")
+
+    # Should move this into a function.
+    # This section reads a seamm settings file.
+    if os.path.exists(_seamm_ini):
+        _datastore_location = None
+        with open(_seamm_ini) as f:
+            settings = f.readlines()
+            for line in settings:
+                if 'datastore' in line.lower():
+                    _datastore_location = line.split('=')[1].strip()
+                
+            if not _datastore_location:
+                raise AttributeError('No datastore location found in seamm.ini file!') 
+    else:
+        raise FileNotFoundError(F'No seamm.ini file found in {seamm_home}')
+    
+    _datastore_location = os.path.expanduser(_datastore_location)
+
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(_datastore_location, 'projects', 'molssi_jobstore.db')
 
 class DevelopmentConfig(BaseConfig):
     DEBUG = True
@@ -75,6 +98,7 @@ config = {
     'development': DevelopmentConfig,
     'testing': TestingConfig,
     'production': ProductionConfig,
+    'seamm': SEAMMConfig,
     # 'docker': DockerConfig,
 
     'default': DevelopmentConfig
