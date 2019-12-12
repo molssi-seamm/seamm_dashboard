@@ -1,0 +1,114 @@
+
+#     initialization of LAMMPS
+
+units               real
+boundary            p p p
+atom_style          full
+atom_modify         sort 0 0.0
+newton              on
+
+#    define the style of forcefield
+
+pair_style          lj/class2 10.0
+pair_modify         mix sixthpower tail yes shift no
+
+read_data           structure.dat
+variable            step equal step
+variable            elapsed equal elapsed
+variable            elaplong equal elaplong
+variable            dt equal dt
+variable            time equal time
+variable            cpu equal cpu
+variable            tpcpu equal tpcpu
+variable            spcpu equal spcpu
+variable            cpuremain equal cpuremain
+variable            part equal part
+variable            timeremain equal timeremain
+variable            atoms equal atoms
+variable            temp equal temp
+variable            press equal press
+variable            pe equal pe
+variable            ke equal ke
+variable            etotal equal etotal
+variable            enthalpy equal enthalpy
+variable            evdwl equal evdwl
+variable            ecoul equal ecoul
+variable            epair equal epair
+variable            ebond equal ebond
+variable            eangle equal eangle
+variable            edihed equal edihed
+variable            eimp equal eimp
+variable            emol equal emol
+variable            elong equal elong
+variable            etail equal etail
+variable            vol equal vol
+variable            density equal density
+variable            lx equal lx
+variable            ly equal ly
+variable            lz equal lz
+variable            xlo equal xlo
+variable            xhi equal xhi
+variable            ylo equal ylo
+variable            yhi equal yhi
+variable            zlo equal zlo
+variable            zhi equal zhi
+variable            xy equal xy
+variable            xz equal xz
+variable            yz equal yz
+variable            xlat equal xlat
+variable            ylat equal ylat
+variable            zlat equal zlat
+variable            bonds equal bonds
+variable            angles equal angles
+variable            dihedrals equal dihedrals
+variable            impropers equal impropers
+variable            pxx equal pxx
+variable            pyy equal pyy
+variable            pzz equal pzz
+variable            pxy equal pxy
+variable            pxz equal pxz
+variable            pyz equal pyz
+variable            fmax equal fmax
+variable            fnorm equal fnorm
+variable            nbuild equal nbuild
+variable            ndanger equal ndanger
+variable            cella equal cella
+variable            cellb equal cellb
+variable            cellc equal cellc
+variable            cellalpha equal cellalpha
+variable            cellbeta equal cellbeta
+variable            cellgamma equal cellgamma
+
+#     velocities
+
+velocity            all create 130.0 2035323452 mom yes rot no
+
+#     NVT dynamics
+
+reset_timestep      0
+timestep            4.0
+thermo_style        custom time temp press etotal ke pe ebond eangle edihed eimp evdwl etail ecoul elong
+thermo              250
+fix                 1 all nvt temp 130.0 130.0 100.0 tchain 3 tloop 1 drag 0.0
+fix                 2 all ave/time 10 250 2500 v_time v_temp v_press v_etotal v_ke v_pe v_epair off 2 title2 'tstep t T P Etot Eke Epe Epair' file summary_nvt_4_3.txt
+fix                 3 all ave/time 25 1 25 v_time v_temp v_press v_etotal v_ke v_pe v_epair off 2 title2 'tstep t T P Etot Eke Epe Epair' file trajectory_nvt_4_3.txt
+run                 25000
+
+unfix               1
+unfix               2
+unfix               3
+
+#     NPT dynamics
+
+reset_timestep      0
+timestep            4.0
+thermo_style        custom time temp press etotal ke pe ebond eangle edihed eimp evdwl etail ecoul elong
+thermo              500
+fix                 1 all npt temp 130.0 130.0 100.0 tchain 3 tloop 1 drag 0.0 iso 100.0 100.0 1000.0
+fix                 2 all ave/time 10 500 5000 v_time v_temp v_press v_density v_cella v_cellb v_cellc v_etotal v_ke v_pe v_epair off 2 title2 'tstep t T P density a b c Etot Eke Epe Epair' file summary_npt_4_4.txt
+fix                 3 all ave/time 25 1 25 v_time v_temp v_press v_density v_cella v_cellb v_cellc v_etotal v_ke v_pe v_epair off 2 title2 'tstep t T P density a b c Etot Eke Epe Epair' file trajectory_npt_4_4.txt
+run                 50000
+
+unfix               1
+unfix               2
+unfix               3
