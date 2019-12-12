@@ -41,28 +41,6 @@ class Job(Base):
 
     flowchart = relationship('Flowchart', back_populates='jobs')
 
-    def __init__(self, **kwargs):
-        self.path = kwargs['path']
-        self.flowchart_id  = kwargs['flowchart_id']
-        self.submission_date = kwargs['submission_date']
-        try:
-            self.author = kwargs['author']
-        except KeyError:
-            # Allow the author to not be specified.
-            pass
-
-        try:
-            self.name = kwargs['name']
-        except KeyError:
-            # Allow the job name to not be specified.
-            pass
-
-        try:
-            self.notes = kwargs['notes']
-        except KeyError:
-            # Allow job notes to not be specified.
-            pass
-    
     def __repr__(self):
         return F"Job(path={self.path}, flowchart_id={self.flowchart_id}, submission_date={self.submission_date})"
 
@@ -70,7 +48,12 @@ class Project(Base):
     __tablename__ = "projects"
 
     name = Column(String, nullable=False, primary_key=True)
+    project_path = Column(String, nullable=False, primary_key=True)
     description = Column(String, nullable=True, unique=False)
+
+    def __repr__(self):
+        return F"Project(name={self.name}, project_path={self.project_path}, description={self.description})"
+
 
 class JobProject(Base):
     __tablename__ = "project_jobs"
