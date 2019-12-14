@@ -51,9 +51,7 @@ class SEAMMConfig(BaseConfig):
                     _datastore_location = line.split('=')[1].strip()
                 
             if not _datastore_location:
-                raise AttributeError('No datastore location found in seamm.ini file!') 
-    else:
-        raise FileNotFoundError(F'No seamm.ini file found in {seamm_home}')
+                raise AttributeError('No datastore location found in seamm.ini file!')
     
     _datastore_location = os.path.expanduser(_datastore_location)
 
