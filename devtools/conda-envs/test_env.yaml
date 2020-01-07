@@ -16,6 +16,7 @@ dependencies:
     - wheel=0.33.6=py36_0
     - xz=5.2.4
     - zlib=1.2.11
+    - nodejs
     - pip:
       - beautifulsoup4==4.6.0
       - blinker==1.4
