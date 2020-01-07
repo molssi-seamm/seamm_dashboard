@@ -7,7 +7,6 @@ from make_datastore import create_datastore
 # Determine config settings from environment variables.
 config_name = os.getenv('FLASK_CONFIG') or 'development'
 
-
 if __name__ == "__main__":
 
     app = create_app(config_name)

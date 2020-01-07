@@ -105,6 +105,7 @@ venv.bak/
 
 .idea/
 node_modules/
+vendors/
 .DS_Store
 data/jobs/
 
