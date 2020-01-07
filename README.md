@@ -29,3 +29,7 @@ python results_dahboard.py
 ```
 
 The dashboard can then be viewed in your browser at `localhost:5000`.
+
+## Connecting to SEAMM Installation
+
+The dashboard is currently set up to run in `development` mode, meaning that it is showing sample data from the directory `data/projects` in this repository. To have it read data from your locally installed version of SEAMM, change the word `development` to `seamm` in `results_dashboard.py` (line 8).
