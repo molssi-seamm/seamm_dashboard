@@ -53,9 +53,9 @@ class SEAMMConfig(BaseConfig):
             if not _datastore_location:
                 raise AttributeError('No datastore location found in seamm.ini file!')
     
-    _datastore_location = os.path.expanduser(_datastore_location)
+        _datastore_location = os.path.expanduser(_datastore_location)
 
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(_datastore_location, 'projects', 'molssi_jobstore.db')
+        SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(_datastore_location, 'projects', 'molssi_jobstore.db')
 
 class DevelopmentConfig(BaseConfig):
     DEBUG = True
