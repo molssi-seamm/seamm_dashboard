@@ -11,9 +11,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from flask_moment import Moment
 from . import logger
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session, sessionmaker
-from .models.sqlalchemy import Base
+from flask_sqlalchemy import SQLAlchemy
 
 mail = Mail()
 cors = CORS()
@@ -29,6 +27,7 @@ moment = Moment()
 toolbar = DebugToolbarExtension()
 #Base = declarative_base()
 
+db = SQLAlchemy()
 
 def create_app(config_name):
     """Flask app factory pattern
@@ -40,6 +39,11 @@ def create_app(config_name):
     app = Flask(__name__)
     app.config.from_object(config[config_name])
 
+    db.init_app(app)
+    
+    with app.app_context():
+        db.create_all()
+
     # init
     mail.init_app(app)
     cors.init_app(app)
@@ -48,14 +52,6 @@ def create_app(config_name):
     # app_admin.init_app(app)
     moment.init_app(app)
     # toolbar.init_app(app)
-
-    # Connect app to sqlalchemy
-    engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'],
-                       convert_unicode=True)
-    db_session = scoped_session(
-    sessionmaker(autocommit=False, autoflush=False, bind=engine))
-    Base.metadata.create_all(engine)
-    Base.query = db_session.query_property()
 
     # jinja template
     app.jinja_env.filters['empty'] = replace_empty
@@ -77,8 +73,5 @@ def create_app(config_name):
     # from app.admin import add_admin_views
     # add_admin_views()
 
-    @app.teardown_appcontext
-    def shutdown_session(exception=None):
-        db_session.remove()
-
     return app
+

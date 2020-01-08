@@ -11,9 +11,11 @@ if __name__ == "__main__":
 
     app = create_app(config_name)
 
-    if True:
-        location = app.config['SQLALCHEMY_DATABASE_URI']
-        location = os.path.dirname(location.replace('sqlite:///', ''))
+    location = app.config['SQLALCHEMY_DATABASE_URI']
+    db_path = location.replace('sqlite:///', '')
+    location = os.path.dirname(db_path)
+
+    with app.app_context():        
         create_datastore(location)
 
     app.run(debug=True)  # , use_reloader=False)

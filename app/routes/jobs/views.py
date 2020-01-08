@@ -1,12 +1,12 @@
 from flask import request, render_template, flash, g, \
                 render_template_string, session, \
-                redirect, url_for, abort, jsonify, send_from_directory,\
-                current_app
+                redirect, url_for, abort, jsonify, send_from_directory
 import os
 import json
 import logging
 import random
 
+from app import db
 
 from . import jobs
 
@@ -45,7 +45,7 @@ def edit_job(job_id):
     if form.validate_on_submit():
         job.name = form.name.data
         job.notes = form.notes.data
-        current_app.db.commit()
+        db.session.commit()
         flash('Job updated successfully.', 'successs')
         return redirect(url_for('jobs.jobs_list'))
     elif request.method == 'GET':
