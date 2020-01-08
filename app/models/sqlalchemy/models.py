@@ -4,20 +4,17 @@ Table models for SEAMM datastore SQLAlchemy database.
 
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
-from sqlalchemy.orm import relationship
+from flask_sqlalchemy import SQLAlchemy
 
-from sqlalchemy.ext.declarative import declarative_base
+from app import db
 
-Base = declarative_base()
-
-class Flowchart(Base):
+class Flowchart(db.Model):
     __tablename__ = 'flowcharts'
 
-    id = Column(String, nullable=False, primary_key=True, unique=True)
-    description = Column(String(1000), nullable=True)
-    flowchart_file = Column(String(5000), nullable=False)
-    jobs = relationship('Job', back_populates='flowchart', lazy=True)
+    id = db.Column(db.String, nullable=False, primary_key=True, unique=True)
+    description = db.Column(db.String(1000), nullable=True)
+    flowchart_file = db.Column(db.String(5000), nullable=False)
+    jobs = db.relationship('Job', back_populates='flowchart', lazy=True)
 
     def __init__(self, **kwargs):
         self.id = kwargs['id']
@@ -28,49 +25,49 @@ class Flowchart(Base):
         return F"Flowchart(id={self.id}, description={self.description}, flowchart_file={self.flowchart_file}')"
 
 
-class Job(Base):
+class Job(db.Model):
     __tablename__ = 'jobs'
 
-    id = Column(Integer, primary_key=True)
-    path = Column(String, nullable=False)
-    flowchart_id = Column(String, ForeignKey("flowcharts.id"))
-    submission_date = Column(DateTime, nullable=False, default=datetime.utcnow)
-    author = Column(String, nullable=True)
-    name = Column(String, nullable=True)
-    notes = Column(String, nullable=True)
+    id = db.Column(db.Integer, primary_key=True)
+    path = db.Column(db.String, nullable=False)
+    flowchart_id = db.Column(db.String, db.ForeignKey("flowcharts.id"))
+    submission_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    author = db.Column(db.String, nullable=True)
+    name = db.Column(db.String, nullable=True)
+    notes = db.Column(db.String, nullable=True)
 
-    flowchart = relationship('Flowchart', back_populates='jobs')
+    flowchart = db.relationship('Flowchart', back_populates='jobs')
 
     def __repr__(self):
         return F"Job(path={self.path}, flowchart_id={self.flowchart_id}, submission_date={self.submission_date})"
 
-class Project(Base):
+class Project(db.Model):
     __tablename__ = "projects"
 
-    name = Column(String, nullable=False, primary_key=True)
-    project_path = Column(String, nullable=False, primary_key=True)
-    description = Column(String, nullable=True, unique=False)
+    name = db.Column(db.String, nullable=False, primary_key=True)
+    project_path = db.Column(db.String, nullable=False, primary_key=True)
+    description = db.Column(db.String, nullable=True, unique=False)
 
     def __repr__(self):
         return F"Project(name={self.name}, project_path={self.project_path}, description={self.description})"
 
 
-class JobProject(Base):
+class JobProject(db.Model):
     __tablename__ = "project_jobs"
 
-    job_path = Column(String, ForeignKey('jobs.path'), primary_key=True)
-    project = Column(String, ForeignKey('projects.name'), primary_key=True)
+    job_path = db.Column(db.String, db.ForeignKey('jobs.path'), primary_key=True)
+    project = db.Column(db.String, db.ForeignKey('projects.name'), primary_key=True)
 
-class User(Base):
+class User(db.Model):
     __tablename__ = "users"
-    username = Column(String, unique=True, nullable=False, primary_key=True)
-    email = Column(String(120), unique=True, nullable=False)
-    password = Column(String(60), nullable=False)
+    username = db.Column(db.String, unique=True, nullable=False, primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(60), nullable=False)
 
-class UserProject(Base):
+class UserProject(db.Model):
     __tablename__ = "user_projects"
 
-    user = Column(String, ForeignKey('users.username'), primary_key=True)
-    project = Column(String, ForeignKey('projects.name'), primary_key=True)
+    user = db.Column(db.String, db.ForeignKey('users.username'), primary_key=True)
+    project = db.Column(db.String, db.ForeignKey('projects.name'), primary_key=True)
 
     
