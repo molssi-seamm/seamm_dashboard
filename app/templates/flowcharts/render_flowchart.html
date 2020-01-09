@@ -1,0 +1,58 @@
+
+<!DOCTYPE>
+
+<html>
+
+  <head>
+    <meta charset="UTF-8">
+
+    <title>SEAMM flowchart view</title>
+
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+
+    <script src="{{ url_for('static', filename='node_modules/cytoscape/dist/cytoscape.min.js') }}"></script>
+
+    <!-- for testing with local version of cytoscape.js -->
+    <!--<script src="../cytoscape.js/build/cytoscape.js"></script>-->
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/custom_flowchart.css') }}">
+
+    <script>
+      {{ flowchart_script|safe }}
+    </script>
+  </head>
+
+  <body>
+
+    <h1>flowchart.flow</h1>
+  
+  <div id="wrapper">
+    <div id="cy"></div>
+    <div id="info">
+      <button type="button" class="collapsible">Flowchart Description</button>
+      <div class="content">
+        {{ description|safe }}
+      </div>
+    </div>
+  </div>
+    
+    <script>
+      var coll = document.getElementsByClassName("collapsible");
+      var i;
+      
+      for (i = 0; i < coll.length; i++) {
+        coll[i].addEventListener("click", function() {
+          this.classList.toggle("active");
+          var content = this.nextElementSibling;
+          if (content.style.display === "block") {
+            content.style.display = "none";
+          } else {
+            content.style.display = "block";
+          }
+        });
+      }
+      </script>
+
+  </body>
+
+</html>
