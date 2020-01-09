@@ -29,16 +29,20 @@
     {% for job in jobs %}
       <tr>
         <td class="sidebar-nav">
-            <a class="nav-link p-0" href="job_details/id/{{ job.id }}" title="View Details">
+            <a class="nav-link p-0" href="job_detail/id/{{ job.id }}" title="View Details">
                 {{ job.name }} </a>
         </td>
         <td class="">
           {{ job.path }}
         </td>
         <td class="text center sidebar-nav">
-          <a class="nav-link p-0" href="flowchart_details/id/{{ job.flowchart.id }}">
+          <a href="{{ url_for('flowcharts.flowchart_details', id=job.flowchart.id) }}">
+            
             <i class="fas fa-project-diagram"></i><span class="d-none d-md-inline">&nbsp; View Flowchart Info</span></a>
-        </td>
+
+            <a class="nav-link p-0" href="flowchart_details/id/{{ job.flowchart.id }}">
+              <i class="fas fa-project-diagram"></i><span class="d-none d-md-inline">&nbsp; View Flowchart Info</span></a>
+          </td>
         <td class="text-center sidebar-nav"><a class="btn-sm btn-info icon mr-1 btn-nav-link" href="edit_job/id/{{ job.id }}">
             <i class="fa fa-edit"></i><span class="d-none d-md-inline">&nbsp; Edit</span></a>
             <a class="btn-sm btn-danger icon btn-del-confirm" href="#">
