@@ -12,7 +12,6 @@
 
     <script src="{{ url_for('static', filename='node_modules/cytoscape/dist/cytoscape.min.js') }}"></script>
     <script src="{{ js_file }}"></script>
-    <script src="{{ url_for('static', filename='js/collapsible.js') }}"></script>
 
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/custom_flowchart.css') }}">
   </head>
@@ -30,6 +29,8 @@
       </div>
     </div>
   </div>
+  <script src="{{ url_for('static', filename='js/collapse.js') }}"></script>
+
   </body>
 
 </html>

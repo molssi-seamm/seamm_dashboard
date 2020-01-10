@@ -56,7 +56,6 @@
       cy.nodes('[name = "Join"]').style( {
               'shape': 'ellipse',
               'background-color': '#000000',
-              'label': 'data(name)',
               'text-halign': 'right',
               'text-valign': 'center',
               'width': 30,
