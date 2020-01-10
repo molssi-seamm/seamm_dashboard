@@ -11,7 +11,6 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
 
     <script src="{{ url_for('static', filename='node_modules/cytoscape/dist/cytoscape.min.js') }}"></script>
-    <script src="{{ js_file }}"></script>
 
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/custom_flowchart.css') }}">
   </head>
@@ -23,13 +22,15 @@
   <div id="wrapper">
     <div id="cy"></div>
     <div id="info">
-      <button type="button" class="collapsible">Flowchart Description</button>
+      <button type="button" class="collapsible_description">Flowchart Description</button>
       <div class="content">
         {{ description|safe }}
       </div>
     </div>
   </div>
-  <script src="{{ url_for('static', filename='js/collapse.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/collapsible.js') }}"></script>
+  <script src="{{ js_file }}"></script>
+
 
   </body>
 
