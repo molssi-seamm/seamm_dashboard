@@ -1,0 +1,59 @@
+body {
+  font-family: helvetica;
+  font-size: 14px;
+}
+
+
+#cy {
+width: 60%;
+height: 80vh;
+position: relative;
+float:left; /* add this */
+}
+
+.customButtons{
+font-family: Verdana, Arial;
+font-size:18px;
+}
+
+h1 {
+opacity: 0.5;
+font-size: 1em;
+}
+
+.collapsible_description {
+background-color: #777;
+color: white;
+cursor: pointer;
+padding: 18px;
+width: 100%;
+border: none;
+text-align: center;
+outline: none;
+font-size: 15px;
+}
+
+.expand, .collapsible:hover {
+background-color: #555;
+}
+
+.content {
+white-space: pre-wrap;
+overflow-wrap: break-word;
+padding: 20px;
+display: none;
+overflow: hidden;
+background-color: #f1f1f1;
+font-family: Courier;
+}
+
+#wrapper {
+width: 100%;
+padding: 18px;
+overflow: hidden; /* will contain if #first is longer than #second */
+}
+
+#info {
+overflow: hidden; /* if you don't want #second to wrap below #first */
+padding: 30px;
+}

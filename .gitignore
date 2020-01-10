@@ -112,3 +112,5 @@ data/jobs/
 *.db
 *.vscode
 
+*.tmp
+

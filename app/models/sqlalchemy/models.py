@@ -13,13 +13,15 @@ class Flowchart(db.Model):
 
     id = db.Column(db.String, nullable=False, primary_key=True, unique=True)
     description = db.Column(db.String(1000), nullable=True)
-    flowchart_file = db.Column(db.String(5000), nullable=False)
+    flowchart_file = db.Column(db.String, nullable=False)
+    flowchart_json = db.Column(db.JSON, nullable=False)
     jobs = db.relationship('Job', back_populates='flowchart', lazy=True)
 
     def __init__(self, **kwargs):
         self.id = kwargs['id']
         self.description = kwargs['description']
         self.flowchart_file = kwargs['flowchart_file']
+        self.flowchart_json = kwargs['flowchart_json']
     
     def __repr__(self):
         return F"Flowchart(id={self.id}, description={self.description}, flowchart_file={self.flowchart_file}')"
