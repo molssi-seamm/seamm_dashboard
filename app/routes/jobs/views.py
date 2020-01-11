@@ -17,15 +17,15 @@ from app.routes.jobs.forms import EditJob
 from app.models.sqlalchemy import Job, Flowchart
 
 
-@jobs.route('/views/jobs_list/')
-@jobs.route('/views//jobs_list/')
+@jobs.route('/views/jobs/')
+@jobs.route('/views//jobs/')
 def jobs_list():
     jobs = Job.query.all()
     
     return render_template('jobs/jobs_list.html', jobs=jobs)
 
-@jobs.route('/views/job_detail/id/<id>')
-@jobs.route('/views//job_details/id/<id>')
+@jobs.route('/views/jobs/<id>')
+@jobs.route('/views//jobs/<id>')
 def job_details(id):
 
     #job = dict(id=id,
@@ -36,8 +36,8 @@ def job_details(id):
     # return render_template('views/jobs_details.html', job=job)
     return render_template('views/charts.html')
    
-@jobs.route('/views/edit_job/id/<job_id>', methods=["GET", "POST"])
-@jobs.route('/views//edit_job/id/<job_id>', methods=["GET", "POST"])
+@jobs.route('/views/jobs/<job_id>/edit', methods=["GET", "POST"])
+@jobs.route('/views//jobs/<job_id>/edit', methods=["GET", "POST"])
 def edit_job(job_id):
     job = Job.query.get(job_id)
     form = EditJob()
