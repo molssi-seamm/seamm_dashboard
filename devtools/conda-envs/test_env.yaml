@@ -17,6 +17,9 @@ dependencies:
     - zlib=1.2.11
     - connexion
     - nodejs
+    - swagger-ui-bundle
+    - flask-marshmallow
+    - marshmallow-sqlalchemy
     - pip:
       - beautifulsoup4==4.6.0
       - blinker==1.4
