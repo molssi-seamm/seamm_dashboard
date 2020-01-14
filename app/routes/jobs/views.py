@@ -14,7 +14,7 @@ from . import jobs
 import subprocess
 
 from app.routes.jobs.forms import EditJob
-from app.models.sqlalchemy import Job, Flowchart
+from app.models import Job, Flowchart
 
 
 @jobs.route('/views/jobs/')

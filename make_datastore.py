@@ -3,8 +3,8 @@ import glob
 
 from datetime import datetime
 
-from app.models.sqlalchemy import Flowchart, Job, Project, JobProject
-from app.models.sqlalchemy.util import process_flowchart, process_job
+from app.models import Flowchart, Job, Project, JobProject
+from app.models.util import process_flowchart, process_job
 
 from app import db
 
