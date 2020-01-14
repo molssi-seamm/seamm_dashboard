@@ -1,0 +1,193 @@
+openapi: 3.0.0
+info:
+  title: SEAMM Dashboard API
+  description: This is an API for the SEAMM dashboard.
+  contact:
+    email: janash@vt.edu
+  version: 0.0.0
+tags:
+- name: admins
+  description: Secured Admin-only calls
+- name: developers
+  description: Operations available to regular developers
+paths:
+  /api/jobs/{id}:
+    get:
+      tags:
+      - developers
+      summary: searches jobs database
+      description: |
+        Get jobs. By passing parameters you can get jobs fitting a certain criteria.
+      operationId: app.routes.api.get_job
+      parameters:
+      - name: id
+        in: path
+        description: retrieve job by id.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Job'
+        "400":
+          description: bad input parameter
+    put:
+      tags:
+      - admins
+      operationId: app.routes.api.update_job
+      parameters:
+      - name: id
+        in: path
+        description: update job by id.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        description: Job values to update
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Job'
+      responses:
+        "201":
+          description: item updated
+        "400":
+          description: invalid input, object invalid
+    delete:
+      tags:
+      - admins
+      operationId: app.routes.api.delete_job
+      parameters:
+      - name: id
+        in: path
+        description: ID of the job to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Job deleted successfully.
+        "404":
+          description: Job not found.
+  /api/jobs:
+    get:
+      tags:
+      - developers
+      summary: searches jobs database
+      description: |
+        Get jobs. By passing parameters you can get jobs fitting a certain criteria.
+      operationId: app.routes.api.get_jobs
+      parameters:
+      - name: createdSince
+        in: query
+        description: look for jobs created since a date.
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: createdBefore
+        in: query
+        description: look for jobs created before a date.
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: project
+        in: query
+        description: Return jobs associated with a particular project
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: maximum number of records to return
+        required: false
+        style: form
+        explode: true
+        schema:
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Job'
+        "400":
+          description: bad input parameter
+    post:
+      tags:
+      - admins
+      summary: adds a job
+      description: Adds a job to the database
+      operationId: app.routes.api.add_job
+      requestBody:
+        description: Job to add
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Job'
+      responses:
+        "201":
+          description: item created
+        "400":
+          description: invalid input, object invalid
+        "409":
+          description: an existing item already exists
+components:
+  schemas:
+    Flowchart:
+      required:
+      - flowchart_file
+      - flowchart_json
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        flowchart_file:
+          type: string
+        flowchart_json:
+          type: string
+    Job:
+      required:
+      - flowchart_id
+      - id
+      - path
+      - submission_date
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        path:
+          type: string
+          format: filepath
+          example: /Users/username/seamm/projects
+        flowchart_id:
+          type: string
+        submission_date:
+          format: date-time
+          example: 2016-08-29T09:12:33.001Z

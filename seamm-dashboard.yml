@@ -1,4 +1,4 @@
-name: seamm-dashboard
+name: seamm-dashboard-swagger
 channels:
   - conda-forge
   - defaults
@@ -16,6 +16,8 @@ dependencies:
     - wheel=0.33.6=py36_0
     - xz=5.2.4
     - zlib=1.2.11
+    - connexion
+    - swagger-ui-bundle
     - nodejs
     - pip:
       - beautifulsoup4==4.6.0
