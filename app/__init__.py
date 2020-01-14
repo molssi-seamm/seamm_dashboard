@@ -1,4 +1,3 @@
-from flask import Flask
 import connexion
 
 from flask_cors import CORS, cross_origin
@@ -14,6 +13,7 @@ from flask_moment import Moment
 from . import logger
 
 from flask_sqlalchemy import SQLAlchemy
+from flask_marshmallow import Marshmallow
 
 mail = Mail()
 cors = CORS()
@@ -30,6 +30,7 @@ toolbar = DebugToolbarExtension()
 #Base = declarative_base()
 
 db = SQLAlchemy()
+ma = Marshmallow()
 
 def create_app(config_name):
     """Flask app factory pattern

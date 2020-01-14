@@ -106,14 +106,6 @@ paths:
         explode: true
         schema:
           type: string
-      - name: project
-        in: query
-        description: Return jobs associated with a particular project
-        required: false
-        style: form
-        explode: true
-        schema:
-          type: string
       - name: limit
         in: query
         description: maximum number of records to return
