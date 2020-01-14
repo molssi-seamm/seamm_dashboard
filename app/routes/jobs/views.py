@@ -16,11 +16,13 @@ import subprocess
 from app.routes.jobs.forms import EditJob
 from app.models import Job, Flowchart
 
+from app.routes.api import get_jobs
+
 
 @jobs.route('/views/jobs/')
 @jobs.route('/views//jobs/')
 def jobs_list():
-    jobs = Job.query.all()
+    jobs = get_jobs()
     
     return render_template('jobs/jobs_list.html', jobs=jobs)
 
