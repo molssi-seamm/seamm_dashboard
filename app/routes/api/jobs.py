@@ -1,10 +1,12 @@
 """
-API calls
+API calls for jobs.
 """
 from datetime import datetime
 from sqlalchemy import and_
 
 from app.models import Job, JobSchema
+
+__all__ = ['get_jobs', 'add_job', 'get_job', 'update_job', 'delete_job']
 
 def get_jobs(createdSince=None, createdBefore=None, limit=None):
     """
