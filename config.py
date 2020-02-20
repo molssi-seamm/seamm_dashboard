@@ -62,24 +62,13 @@ class DevelopmentConfig(BaseConfig):
     TESTING = False
     WORDPRESS_DOMAIN = 'http://localhost:8888'
     API_DOMAIN = 'http://localhost:5000'
-    MONGODB_SETTINGS = {
-        'host': "mongodb://ninja:pass@localhost:27017/resources_website",  # URI
-        # 'db': 'project1',
-        # 'host': 'localhost',
-        # 'port': 12345,
-        # 'username': 'ninja',
-        # 'password': '123'
-    }
 
 
 class TestingConfig(BaseConfig):
     DEBUG = True
     TESTING = True
-    WORDPRESS_DOMAIN = 'http://molssi.org'
-    API_DOMAIN = 'http://molssi-api.herokuapp.com'
-    MONGODB_SETTINGS = {
-        'host': "mongodb://ninja:pass@xyz.mlab.com:27163/resources_website"
-    }
+    WORDPRESS_DOMAIN = 'http://localhost:8888'
+    API_DOMAIN = 'http://localhost:5000'
 
 
 class ProductionConfig(BaseConfig):

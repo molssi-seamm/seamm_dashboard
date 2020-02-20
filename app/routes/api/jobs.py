@@ -3,6 +3,9 @@ API calls for jobs.
 """
 from datetime import datetime
 from sqlalchemy import and_
+from flask import Response
+
+from app import db
 
 from app.models import Job, JobSchema
 
@@ -20,6 +23,7 @@ def get_jobs(createdSince=None, createdBefore=None, limit=None):
         Return jobs created before this date. Must be in format M-D-YYYY where M all numbers are integers.
     limit: int
         The maximum number of jobs to return.
+        
     """
     # Handle dates
     if createdSince is not None:
@@ -34,7 +38,7 @@ def get_jobs(createdSince=None, createdBefore=None, limit=None):
         # Up to now.
         createdBefore = datetime.utcnow()
     
-    # If limit is not set, set limit to max.
+    # If limit is not set, set limit to all jobs in DB.
     if limit is None:
         limit = Job.query.count()
     
@@ -42,19 +46,50 @@ def get_jobs(createdSince=None, createdBefore=None, limit=None):
 
     jobs_schema = JobSchema(many=True)
     
-    return jobs_schema.dump(jobs)
+    return jobs_schema.dump(jobs), 200
 
-def add_job():
-    return []
+def add_job(job_data):
+
+    # Make sure this job isn't in the DB
+    jobs = Job.query.get(job_data['id'])
+
+    if len(jobs) > 0:
+        return Response(status=409)
+
+    job_schema = JobSchema(many=False)
+
+    # Check validity
+    try:
+        job_schema.load(job_data)
+    except:
+        return Response(status=400)
+
+    job_to_add = Job(job_data)
+
+    db.session.add(job_to_add)
+    db.session.commit()
+
+    return Response(status=201)
 
 def get_job(id):
     job = Job.query.get(id)
     job_schema = JobSchema(many=False)
     return job_schema.dump(job)
 
-def update_job(id):
-    return []
+def update_job(id, job_info):
+    job = Job.query.get(id)
+
+    if len(job) < 1:
+        return Response(status=404)
+
+    ## The rest is To Do.
 
 def delete_job(id):
-    pass
+    job = Job.query.get(id)
+
+    if len(job) < 1:
+        return Response(status=404)
+    else:
+        db.session.delete(job)
+        return Response(status=200)
 

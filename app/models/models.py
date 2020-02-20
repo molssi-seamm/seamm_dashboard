@@ -87,3 +87,7 @@ class UserProject(db.Model):
 class JobSchema(ma.ModelSchema):
     class Meta:
         model = Job
+
+class FlowchartSchema(ma.ModelSchema):
+    class Meta:
+        model = Flowchart

@@ -16,26 +16,20 @@ import subprocess
 from app.routes.jobs.forms import EditJob
 from app.models import Job, Flowchart
 
-from app.routes.api import get_jobs
+from app.routes.api import get_jobs, get_job
 
 
 @jobs.route('/views/jobs/')
 @jobs.route('/views//jobs/')
 def jobs_list():
-    jobs = get_jobs()
+    jobs = get_jobs()[0]
     
     return render_template('jobs/jobs_list.html', jobs=jobs)
 
 @jobs.route('/views/jobs/<id>')
 @jobs.route('/views//jobs/<id>')
 def job_details(id):
-
-    #job = dict(id=id,
-    #           name="My Job " + str(random.randint(1, 100)),
-    #           description="This is description.."
-    #    )
-
-    # return render_template('views/jobs_details.html', job=job)
+    job_details = get_job(id)
     return render_template('views/charts.html')
    
 @jobs.route('/views/jobs/<job_id>/edit', methods=["GET", "POST"])
