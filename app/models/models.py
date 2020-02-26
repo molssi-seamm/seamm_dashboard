@@ -86,6 +86,7 @@ class UserProject(db.Model):
 
 class JobSchema(ma.ModelSchema):
     class Meta:
+        include_fk = True
         model = Job
 
 class FlowchartSchema(ma.ModelSchema):

@@ -1,9 +1,11 @@
 """
 API calls for jobs.
 """
+
 from datetime import datetime
 from sqlalchemy import and_
-from flask import Response
+from flask import Response, request
+from dateutil import parser
 
 from app import db
 
@@ -48,15 +50,21 @@ def get_jobs(createdSince=None, createdBefore=None, limit=None):
     
     return jobs_schema.dump(jobs), 200
 
-def add_job(job_data):
+def add_job():
+
+    # Job data is in request since not listed
+    # as parameter in swagger.yml
+    job_data = request.get_json(force=True)
 
     # Make sure this job isn't in the DB
     jobs = Job.query.get(job_data['id'])
 
-    if len(jobs) > 0:
+    if jobs is not None:
         return Response(status=409)
 
     job_schema = JobSchema(many=False)
+
+    job_schema.load(job_data, session=db.session)
 
     # Check validity
     try:
@@ -64,7 +72,8 @@ def add_job(job_data):
     except:
         return Response(status=400)
 
-    job_to_add = Job(job_data)
+    job_data['submission_date'] = parser.parse(job_data['submission_date'])
+    job_to_add = Job(**job_data)
 
     db.session.add(job_to_add)
     db.session.commit()
