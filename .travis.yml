@@ -46,6 +46,7 @@ install:
   - cd app
   - cd static
   - npm install
+  - cd ../../
     # Build and install package
   # - python setup.py develop --no-deps
 

@@ -27,7 +27,7 @@ dependencies:
       - flask-mongoengine
       - flask-sqlalchemy
       - flask-wtf
-      - pytest
+      - pytest-cov
       - python-dateutil
       - werkzeug>=0.12.2
       - wtforms>=2.1
