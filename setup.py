@@ -1,20 +1,5 @@
 import setuptools
 
-try: # for pip >= 10
-    from pip._internal.req import parse_requirements
-    from pip._internal.download import PipSession
-except ImportError: # for pip <= 9.0.3
-    from pip.req import parse_requirements
-    from pip.download import PipSession
-
-
-def read_requirements():
-    """parses requirements from requirements.txt"""
-
-    install_reqs = parse_requirements('requirements.txt', session=PipSession())
-    return [ir.name for ir in install_reqs]
-
-
 if __name__ == "__main__":
     setuptools.setup(
         name='SEAMM Dashboard',
@@ -27,7 +12,7 @@ if __name__ == "__main__":
 
         packages=setuptools.find_packages(),
 
-        install_requires=read_requirements(),
+        #install_requires=read_requirements(),
 
         include_package_data=True,
 
