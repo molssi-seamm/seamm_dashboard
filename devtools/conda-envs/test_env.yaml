@@ -9,7 +9,7 @@ dependencies:
     - setuptools
     - sqlalchemy=
     - sqlite
-    - connexion
+    - connexion>=2.6.0
     - swagger-ui-bundle
     - flask-marshmallow
     - marshmallow-sqlalchemy
