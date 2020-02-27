@@ -81,7 +81,21 @@ def add_job():
     return Response(status=201)
 
 def get_job(id):
+    """
+    Function for api endpoint api/jobs/{id}
+
+    Parameters
+    ----------
+    id : the ID of the job to return
+    """
+    if not isinstance(id, int):
+        return Response(status=400)
+
     job = Job.query.get(id)
+
+    if job is None:
+        return Response(status=404)
+
     job_schema = JobSchema(many=False)
-    return job_schema.dump(job)
+    return job_schema.dump(job), 200
 
