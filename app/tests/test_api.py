@@ -55,3 +55,20 @@ def test_get_job_by_id(client):
         assert received[k] == expected_response[k]
 
     assert response.status_code == 200
+
+def test_get_job_missing(client):
+    response = client.get("api/jobs/100")
+
+    assert response.status_code == 404
+
+def test_flowcharts(client):
+
+    response = client.get("api/flowcharts")
+
+    assert len(response.json) == 1
+    assert response.status_code == 200
+
+def test_get_flowchart(client):
+
+    response = client.get("api/flowcharts/ABCD")
+    assert response.status_code == 200

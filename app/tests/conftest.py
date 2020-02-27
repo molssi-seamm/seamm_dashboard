@@ -31,8 +31,7 @@ def app():
     
     # Just nonsense values
     flowchart_data = {
-        "flowchart_id": "ABCD",
-        "id": 1,
+        "id": "ABCD",
         "flowchart_file": "",
         "flowchart_json": json.dumps({'sample': 2}),
         "description": "Sort of a sample."
