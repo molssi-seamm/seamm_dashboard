@@ -1,4 +1,4 @@
-name: seamm-dashboard-new
+name: seamm-dashboard
 channels:
   - anaconda
   - conda-forge
@@ -9,7 +9,7 @@ dependencies:
     - setuptools
     - sqlalchemy=
     - sqlite
-    - connexion
+    - connexion>=2.6.0
     - swagger-ui-bundle
     - flask-marshmallow
     - marshmallow-sqlalchemy
