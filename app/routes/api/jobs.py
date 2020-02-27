@@ -11,7 +11,7 @@ from app import db
 
 from app.models import Job, JobSchema
 
-__all__ = ['get_jobs', 'add_job', 'get_job', 'update_job', 'delete_job']
+__all__ = ['get_jobs', 'get_job']
 
 def get_jobs(createdSince=None, createdBefore=None, limit=None):
     """
@@ -84,21 +84,4 @@ def get_job(id):
     job = Job.query.get(id)
     job_schema = JobSchema(many=False)
     return job_schema.dump(job)
-
-def update_job(id, job_info):
-    job = Job.query.get(id)
-
-    if len(job) < 1:
-        return Response(status=404)
-
-    ## The rest is To Do.
-
-def delete_job(id):
-    job = Job.query.get(id)
-
-    if len(job) < 1:
-        return Response(status=404)
-    else:
-        db.session.delete(job)
-        return Response(status=200)
 
