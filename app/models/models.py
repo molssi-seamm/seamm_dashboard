@@ -84,16 +84,12 @@ class UserProject(db.Model):
 #
 #############################
 
-class JobSchema(ma.SQLAlchemyAutoSchema):
+class JobSchema(ma.ModelSchema):
     class Meta:
-        load_instance = True
-        include_relatioships = True
         include_fk = True
         model = Job
 
-class FlowchartSchema(ma.SQLAlchemyAutoSchema):
+class FlowchartSchema(ma.ModelSchema):
     class Meta:
-        load_instance = True
-        include_relatioships = True
         include_fk = True
         model = Flowchart
