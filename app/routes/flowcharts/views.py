@@ -12,7 +12,7 @@ import random
 #import subprocess
 
 from app.routes.jobs.forms import EditJob
-from app.models.sqlalchemy import Job, Flowchart
+from app.models import Job, Flowchart
 
 
 @flowcharts.route("/flowchart/edit/<flowchart_id>")

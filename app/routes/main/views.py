@@ -13,7 +13,7 @@ from . import main
 #import seamm
 import subprocess
 
-from app.models.sqlalchemy.models import Job, Flowchart, Project
+from app.models import Job, Flowchart, Project
 
 
 @main.route('/')

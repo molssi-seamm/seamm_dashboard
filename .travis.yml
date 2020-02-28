@@ -46,12 +46,13 @@ install:
   - cd app
   - cd static
   - npm install
+  - cd ../../
     # Build and install package
-  # - python setup.py develop --no-deps
+  - python setup.py develop --no-deps
 
 
 script:
-  # - pytest -v --cov=app app/tests/
+   - pytest -v --cov=app app/tests/
 
 notifications:
     email: false

@@ -6,7 +6,13 @@ from datetime import datetime
 
 from flask_sqlalchemy import SQLAlchemy
 
-from app import db
+from app import db, ma
+
+#############################
+#
+# SQLAlchemy Models
+#
+#############################
 
 class Flowchart(db.Model):
     __tablename__ = 'flowcharts'
@@ -72,4 +78,18 @@ class UserProject(db.Model):
     user = db.Column(db.String, db.ForeignKey('users.username'), primary_key=True)
     project = db.Column(db.String, db.ForeignKey('projects.name'), primary_key=True)
 
-    
+#############################
+#
+# Marshmallow
+#
+#############################
+
+class JobSchema(ma.ModelSchema):
+    class Meta:
+        include_fk = True
+        model = Job
+
+class FlowchartSchema(ma.ModelSchema):
+    class Meta:
+        include_fk = True
+        model = Flowchart

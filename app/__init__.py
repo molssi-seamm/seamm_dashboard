@@ -1,4 +1,5 @@
-from flask import Flask
+import connexion
+
 from flask_cors import CORS, cross_origin
 from config import config
 from flask_mongoengine import MongoEngine
@@ -12,6 +13,7 @@ from flask_moment import Moment
 from . import logger
 
 from flask_sqlalchemy import SQLAlchemy
+from flask_marshmallow import Marshmallow
 
 mail = Mail()
 cors = CORS()
@@ -28,6 +30,7 @@ toolbar = DebugToolbarExtension()
 #Base = declarative_base()
 
 db = SQLAlchemy()
+ma = Marshmallow()
 
 def create_app(config_name):
     """Flask app factory pattern
@@ -36,9 +39,11 @@ def create_app(config_name):
     # Setup logging levels
     logger.setup_logging(config_name=config_name)
 
-    app = Flask(__name__)
+    conn_app = connexion.App(__name__, specification_dir='./')
+    app = conn_app.app
     app.config.from_object(config[config_name])
 
+    conn_app.add_api('swagger.yml')
     db.init_app(app)
     
     with app.app_context():

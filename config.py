@@ -9,10 +9,8 @@ class BaseConfig:
     ADMINS = frozenset(['daltarawy@vt.edu'])  ##
     SECRET_KEY = 'SecretKeyForSessionSigning'
     EDIT_SOFTWARE_SALT = 'ThisIsAnotherSalt'
-
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(_basedir, 'data', 'projects', 'molssi_jobstore.db')
     THREADS_PER_PAGE = 8
-
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # email
     MAIL_SERVER = os.environ.get('MAIL_SERVER', 'smtp.googlemail.com')
@@ -36,6 +34,9 @@ class BaseConfig:
     WTF_CSRF_ENABLED = True   # it's true by default, important to prevent CSRF attacks
 
 class SEAMMConfig(BaseConfig):
+    _basedir = os.path.abspath(os.path.dirname(__file__))
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(_basedir, 'data', 'projects', 'molssi_jobstore.db')
+
     _seamm_home = os.path.join(os.path.expanduser("~"), ".seamm")
 
     _seamm_ini = os.path.join(_seamm_home, "seamm.ini")
@@ -58,29 +59,22 @@ class SEAMMConfig(BaseConfig):
         SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(_datastore_location, 'projects', 'molssi_jobstore.db')
 
 class DevelopmentConfig(BaseConfig):
+    _basedir = os.path.abspath(os.path.dirname(__file__))
     DEBUG = True
     TESTING = False
     WORDPRESS_DOMAIN = 'http://localhost:8888'
     API_DOMAIN = 'http://localhost:5000'
-    MONGODB_SETTINGS = {
-        'host': "mongodb://ninja:pass@localhost:27017/resources_website",  # URI
-        # 'db': 'project1',
-        # 'host': 'localhost',
-        # 'port': 12345,
-        # 'username': 'ninja',
-        # 'password': '123'
-    }
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(_basedir, 'data', 'projects', 'molssi_jobstore.db')
 
 
 class TestingConfig(BaseConfig):
+    import tempfile
+
     DEBUG = True
     TESTING = True
-    WORDPRESS_DOMAIN = 'http://molssi.org'
-    API_DOMAIN = 'http://molssi-api.herokuapp.com'
-    MONGODB_SETTINGS = {
-        'host': "mongodb://ninja:pass@xyz.mlab.com:27163/resources_website"
-    }
-
+    API_DOMAIN = 'http://localhost:4000'
+    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
+    
 
 class ProductionConfig(BaseConfig):
     DEBUG = False
@@ -98,6 +92,5 @@ config = {
     'production': ProductionConfig,
     'seamm': SEAMMConfig,
     # 'docker': DockerConfig,
-
     'default': DevelopmentConfig
 }
