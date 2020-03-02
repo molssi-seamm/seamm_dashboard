@@ -8,7 +8,7 @@ var arrayReturn = [];
                 console.log(data[i])
                 arrayReturn.push([`<a class="nav-link p-0" href="/jobs/${data[i].id}" title="View Details">`+data[i].name+'</a>', 
                 data[i].path, 
-                `<a class="nav-link p-0 btn btn-secondary" href="flowchart_details/id/${data[i].flowchart_id}"><i class="fas fa-project-diagram"></i><span class="d-none d-md-inline">&nbsp;View Flowchart</span></a>`,
+                `<a class="nav-link p-0 btn btn-secondary" href="flowcharts/${data[i].flowchart_id}"><i class="fas fa-project-diagram"></i><span class="d-none d-md-inline">&nbsp;View Flowchart</span></a>`,
                 `<a class="nav-link p-0 btn btn-primary" href="/jobs/${data[i].id}/edit">
             <i class="fa fa-edit"></i><span class="d-none d-md-inline">&nbsp; Edit</span></a>
             <a class="nav-link p-0 btn btn-danger" href="#">
