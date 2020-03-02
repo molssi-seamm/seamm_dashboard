@@ -18,20 +18,6 @@ from app.models import Job, Flowchart
 def flowchart_list():
     return render_template("flowcharts/flowchart_list.html")
 
-@flowcharts.route("/flowchart/edit/<flowchart_id>")
-def edit_flowchart(flowchart_id):
-    """This route will be for opening and editing a flowchart with SEAMM."""
-    flowchart = Flowchart.query.get(flowchart_id)
-    dir_path = os.path.dirname(os.path.abspath(__file__))
-    temp_file = os.path.join(dir_path, '..','..', 'data','tmp','tmp.flow')
-    
-    with open(temp_file, 'w+') as f:
-        f.write(flowchart.flowchart_file)
-    
-    #subprocess.run(['seamm', '{}'.format(temp_file)])
-    os.remove(temp_file)
-    return redirect(url_for('jobs.jobs_list'))
-
 @flowcharts.route('/views/flowcharts/<id>')
 @flowcharts.route('/views/flowcharts/<id>/<flowchart_keys>')
 def flowchart_details(id, flowchart_keys=None):
