@@ -14,6 +14,9 @@ import random
 from app.routes.jobs.forms import EditJob
 from app.models import Job, Flowchart
 
+@flowcharts.route("/views/flowcharts")
+def flowchart_list():
+    return render_template("flowcharts/flowchart_list.html")
 
 @flowcharts.route("/flowchart/edit/<flowchart_id>")
 def edit_flowchart(flowchart_id):
@@ -29,9 +32,8 @@ def edit_flowchart(flowchart_id):
     os.remove(temp_file)
     return redirect(url_for('jobs.jobs_list'))
 
-@flowcharts.route('/views/flowchart_details/id/<id>')
-@flowcharts.route('/views//flowchart_details/id/<id>')
-@flowcharts.route('/views/flowchart_details/id/<id>/<flowchart_keys>')
+@flowcharts.route('/views/flowcharts/<id>')
+@flowcharts.route('/views/flowcharts/<id>/<flowchart_keys>')
 def flowchart_details(id, flowchart_keys=None):
     
     this_url = 'flowchart_details_{}_{}'.format(id,flowchart_keys)
