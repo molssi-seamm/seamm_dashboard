@@ -1,5 +1,4 @@
 from app import create_app
-from werkzeug.contrib.profiler import ProfilerMiddleware
 import os
 
 from make_datastore import create_datastore
