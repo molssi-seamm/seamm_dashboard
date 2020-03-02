@@ -1,57 +1,39 @@
-$(document).ready(function() {
-
-  $('#jobs').DataTable({
-    "language": {
-      "searchPlaceholder": "Enter search terms"
-    }
-  });
-  $('#jobs').attr('style', 'border-collapse: collapse !important');
-  setBreadcrumb(['Home', 'Admin', 'Buildings']);
-
-  $('.btn-del-confirm').on('click', function() {
-    $.confirm({
-      title: 'Confirmation',
-      type: 'red',
-      escapeKey: true,
-      content: 'To delete this <strong>XYZ</strong> building, you have to <strong>manually</strong> delete all the rooms associated with it? <div>Are you sure you want to delete <strong>XYZ</strong> building?</div>',
-      theme: 'bootstrap',
-      container: '#ui-view',
-      closeIcon: true,
-      backgroundDismiss: true,
-      buttons: {
-        Ok: {
-          btnClass: 'btn-success',
-          keys: [
-            'enter'
-          ],
-          action: function() {
-            $(".breadcrumb").notify(
-              "Building was deleted successfully", {
-                clickToHide: true,
-                autoHide: true,
-                autoHideDelay: 5000,
-                arrowShow: false,
-                position: 'bottom center',
-                style: 'bootstrap',
-                className: 'success',
-                showAnimation: 'slideDown',
-                showDuration: 400,
-                hideAnimation: 'slideUp',
-                hideDuration: 200,
-                gap: 10
-              });
-          }
-        },
-        Cancel: {
-          btnClass: 'btn-danger',
-          keys: [
-            'ctrl',
-            'shift'
-          ]
+var arrayReturn = [];
+    $.ajax({
+        url: "api/jobs",
+        async: false,
+        dataType: 'json',
+        success: function (data) {
+            for (var i = 0, len = data.length; i < len; i++) {
+                console.log(data[i])
+                arrayReturn.push([`<a class="nav-link p-0" href="/jobs/${data[i].id}" title="View Details">`+data[i].name+'</a>', 
+                data[i].path, 
+                `<a class="nav-link p-0" href="flowchart_details/id/${data[i].flowchart_id}"><i class="fas fa-project-diagram"></i><span class="d-none d-md-inline">&nbsp;View Flowchart</span></a>`,
+                `<a class="btn-sm btn-info icon mr-1 btn-nav-link" href="jobs/${data[i].id}/edit">
+            <i class="fa fa-edit"></i><span class="d-none d-md-inline">&nbsp; Edit</span></a>
+            <a class="btn-sm btn-danger icon btn-del-confirm" href="#">
+                <i class="fa fa-trash-o "></i><span class="d-none d-md-inline">&nbsp; Delete</span></a>` ]);
+            }
+        inittable(arrayReturn);
         }
-      },
-      columnClass: 'col-md-6 col-md-offset-3'
     });
-  });
 
-});
+function inittable(data) {	
+    $('#jobs').DataTable( {
+        "responsive": true,
+        "aaData": data,
+        "columnDefs": [
+            { className: "sidebar-nav", "targets": [0, 1, 2, 3]}
+        ]
+    } );
+}
+
+function applyLinkStyle() {
+    var elements = document.getElementsByClassName("joblink");
+    //element.classList.add("nav-link");
+    //element.classList.add("p-0");
+  }
+
+  $(document).ready(function(){
+    //applyLinkStyle()
+  })
