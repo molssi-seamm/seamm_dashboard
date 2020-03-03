@@ -9,10 +9,6 @@ import json
 from datetime import date
 from dateutil import parser
 
-def test_home(client):
-    response = client.get('/')
-    print(response)
-    assert response.status_code == 200
 
 @pytest.mark.parametrize("createdSince, createdBefore, limit, expected_number", [
     ("01-01-2018", None, None, 1),
