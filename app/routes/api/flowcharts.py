@@ -5,7 +5,7 @@ API calls for flowcharts
 from app.models import Flowchart, FlowchartSchema
 from flask import Response
 
-__all__ = ['get_flowcharts', 'get_flowchart']
+__all__ = ['get_flowcharts', 'get_flowchart', 'get_cytoscape']
 
 def get_flowcharts(description=None, limit=None):
     
@@ -37,3 +37,50 @@ def get_flowchart(id):
 
     flowchart_schema = FlowchartSchema(many=False)
     return flowchart_schema.dump(flowchart), 200
+
+def get_cytoscape(id, flowchartKeys=None):
+    """
+    Function for getting cytoscape elements for a flowchart.
+    """
+
+    flowchart = Flowchart.query.get(id)
+
+    important_stuff = {}
+    important_stuff = flowchart.flowchart_json
+    description = important_stuff['nodes'][0]['attributes']['_description']
+
+    elements = []
+
+    for node_number, node in enumerate(important_stuff['nodes']):
+        url = "#"
+        ## Build elements for cytoscape
+        elements.append({'data': {
+            'id': node['attributes']['_uuid'],
+            'name': node['attributes']['_title'],
+            'url': url,
+            
+        },
+        'position': {
+                "x": node['attributes']['x'],
+                "y": node['attributes']['y']
+            },
+
+        'description': "",                
+        })
+        
+
+    for edge in important_stuff['edges']:
+        node1_id = edge['node1']
+        node2_id = edge['node2']
+        edge_data = {'data':
+            {
+                'id': str(node1_id) + '_' + str(node2_id),
+                'source': node1_id, 
+                'target': node2_id
+            },
+            
+        }
+
+        elements.append(edge_data)
+    return elements
+
