@@ -8,5 +8,5 @@ def test_home(client):
 
 def test_jobs_list(client):
     # Need to figure out how to test that table is working.
-    response = client.get('/#jobs', content_type="html/text")
+    response = client.get('/#jobs', content_type="html/text", follow_redirects=True)
     assert response.status_code == 200

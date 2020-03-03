@@ -20,6 +20,9 @@ matrix:
       language: generic
       env: PYTHON_VER=3.7
 
+addons:
+  chrome: beta
+
 # branches to build
 branches:
     only:
