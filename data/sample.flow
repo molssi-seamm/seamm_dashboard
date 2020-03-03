@@ -1,0 +1,224 @@
+#!/usr/bin/env run_flowchart
+!MolSSI flowchart 1.0
+{
+    "item": "object",
+    "module": "seamm.flowchart",
+    "class": "Flowchart",
+    "extension": null,
+    "nodes": [
+        {
+            "item": "object",
+            "module": "seamm.start_node",
+            "class": "StartNode",
+            "extension": null,
+            "attributes": {
+                "_uuid": 1,
+                "_title": "Start",
+                "_description": "",
+                "_id": null,
+                "extension": null,
+                "_visited": true,
+                "parameters": null,
+                "x": 150.0,
+                "y": 35.0,
+                "w": 200,
+                "h": 50
+            }
+        },
+        {
+            "item": "object",
+            "module": "from_smiles_step.from_smiles",
+            "class": "FromSMILES",
+            "extension": "FromSMILESStep",
+            "attributes": {
+                "_uuid": 37919797731459127919404001026537257056,
+                "_title": "from SMILES",
+                "_description": "",
+                "_id": null,
+                "extension": "FromSMILESStep",
+                "_visited": true,
+                "parameters": {
+                    "__class__": "FromSMILESParameters",
+                    "__module__": "from_smiles_step.from_smiles_parameters",
+                    "smiles string": {
+                        "value": "CH4",
+                        "units": null
+                    },
+                    "minimize": {
+                        "value": "no",
+                        "units": null
+                    },
+                    "forcefield": {
+                        "value": "UFF",
+                        "units": null
+                    }
+                },
+                "x": 150.0,
+                "y": 105.0,
+                "w": 200,
+                "h": 50
+            }
+        },
+        {
+            "item": "object",
+            "module": "mopac_step.mopac",
+            "class": "MOPAC",
+            "extension": "MOPAC",
+            "attributes": {
+                "_data": {},
+                "_uuid": 125613082283930201323951280222419436393,
+                "_title": "MOPAC",
+                "_description": "",
+                "_id": null,
+                "extension": "MOPAC",
+                "_visited": false,
+                "parameters": null,
+                "x": 150.0,
+                "y": 175.0,
+                "w": 200,
+                "h": 50
+            },
+            "subflowchart": {
+                "item": "object",
+                "module": "seamm.flowchart",
+                "class": "Flowchart",
+                "extension": null,
+                "nodes": [
+                    {
+                        "item": "object",
+                        "module": "seamm.start_node",
+                        "class": "StartNode",
+                        "extension": null,
+                        "attributes": {
+                            "_uuid": 1,
+                            "_title": "Start",
+                            "_description": "",
+                            "_id": null,
+                            "extension": null,
+                            "_visited": true,
+                            "parameters": null,
+                            "x": 150.0,
+                            "y": 35.0,
+                            "w": 200,
+                            "h": 50
+                        }
+                    },
+                    {
+                        "item": "object",
+                        "module": "mopac_step.energy",
+                        "class": "Energy",
+                        "extension": "Energy",
+                        "attributes": {
+                            "_uuid": 93052355587451499111537791002328002372,
+                            "_title": "Energy",
+                            "_description": "A single point energy calculation",
+                            "_id": null,
+                            "extension": "Energy",
+                            "_visited": false,
+                            "parameters": {
+                                "__class__": "EnergyParameters",
+                                "__module__": "mopac_step.energy_parameters",
+                                "structure": {
+                                    "value": "default",
+                                    "units": null
+                                },
+                                "hamiltonian": {
+                                    "value": "PM7",
+                                    "units": null
+                                },
+                                "convergence": {
+                                    "value": "normal",
+                                    "units": null
+                                },
+                                "relative": {
+                                    "value": "0.1",
+                                    "units": null
+                                },
+                                "absolute": {
+                                    "value": "1.0E-07",
+                                    "units": "kcal/mol"
+                                },
+                                "extra keywords": {
+                                    "value": [],
+                                    "units": null
+                                },
+                                "results": {
+                                    "value": {},
+                                    "units": null
+                                },
+                                "create tables": {
+                                    "value": "yes",
+                                    "units": null
+                                }
+                            },
+                            "x": 150.0,
+                            "y": 105.0,
+                            "w": 200,
+                            "h": 50,
+                            "_long_header": "",
+                            "keywords": []
+                        }
+                    }
+                ],
+                "edges": [
+                    {
+                        "item": "edge",
+                        "node1": 1,
+                        "node2": 93052355587451499111537791002328002372,
+                        "edge_type": "execution",
+                        "edge_subtype": "next",
+                        "attributes": {
+                            "anchor1": "s",
+                            "anchor2": "n",
+                            "coords": [
+                                150,
+                                60,
+                                150,
+                                80
+                            ],
+                            "arrow_id": 43
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "edges": [
+        {
+            "item": "edge",
+            "node1": 1,
+            "node2": 37919797731459127919404001026537257056,
+            "edge_type": "execution",
+            "edge_subtype": "next",
+            "attributes": {
+                "anchor1": "s",
+                "anchor2": "n",
+                "coords": [
+                    150,
+                    60,
+                    150,
+                    80
+                ],
+                "arrow_id": 72
+            }
+        },
+        {
+            "item": "edge",
+            "node1": 37919797731459127919404001026537257056,
+            "node2": 125613082283930201323951280222419436393,
+            "edge_type": "execution",
+            "edge_subtype": "next",
+            "attributes": {
+                "anchor1": "s",
+                "anchor2": "n",
+                "coords": [
+                    150,
+                    130,
+                    150,
+                    150
+                ],
+                "arrow_id": 92
+            }
+        }
+    ]
+}

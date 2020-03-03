@@ -72,3 +72,11 @@ def test_get_flowchart(client):
 
     response = client.get("api/flowcharts/ABCD")
     assert response.status_code == 200
+
+def test_get_cytoscape(client):
+
+        response = client.get("api/flowcharts/ABCD/cytoscape")
+        received = response.json
+        # Will be three nodes and two edges, for a length of 5.
+        assert len(received) == 5
+        assert response.status_code == 200
