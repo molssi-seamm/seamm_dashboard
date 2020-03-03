@@ -5,7 +5,6 @@ var arrayReturn = [];
         dataType: 'json',
         success: function (data) {
             for (var i = 0, len = data.length; i < len; i++) {
-                console.log(data[i])
                 arrayReturn.push([`<a class="nav-link p-0" href="/jobs/${data[i].id}" title="View Details">`+data[i].name+'</a>', 
                 data[i].path, 
                 `<a class="nav-link p-0 btn btn-secondary" href="flowcharts/${data[i].flowchart_id}"><i class="fas fa-project-diagram"></i><span class="d-none d-md-inline">&nbsp;View Flowchart</span></a>`,
