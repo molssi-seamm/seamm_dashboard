@@ -55,7 +55,7 @@ install:
 
 
 script:
-   - pytest -v --cov=app app/tests/
+   - pytest -v --driver Chrome --cov=app app/tests/
 
 notifications:
     email: false

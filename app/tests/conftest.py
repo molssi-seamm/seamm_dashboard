@@ -10,6 +10,8 @@ from app.models.util import process_flowchart
 
 from app.models import Job, Flowchart
 
+from selenium import webdriver
+
 @pytest.fixture(scope="session")
 def app():
     flask_app = create_app('testing')
@@ -45,7 +47,6 @@ def app():
     db.session.add(job2)
     db.session.add(flowchart)
     db.session.commit()
-
     yield flask_app
 
     # clean up

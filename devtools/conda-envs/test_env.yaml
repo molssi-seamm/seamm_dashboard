@@ -15,6 +15,9 @@ dependencies:
     - marshmallow-sqlalchemy
     - nodejs
     - pip:
+      - pytest-selenium
+      - pytest-flask
+      - chromedriver-binary
       - flask
       - flask-bootstrap
       - flask-cors
