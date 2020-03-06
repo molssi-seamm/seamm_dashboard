@@ -47,7 +47,7 @@ def get_cytoscape(id, flowchartKeys=None):
 
     important_stuff = {}
     important_stuff = flowchart.flowchart_json
-    description = important_stuff['nodes'][0]['attributes']['_description']
+    #description = important_stuff['nodes'][0]['attributes']['_description']
 
     elements = []
 

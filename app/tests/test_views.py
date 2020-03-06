@@ -2,12 +2,8 @@
 Tests for the front end
 """
 
-import urllib.request
+from flask import url_for
 
-from selenium.webdriver.common.by import By
-from flask import request, url_for, Flask
-
-from app import create_app
 import pytest
 
 import chromedriver_binary

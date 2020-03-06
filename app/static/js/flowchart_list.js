@@ -6,9 +6,9 @@ var arrayReturn = [];
         dataType: 'json',
         success: function (data) {
             for (var i = 0, len = data.length; i < len; i++) {
-                job_links = ''
+                var job_links = ''
                 for (var j = 0, jlen = data[i].jobs.length; j < jlen; j++) {
-                    retrieved_link = ajaxJobs(data[i].jobs[j])
+                    var retrieved_link = ajaxJobs(data[i].jobs[j])
                     job_links = job_links + retrieved_link
                 }
                 arrayReturn.push([data[i].title, 

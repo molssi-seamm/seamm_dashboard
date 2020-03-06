@@ -2,7 +2,6 @@ from flask import request, render_template, flash, g, \
                 render_template_string, session, \
                 redirect, url_for, abort, jsonify, send_from_directory,\
                 current_app
-import os
 import json
 from . import flowcharts
 import logging
