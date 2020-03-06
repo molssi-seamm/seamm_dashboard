@@ -11,6 +11,8 @@ from app.models.util import process_flowchart
 from app.models import Job, Flowchart
 
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 @pytest.fixture(scope="session")
 def app():
@@ -56,3 +58,21 @@ def app():
 @pytest.fixture(scope='function')
 def client(app):
     return app.test_client()
+
+
+@pytest.fixture
+def chrome_driver():
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    if os.getenv('CHROME_BETA'):
+        chrome_options.binary_location = os.getenv('CHROME_BETA')
+
+    driver = webdriver.Chrome(chrome_options=chrome_options)
+    
+    yield driver
+
+    driver.close()
+
+
+

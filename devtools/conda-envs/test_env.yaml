@@ -5,9 +5,10 @@ channels:
   - defaults
 dependencies:
     - python>3.7
+    - pip
     - readline
     - setuptools
-    - sqlalchemy=
+    - sqlalchemy
     - sqlite
     - connexion>=2.6.0
     - swagger-ui-bundle
@@ -15,7 +16,7 @@ dependencies:
     - marshmallow-sqlalchemy
     - nodejs
     - pip:
-      - pytest-selenium
+      - selenium
       - pytest-flask
       - chromedriver-binary
       - flask

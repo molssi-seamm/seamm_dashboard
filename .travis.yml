@@ -27,7 +27,7 @@ addons:
 branches:
     only:
     - master
-    - package-install
+    - consume-api
 
 
 before_install:
@@ -42,20 +42,23 @@ before_install:
 
 install:
 
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export CHROME_BETA=$(which google-chrome-beta); fi
     # Create test environment for package
   - python devtools/scripts/create_conda_env.py -n=test -p=$PYTHON_VER devtools/conda-envs/test_env.yaml
     # Activate the test environment
   - conda activate test
+  - conda list
   - cd app
   - cd static
   - npm install
   - cd ../../
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version; fi
     # Build and install package
   - python setup.py develop --no-deps
 
 
 script:
-   - pytest -v --driver Chrome --cov=app app/tests/
+   - pytest -v --cov=app app/tests/
 
 notifications:
     email: false

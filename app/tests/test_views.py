@@ -25,9 +25,9 @@ def test_jobs_list(client):
 
 @pytest.mark.usefixtures('live_server')
 class TestLiveServer:
-    def test_main_view(app, selenium):
-        selenium.get(url_for('main.index', _external=True))
-        ui_view = selenium.find_element_by_id("ui-view")
+    def test_main_view(app, chrome_driver):
+        chrome_driver.get(url_for('main.index', _external=True))
+        ui_view = chrome_driver.find_element_by_id("ui-view")
         displayed_values = ui_view.find_elements_by_class_name("text-value")
 
         expected_values = "0 2 0 1 0".split()
