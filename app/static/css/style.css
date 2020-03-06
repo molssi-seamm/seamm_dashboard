@@ -3916,6 +3916,10 @@ tbody.collapse.show {
   }
 }
 
+table.dataTable td {
+  word-break: break-word;
+}
+
 @media (max-width: 767.98px) {
   .navbar-expand-md > .container,
   .navbar-expand-md > .container-fluid {

@@ -18,9 +18,11 @@ class Flowchart(db.Model):
     __tablename__ = 'flowcharts'
 
     id = db.Column(db.String, nullable=False, primary_key=True, unique=True)
+    title = db.Column(db.String, nullable=True)
     description = db.Column(db.String(1000), nullable=True)
     flowchart_file = db.Column(db.String, nullable=False)
     flowchart_json = db.Column(db.JSON, nullable=False)
+    authors = db.Column(db.String, nullable=True)
     jobs = db.relationship('Job', back_populates='flowchart', lazy=True)
 
     def __init__(self, **kwargs):

@@ -1,6 +1,5 @@
 
 <!DOCTYPE>
-
 <html>
 
   <head>
@@ -23,15 +22,13 @@
     <div id="cy"></div>
     <div id="info">
       <button type="button" class="collapsible_description">Flowchart Description</button>
-      <div class="content">
+      <div id="description" class="content">
         {{ description|safe }}
       </div>
     </div>
   </div>
   <script src="{{ url_for('static', filename='js/collapsible.js') }}"></script>
-  <script src="{{ js_file }}"></script>
-
-
+  <script src="{{ url_for('static', filename='js/render_flowchart.js') }}"></script>
   </body>
 
 </html>

@@ -1,5 +1,5 @@
 # MolSSI Dashboard (Flask-coreUI)
-This application is a results Dashborad for MolSSI projects.
+This application is a results Dashboard for MolSSI projects.
 
 The server runs Flask on Passenger and Apache, or can run flask testing server.
 

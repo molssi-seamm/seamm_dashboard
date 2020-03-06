@@ -9,10 +9,6 @@ import json
 from datetime import date
 from dateutil import parser
 
-def test_home(client):
-    response = client.get('/')
-    print(response)
-    assert response.status_code == 200
 
 @pytest.mark.parametrize("createdSince, createdBefore, limit, expected_number", [
     ("01-01-2018", None, None, 1),
@@ -72,3 +68,11 @@ def test_get_flowchart(client):
 
     response = client.get("api/flowcharts/ABCD")
     assert response.status_code == 200
+
+def test_get_cytoscape(client):
+
+        response = client.get("api/flowcharts/ABCD/cytoscape")
+        received = response.json
+        # Will be three nodes and two edges, for a length of 5.
+        assert len(received) == 5
+        assert response.status_code == 200

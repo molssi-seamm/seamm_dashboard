@@ -148,6 +148,34 @@ paths:
                   $ref: '#/components/schemas/Flowchart'
         "400":
           description: bad input parameter
+  /api/flowcharts/{id}/cytoscape:
+    get:
+      tags:
+      - developers
+      summary: searches database by flowchart id
+      description: |
+        Get flowchart by ID.
+      operationId: app.routes.api.get_cytoscape
+      parameters:
+      - name: id
+        in: path
+        description: retrieve flowchart by id.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Flowchart'
+        "400":
+          description: bad input parameter
 components:
   schemas:
     Flowchart:
