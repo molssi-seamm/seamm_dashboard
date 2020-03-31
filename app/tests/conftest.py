@@ -64,11 +64,10 @@ def client(app):
 def chrome_driver():
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--no-sandbox")
     if os.getenv('CHROME_BETA'):
         chrome_options.binary_location = os.getenv('CHROME_BETA')
 
-    driver = webdriver.Chrome(chrome_options=chrome_options)
+    driver = webdriver.Chrome(options=chrome_options)
     
     yield driver
 
