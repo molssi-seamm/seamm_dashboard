@@ -20,9 +20,8 @@ matrix:
       language: generic
       env: PYTHON_VER=3.7
 
-sudo: required
 addons:
-  chrome: beta
+  chrome: stable
 
 # branches to build
 branches:
@@ -43,7 +42,10 @@ before_install:
 
 install:
 
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export CHROME_BETA=$(which google-chrome-beta); fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then wget https://chromedriver.storage.googleapis.com/80.0.3987.106/chromedriver_linux64.zip -O temp.zip; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then wget https://chromedriver.storage.googleapis.com/80.0.3987.106/chromedriver_mac64.zip -O temp.zip; fi
+  - unzip temp.zip
+  - export EXECUTABLE_PATH=$(pwd)/chromedriver
     # Create test environment for package
   - python devtools/scripts/create_conda_env.py -n=test -p=$PYTHON_VER devtools/conda-envs/test_env.yaml
     # Activate the test environment
