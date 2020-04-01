@@ -6,7 +6,6 @@ from flask import url_for
 
 import pytest
 
-import chromedriver_binary
 
 def test_home(client):
     response = client.get('/')

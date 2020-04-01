@@ -21,7 +21,7 @@ matrix:
       env: PYTHON_VER=3.7
 
 addons:
-  chrome: beta
+  chrome: stable
 
 # branches to build
 branches:
@@ -42,7 +42,7 @@ before_install:
 
 install:
 
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export CHROME_BETA=$(which google-chrome-beta); fi
+  - source devtools/scripts/install_chromedriver.sh
     # Create test environment for package
   - python devtools/scripts/create_conda_env.py -n=test -p=$PYTHON_VER devtools/conda-envs/test_env.yaml
     # Activate the test environment

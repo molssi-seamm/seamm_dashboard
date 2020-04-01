@@ -18,7 +18,6 @@ dependencies:
     - pip:
       - selenium
       - pytest-flask
-      - chromedriver-binary
       - flask
       - flask-bootstrap
       - flask-cors

@@ -11,7 +11,7 @@ var arrayReturn = [];
                 `<a class="nav-link p-0 btn btn-primary" href="/jobs/${data[i].id}/edit">
             <i class="fa fa-edit"></i><span class="d-none d-md-inline">&nbsp; Edit</span></a>
             <a class="nav-link p-0 btn btn-danger" href="#">
-                <i class="fa fa-trash-o "></i><span class="d-none d-md-inline">&nbsp; Delete</span></a>` ]);
+                <i class="fa fa-trash "></i><span class="d-none d-md-inline">&nbsp; Delete</span></a>` ]);
             }
         inittable(arrayReturn);
         }
@@ -23,16 +23,7 @@ function inittable(data) {
         "aaData": data,
         "columnDefs": [
             { className: "sidebar-nav", "targets": [0, 1, 2, 3 ]}
-        ]
+        ],
+        "autoWidth": false,
     } );
 }
-
-function applyLinkStyle() {
-    var elements = document.getElementsByClassName("joblink");
-    //element.classList.add("nav-link");
-    //element.classList.add("p-0");
-  }
-
-  $(document).ready(function(){
-    //applyLinkStyle()
-  })
