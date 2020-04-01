@@ -14,8 +14,6 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
-import chromedriver_binary
-
 @pytest.fixture(scope="session")
 def app():
     flask_app = create_app('testing')
@@ -68,6 +66,7 @@ def chrome_driver():
     chrome_options.add_argument("--headless")
     executable_path = os.getenv('EXECUTABLE_PATH')
     driver = webdriver.Chrome(executable_path=executable_path, options=chrome_options)
+    
     yield driver
 
     driver.close()
