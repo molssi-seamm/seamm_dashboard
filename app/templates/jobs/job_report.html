@@ -1,15 +1,38 @@
 <!-- Plugins and scripts required by this view-->
-<link rel="stylesheet" href="{{ url_for('static', filename='node_modules/jstree/dist/themes/default/style.css') }}" />
-<script src="{{ url_for('static', filename='node_modules/jquery/dist/jquery.min.js') }}"></script>
-<script src="{{ url_for('static', filename='node_modules/jstree/dist/jstree.min.js') }}"></script>
 <script src= "{{ url_for('static', filename='js/job_report.js') }}"></script>
 
 <div class="animated fadeIn">
-  <div class="input-group">
-    <input type="text" class="form-control" placeholder="Search Files" id="search">
-    <span class="input-group-btn">
-      <button class="btn btn-default" type="button" id="btn-search">Search</button>
-    </span>
+  <div id='job_title' class='h1' style="margin-bottom:25px"></div>
+    <div class='h5'>Job Info</div>
+    <table id="job-info" class="table table-responsive-sm table-bordered table-striped table-sm" style="width:100%">
+      <thead>
+        <tr>
+          <th>
+            Job Name
+          </th>
+          <th>
+            Job Path
+          </th>
+          <th>
+            Flowchart
+          </th>
+          <th>
+            Actions
+          </th>
+        </tr>
+      </thead>
+    </table>
+    <div class="row">
+      <div class="col-sm-3">
+        <div class='h5', style="margin-top:20px">Browse job files</div>
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Search Files" id="search">
+          <span class="input-group-btn">
+            <button class="btn btn-primary" type="button" id="btn-search">Search</button>
+          </span>
+        </div>
+        <div id='js-tree'></div>
+      </div>
   </div>
-  <div id='js-tree'></div>
+  <div class="col-sm-9"></div>
 </div>
