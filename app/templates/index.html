@@ -488,7 +488,7 @@
     <footer class="app-footer">
       <div>
         <a href="http://molssi.org">MolSSI</a>
-        <span>&copy; 2018 Molecular Sciences Software Institute.</span>
+        <span>&copy; 2018-2020 The Molecular Sciences Software Institute.</span>
       </div>
     </footer>
     <!-- Bootstrap and necessary plugins-->
@@ -501,6 +501,8 @@
     <script src="{{ url_for('static', filename='node_modules/chart.js/dist/Chart.min.js') }}"></script>
     <script src="{{ url_for('static', filename='node_modules/cytoscape/dist/cytoscape.min.js') }}"></script>
     <script src="{{ url_for('static', filename='node_modules/@fortawesome/fontawesome-free/js/all.js')}}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='node_modules/jstree/dist/themes/default/style.css') }}" />
+    <script src="{{ url_for('static', filename='node_modules/jstree/dist/jstree.min.js') }}"></script>
 
     <!-- extras -->
     <script src="{{ url_for('static', filename='node_modules/datatables.net/js/jquery.dataTables.min.js') }}"></script>
