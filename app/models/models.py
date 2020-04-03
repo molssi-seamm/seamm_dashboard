@@ -45,6 +45,7 @@ class Job(db.Model):
     author = db.Column(db.String, nullable=True)
     name = db.Column(db.String, nullable=True)
     notes = db.Column(db.String, nullable=True)
+    status = db.Column(db.String, nullable=False, default="Created")
 
     flowchart = db.relationship('Flowchart', back_populates='jobs')
 
