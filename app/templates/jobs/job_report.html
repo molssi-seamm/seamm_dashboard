@@ -1,0 +1,15 @@
+<!-- Plugins and scripts required by this view-->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+<script src= "{{ url_for('static', filename='js/job_report.js') }}"></script>
+
+<div class="animated fadeIn">
+  <div class="input-group">
+    <input type="text" class="form-control" placeholder="Search Files" id="search">
+    <span class="input-group-btn">
+      <button class="btn btn-default" type="button" id="btn-search">Search</button>
+    </span>
+  </div>
+  <div id='js-tree'></div>
+</div>
