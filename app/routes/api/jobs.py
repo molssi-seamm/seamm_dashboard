@@ -8,6 +8,9 @@ from datetime import datetime
 from sqlalchemy import and_
 from flask import Response, request
 from dateutil import parser
+from flask import url_for
+
+import urllib.parse
 
 from app import db
 
@@ -101,49 +104,62 @@ def get_job(id):
     job_schema = JobSchema(many=False)
     return job_schema.dump(job), 200
 
-def get_job_files(id):
+def get_job_files(id, file_path=None):
     """
-    Function for api endpoint api/jobs/{id}/jsTree
+    Function for api endpoint api/jobs/{id}/files
 
     Parameters
     ----------
     id : the ID of the job to return
     """
 
-    js_tree = []
-
     job_info, status = get_job(id)
 
-    path = job_info['path']
+    if file_path is None:
+        js_tree = []
 
-    base_dir = os.path.split(path)[1]
+        path = job_info['path']
 
-    used_ids = []
+        base_dir = os.path.split(path)[1]
 
-    js_tree.append({
-        'id': path,
-        'parent': '#',
-        'text': base_dir,
-    })
+        used_ids = []
 
-    for root, dirs, files in os.walk(path):
-        parent = root
-        
-        for name in sorted(files):
+        js_tree.append({
+            'id': path,
+            'parent': '#',
+            'text': base_dir,
+            'state': {
+            'opened': "true",
+            'selected': "true",
+            },
+        })
+
+        for root, dirs, files in os.walk(path):
+            parent = root
+            
+            for name in sorted(files):
+
+                encoded_path = urllib.parse.quote(os.path.join(root, name), safe='')
+                    
+                js_tree.append({
+                    'id': os.path.join(root,name),
+                    'parent': parent,
+                    'text': name,
+                    "a_attr":{"href": f'/api/jobs/{id}/files?file_path={encoded_path}'} 
+                })
                 
-            js_tree.append({
+            for name in sorted(dirs):
+                js_tree.append({
                 'id': os.path.join(root,name),
                 'parent': parent,
                 'text': name,
             })
-            
-        for name in sorted(dirs):
-            js_tree.append({
-            'id': os.path.join(root,name),
-            'parent': parent,
-            'text': name,
-        })
-    return js_tree
+        return js_tree
 
+    else:
+        with open(file_path) as f:
+            file_contents = f.read()
+        
+        return file_contents
     
 
