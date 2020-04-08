@@ -56,6 +56,7 @@ $(document).ready(function() {
     $('#js-tree').bind("select_node.jstree", function (e, data) {
         if (data.node.children.length == 0) {
             var href = data.node.a_attr.href;
+            var file_type = href.split(".").slice(-1);
             $("#file-content").load(href);
         }
     });
