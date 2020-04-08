@@ -142,10 +142,10 @@ def get_job_files(id, file_path=None):
                 encoded_path = urllib.parse.quote(os.path.join(root, name), safe='')
                     
                 js_tree.append({
-                    'id': os.path.join(root,name),
+                    'id': encoded_path,
                     'parent': parent,
                     'text': name,
-                    "a_attr":{"href": f'/api/jobs/{id}/files?file_path={encoded_path}'} 
+                    'a_attr': {'href': f'api/jobs/{id}/files?file_path={encoded_path}', 'class': 'file'}
                 })
                 
             for name in sorted(dirs):
@@ -157,8 +157,15 @@ def get_job_files(id, file_path=None):
         return js_tree
 
     else:
-        with open(file_path) as f:
+        unencoded_path = urllib.parse.unquote(file_path)
+        print(unencoded_path)
+        with open(unencoded_path) as f:
             file_contents = f.read()
+        
+        print(file_contents)
+            
+        file_contents = file_contents.replace('\n', '<br>')
+        #file_contents = file_contents.replace('\t', '&emsp;')
         
         return file_contents
     

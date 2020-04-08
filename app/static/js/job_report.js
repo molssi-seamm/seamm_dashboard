@@ -55,7 +55,7 @@ $(document).ready(function() {
 
     $('#js-tree').bind("select_node.jstree", function (e, data) {
         var href = data.node.a_attr.href;
-        window.location.href = href;
+        $("#file-content").load(href);
     });
 
     $('#search').keyup(function(){
@@ -69,7 +69,6 @@ $(document).ready(function() {
         async: false,
         dataType: 'json',
         success: function (data) {
-            console.log(data)
             arrayReturn = [[`<a class="nav-link p-0" href="/jobs/${data.id}" title="View Details">`+data.name+'</a>', 
             data.status, 
             `<a class="nav-link p-0 btn btn-secondary" href="flowcharts/${data.flowchart_id}"><i class="fas fa-project-diagram"></i><span class="d-none d-md-inline">&nbsp;View Flowchart</span></a>`,
@@ -77,7 +76,6 @@ $(document).ready(function() {
         <i class="fa fa-edit"></i><span class="d-none d-md-inline">&nbsp; Edit</span></a>
         <a class="nav-link p-0 btn btn-danger" href="#">
             <i class="fa fa-trash "></i><span class="d-none d-md-inline">&nbsp; Delete</span></a>` ]];
-        console.log(arrayReturn)
         inittable(arrayReturn);
         }
     })
