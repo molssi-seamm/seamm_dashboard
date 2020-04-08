@@ -1,5 +1,7 @@
 <!-- Plugins and scripts required by this view-->
 <script src= "{{ url_for('static', filename='js/job_report.js') }}"></script>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/custom_flowchart.css') }}">
+
 
 <div class="animated fadeIn">
   <div id='job_title' class='h1' style="margin-bottom:25px"></div>
@@ -31,7 +33,7 @@
             <button class="btn btn-primary" type="button" id="btn-search">Search</button>
           </span>
         </div>
-        <div id='js-tree'></div>
+        <div style="margin:15px" id='js-tree'></div>
       </div>
-      <div class="col-sm-8" id='file-content', style="margin:15px;white-space:pre-line">File Content will go here.</div>
+      <div class="col-sm-8" id='file-content' style="margin:15px; white-space:pre-wrap; overflow-wrap: break-word; font-family: Courier;"></div>
 </div>
