@@ -54,8 +54,10 @@ $(document).ready(function() {
     })
 
     $('#js-tree').bind("select_node.jstree", function (e, data) {
-        var href = data.node.a_attr.href;
-        $("#file-content").load(href);
+        if (data.node.children.length == 0) {
+            var href = data.node.a_attr.href;
+            $("#file-content").load(href);
+        }
     });
 
     $('#search').keyup(function(){
