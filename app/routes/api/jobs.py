@@ -8,7 +8,7 @@ from datetime import datetime
 from sqlalchemy import and_
 from flask import Response, request
 from dateutil import parser
-from flask import url_for
+from flask import url_for, send_file
 
 import urllib.parse
 
@@ -158,15 +158,7 @@ def get_job_files(id, file_path=None):
 
     else:
         unencoded_path = urllib.parse.unquote(file_path)
-        print(unencoded_path)
-        with open(unencoded_path) as f:
-            file_contents = f.read()
         
-        print(file_contents)
-            
-        file_contents = file_contents.replace('\n', '<br>')
-        #file_contents = file_contents.replace('\t', '&emsp;')
-        
-        return file_contents
+        return send_file(unencoded_path)
     
 
