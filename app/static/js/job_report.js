@@ -27,21 +27,23 @@ function buildTree() {
 }
 
 
-function load_file(file_name){
+function load_file(file_url){
+    var return_data = []
+    console.log(file_url)
     $.ajax({
-        url: `api/jobs/${job_id}/files/${file_name}`,
+        url: file_url,
         async: false,
+        dataType: 'json',
         success: function (data) {
-            return data
+            return_data = data
         }
     });
+    return return_data
     }
 
 function buildFlowchart(flowchart_url) {
     var elements = [];
-    console.log(flowchart_url)
     var flowchart_id = flowchart_url.split('/').slice(-1)[0]
-    console.log(flowchart_id)
         $.ajax({
             url: `api/flowcharts/${flowchart_id}/cytoscape`,
             async: false,
@@ -76,6 +78,7 @@ function get_job_data() {
 }
 
 $(document).ready(function() {
+    // Change div sizes depending on window size
 
     job_data = get_job_data()
 
@@ -153,6 +156,18 @@ $(document).ready(function() {
                 cy.nodes('[name = "Start"]').style( {
                         'shape': 'ellipse',
                     });
+            }
+            else if (file_type=='graph'){
+                plotly_data = load_file(href)
+                content_div = document.getElementById('file-content');
+                content_div.innerHTML = "";
+                Plotly.newPlot(content_div, plotly_data.data, plotly_data.layout, {'editable': true, 
+                    'toImageButtonOptions': {
+                    format: 'png', // one of png, svg, jpeg, webp
+                    filename: data.node.text,
+                    scale: 10 // Multiply title/legend/axis/canvas sizes by this factor
+                  }});
+                
             }
             else { $("#file-content").load(href); }
         }
