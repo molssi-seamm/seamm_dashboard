@@ -18,6 +18,15 @@ from app.models import Job, JobSchema
 
 __all__ = ['get_jobs', 'get_job', 'get_job_files']
 
+file_icons = {
+    'graph': 'fas fa-chart-line',
+    'csv': "fas fa-table",
+    'flow': "fas fa-project-diagram",
+    'other': "far fa-file-alt",
+    'folder': 'far fa-folder-open'
+    
+}
+
 def get_jobs(createdSince=None, createdBefore=None, limit=None):
     """
     Function for API endpoint /api/jobs
@@ -132,6 +141,7 @@ def get_job_files(id, file_path=None):
             'opened': "true",
             'selected': "true",
             },
+            'icon': file_icons['folder'],
         })
 
         for root, dirs, files in os.walk(path):
@@ -139,13 +149,17 @@ def get_job_files(id, file_path=None):
             
             for name in sorted(files):
 
+                extension = name.split('.')[-1]
+
                 encoded_path = urllib.parse.quote(os.path.join(root, name), safe='')
                     
                 js_tree.append({
                     'id': encoded_path,
                     'parent': parent,
                     'text': name,
-                    'a_attr': {'href': f'api/jobs/{id}/files?file_path={encoded_path}', 'class': 'file'}
+                    'a_attr': {'href': f'api/jobs/{id}/files?file_path={encoded_path}', 'class': 'file'},
+                    'icon': [file_icons[extension] if extension in file_icons.keys() else file_icons['other'] ][0],
+                    
                 })
                 
             for name in sorted(dirs):
@@ -153,12 +167,13 @@ def get_job_files(id, file_path=None):
                 'id': os.path.join(root,name),
                 'parent': parent,
                 'text': name,
+                'icon': file_icons['folder']
             })
         return js_tree
 
     else:
         unencoded_path = urllib.parse.unquote(file_path)
-        
+
         return send_file(unencoded_path)
     
 
