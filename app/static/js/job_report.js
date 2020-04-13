@@ -129,15 +129,11 @@ function build_cyto_graph(elements, container_id) {
 }
 
 $(document).ready(function() {
-    // Change div sizes depending on window size
-
     job_data = get_job_data();
     build_job_table(job_data);
-
     tree_elements = buildTree();
-
-    var table = inittable([[], '#csv-data'])
-
+    
+    // JS Tree stuff
     $('#js-tree').jstree({ 'core' : {
         'data' : tree_elements,
         },
@@ -161,19 +157,35 @@ $(document).ready(function() {
             // Clear div content before new content loading 
             content_div = document.getElementById('file-content');
             content_div.innerHTML = "";
-            table.destroy();
 
+            content_div = document.getElementById('cytoscape');
+            content_div.innerHTML = "";
+            
+            try {
+                table.destroy();
+                $('#csv-data tr').remove();
+                $('#csv-data thead').remove();
+                $('#csv-data tbody').remove();
+            } catch {
+                // Do nothing.
+            }
+
+            title_div = document.getElementById('file-name');
+            title_div.innerHTML = data.node.text;
             
             // Figure out the file type.
             var href = data.node.a_attr.href;
             var file_type = href.split(".").slice(-1);
             var cyto_elements = buildFlowchart(`views/flowcharts/${job_data.flowchart_id}`)
 
-            document.getElementById('file-content').style.minHeight = "400px";
 
             // Handle the file.
             if (file_type=='flow'){
-                var cy = window.cy = build_cyto_graph(cyto_elements, 'file-content')
+                document.getElementById('file-content').style.minHeight = "0px";
+                document.getElementById('cytoscape').style.minHeight = "600px";
+
+
+                var cy = window.cy = build_cyto_graph(cyto_elements, 'cytoscape')
                 cy.nodes('[name = "Join"]').style( {
                     'shape': 'ellipse',
                     'background-color': '#000000',
@@ -189,7 +201,8 @@ $(document).ready(function() {
 
             else if (file_type=='graph'){
                 plotly_data = load_file(href, 'json')
-                Plotly.newPlot(content_div, plotly_data.data, plotly_data.layout, {'editable': true, 
+                Plotly.newPlot(content_div, plotly_data.data, plotly_data.layout, 
+                    {'editable': true, 
                     'toImageButtonOptions': {
                     format: 'png', // one of png, svg, jpeg, webp
                     filename: data.node.text,
@@ -201,6 +214,7 @@ $(document).ready(function() {
             else if (file_type=='csv'){
 
                 document.getElementById('file-content').style.minHeight = "0px";
+                document.getElementById('cytoscape').style.minHeight = "0px";
                 var csv_data = load_file(href, 'text')
                 var separated = $.csv.toArrays(csv_data)
                 //console.log(separated)
@@ -212,7 +226,7 @@ $(document).ready(function() {
 
                 var data = separated.slice(1,)
                 console.log(data)
-
+                
                 table = $('#csv-data').DataTable({
                     "responsive": true,
                     "aaData": data,
@@ -221,7 +235,10 @@ $(document).ready(function() {
 
             }
             // Try to load as text file.
-            else { $("#file-content").load(href); }
+            else { 
+                document.getElementById('cytoscape').style.minHeight = "0px";
+                $("#file-content").load(href); 
+            }
         }
     });
 
