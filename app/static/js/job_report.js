@@ -205,7 +205,7 @@ $(document).ready(function() {
 
             else if (file_type=='graph'){
                 $('#cytoscape').height("0px")
-                $('#file-content').height("0px");
+                
 
                 plotly_data = load_file(href, 'json')
                 Plotly.newPlot(content_div, plotly_data.data, plotly_data.layout, 
@@ -215,6 +215,8 @@ $(document).ready(function() {
                     filename: data.node.text,
                     scale: 10 // Multiply title/legend/axis/canvas sizes by this factor
                   }});
+
+                  $('#view-card').height($('.plotly').height()+150);
                 
             }
 
