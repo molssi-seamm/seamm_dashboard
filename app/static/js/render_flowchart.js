@@ -32,10 +32,10 @@ function buildFlowchart(url) {
 $(document).ready(function(){
 
   var page_url = location.href.split('/')
-
   var flowchart_description = getDescription()
 
-  $('#description').load(flowchart_description)
+  $('#description').html(flowchart_description)
+  console.log(flowchart_description)
 
   var cytoscape_elements = buildFlowchart(page_url)
 
