@@ -177,7 +177,6 @@ $(document).ready(function() {
 
             $('#file-name').html(data.node.text)
 
-            
             // Figure out the file type.
             var href = data.node.a_attr.href;
             var file_type = href.split(".").slice(-1);
@@ -237,9 +236,10 @@ $(document).ready(function() {
                     "responsive": true,
                     "aaData": data,
                     "columns": headers,
-                    "scrollX": true,
-                    "scrollY": true,
-                })
+                    "initComplete": function (settings, json) {  
+                        $("#csv-data").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");
+                    },
+                });
 
                 $('#view-card').height($('#csv-data_wrapper').height()+150)
 
