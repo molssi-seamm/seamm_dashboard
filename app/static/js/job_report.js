@@ -154,6 +154,7 @@ $(document).ready(function() {
     $('#job_title').text(tree_elements[0].text)
 
     var content_div = document.getElementById('file-content');
+    $('#js-tree').height($(window).height()-$('#js-tree').offset().top+50)
 
     $('#js-tree').bind("select_node.jstree", function (e, data) {
         if (data.node.a_attr.href != '#') {
