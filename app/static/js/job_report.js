@@ -62,7 +62,6 @@ function buildFlowchart(flowchart_url) {
     }
 
 function get_job_data() {
-    var arrayReturn = [];
     var job_data = {};
     $.ajax({
     url: `api/jobs/${job_id}`,
@@ -76,7 +75,7 @@ function get_job_data() {
 }
 
 function build_job_table(data) {
-    arrayReturn = [[`<a class="nav-link p-0" href="/jobs/${data.id}" title="View Details">`+data.name+'</a>', 
+    var arrayReturn = [[`<a class="nav-link p-0" href="/jobs/${data.id}" title="View Details">`+data.name+'</a>', 
             data.status, 
             `<a class="nav-link p-0 btn btn-secondary" href="flowcharts/${data.flowchart_id}"><i class="fas fa-project-diagram"></i><span class="d-none d-md-inline">&nbsp;View Flowchart</span></a>`,
             `<a class="nav-link p-0 btn btn-primary" href="/jobs/${data.id}/edit">
@@ -131,9 +130,9 @@ function build_cyto_graph(elements, container_id) {
 $(document).ready(function() {
     $('#view-card').height($(window).height()-$('#js-tree').offset().top+50)
 
-    job_data = get_job_data();
+    var job_data = get_job_data();
+    var tree_elements = buildTree();
     build_job_table(job_data);
-    tree_elements = buildTree();
     
     // JS Tree stuff
     $('#js-tree').jstree({ 'core' : {
@@ -154,13 +153,14 @@ $(document).ready(function() {
 
     $('#job_title').text(tree_elements[0].text)
 
+    var content_div = document.getElementById('file-content');
+
     $('#js-tree').bind("select_node.jstree", function (e, data) {
         if (data.node.a_attr.href != '#') {
             
             $('#view-card').height($(window).height()-$('#js-tree').offset().top+50)
 
             // Clear div content before new content loading 
-            content_div = document.getElementById('file-content');
             content_div.innerHTML = "";
 
             content_div = document.getElementById('cytoscape');
@@ -206,7 +206,7 @@ $(document).ready(function() {
                 $('#cytoscape').height("0px")
                 $('#file-content').height("0px")
 
-                plotly_data = load_file(href, 'json')
+                var plotly_data = load_file(href, 'json')
                 Plotly.newPlot(content_div, plotly_data.data, plotly_data.layout, 
                     {'editable': true, 
                     'toImageButtonOptions': {
