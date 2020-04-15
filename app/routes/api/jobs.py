@@ -8,7 +8,7 @@ from datetime import datetime
 from sqlalchemy import and_
 from flask import Response, request
 from dateutil import parser
-from flask import url_for, send_file
+from flask import send_file
 
 import urllib.parse
 
@@ -130,8 +130,6 @@ def get_job_files(id, file_path=None):
         path = job_info['path']
 
         base_dir = os.path.split(path)[1]
-
-        used_ids = []
 
         js_tree.append({
             'id': path,
