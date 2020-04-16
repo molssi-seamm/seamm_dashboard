@@ -10,6 +10,10 @@ import os
 
 import urllib.parse
 
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 
 @pytest.mark.usefixtures('live_server')
 class TestLiveServer:
@@ -34,11 +38,11 @@ class TestLiveServer:
     def test_jobs_list(self, app, chrome_driver):
         chrome_driver.get(f"{self.base_url}#jobs")
         
+        # Get the jobs table. Will want to wait for this to be loaded, of course.
+        jobs_table = WebDriverWait(chrome_driver, 20).until(EC.presence_of_element_located((By.ID, "jobs")))
+        
         # Check table dimensions.
-        jobs_table = chrome_driver.find_element_by_id('jobs')
         table_headings = jobs_table.find_elements_by_tag_name("th")
-        
-        
         table_rows = jobs_table.find_elements_by_tag_name("tr")
         assert len(table_headings) == 5
         assert len(table_rows) == 3
@@ -65,8 +69,7 @@ class TestLiveServer:
         
         num_files = len(os.listdir(test_dir))
         
-        chrome_driver.implicitly_wait(3)
-        chrome_driver.get_screenshot_as_file('test_screenshot.png')
+        
         file_tree = chrome_driver.find_element_by_id('js-tree')
         js_tree_contents = file_tree.find_elements_by_tag_name('li')
     
@@ -95,7 +98,7 @@ class TestLiveServer:
         initial_displayed_text = chrome_driver.find_element_by_id('file-content').text
         
         # Get a link for a file and click on it.
-        job_link = chrome_driver.find_element_by_id(test_file_id)
+        job_link = WebDriverWait(chrome_driver, 20).until(EC.presence_of_element_located((By.ID, test_file_id)))
         job_link.click()
 
         # When clicked, file text should be displayed in the div.
