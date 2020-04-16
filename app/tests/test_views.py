@@ -69,8 +69,15 @@ class TestLiveServer:
         
         num_files = len(os.listdir(test_dir))
         
-        
+        # Get the file tree. Wait for a specific element to load so we know the tree is loaded.
         file_tree = chrome_driver.find_element_by_id('js-tree')
+        
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        test_file = os.path.realpath(os.path.join(dir_path, "..", "..", "data", "projects", "MyProject", "Job_000001", "job.out"))
+        test_file_id = urllib.parse.quote(test_file, safe='')+'_anchor'
+        WebDriverWait(chrome_driver, 20).until(EC.presence_of_element_located((By.ID, test_file_id)))
+
+        # Now get components.
         js_tree_contents = file_tree.find_elements_by_tag_name('li')
     
         num_files_in_tree = len(js_tree_contents)
