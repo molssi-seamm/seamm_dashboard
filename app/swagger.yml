@@ -39,6 +39,33 @@ paths:
                   $ref: '#/components/schemas/Job'
         "400":
           description: bad input parameter
+  /api/jobs/{id}/files:
+    get:
+      tags:
+      - developers
+      summary: returns json of files associated with a particular job
+      description: |
+        Get job files.
+      operationId: app.routes.api.get_job_files
+      parameters:
+      - name: id
+        in: path
+        description: retrieve job by id.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: file_path
+        in: query
+        schema: 
+          type: string
+        description: Retrieve text for file.
+      responses:
+        "200":
+          description: search results matching criteria
+        "400":
+          description: bad input parameter
   /api/jobs:
     get:
       tags:

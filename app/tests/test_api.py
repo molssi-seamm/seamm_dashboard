@@ -34,13 +34,13 @@ def test_get_jobs(createdSince, createdBefore, limit, expected_number, client):
 
 
 def test_get_job_by_id(client):
-    response = client.get("api/jobs/1")
+    response = client.get("api/jobs/2")
     
     expected_response =  {
         "flowchart_id": "ABCD",
-        "id": 1,
+        "id": 2,
         "path": "/Users/username/seamm/projects",
-        "submission_date": parser.parse("2016-08-29T09:12:33.001000+00:00").replace(tzinfo=None)
+        "submission_date": parser.parse("2019-08-29T09:12:33.001000+00:00").replace(tzinfo=None)
         }
 
     received = response.json

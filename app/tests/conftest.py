@@ -20,11 +20,13 @@ def app():
     app_context = flask_app.app_context()
     app_context.push()
 
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+
     # Fill in some data
     job1_data = {
         "flowchart_id": "ABCD",
         "id": 1,
-        "path": "/Users/username/seamm/projects",
+        "path": os.path.realpath(os.path.join(dir_path, "..", "..", "data", "projects", "MyProject", "Job_000001")),
         "submission_date": parser.parse("2016-08-29T09:12:33.001000+00:00")
         }
 

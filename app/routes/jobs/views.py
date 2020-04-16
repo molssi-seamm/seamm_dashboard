@@ -24,7 +24,7 @@ def jobs_list():
 @jobs.route('/views/jobs/<id>')
 @jobs.route('/views//jobs/<id>')
 def job_details(id):
-    return render_template('views/charts.html')
+    return render_template('jobs/job_report.html')
    
 @jobs.route('/views/jobs/<job_id>/edit', methods=["GET", "POST"])
 @jobs.route('/views//jobs/<job_id>/edit', methods=["GET", "POST"])

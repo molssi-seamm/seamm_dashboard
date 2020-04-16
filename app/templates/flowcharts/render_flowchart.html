@@ -8,27 +8,24 @@
     <title>SEAMM flowchart view</title>
 
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
-
     <script src="{{ url_for('static', filename='node_modules/cytoscape/dist/cytoscape.min.js') }}"></script>
-
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/custom_flowchart.css') }}">
   </head>
 
   <body>
-
-    <h1>flowchart.flow</h1>
+    <script src="{{ url_for('static', filename='js/collapsible.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/render_flowchart.js') }}"></script>
+  <h1>flowchart.flow</h1>
   
   <div id="wrapper">
     <div id="cy"></div>
     <div id="info">
       <button type="button" class="collapsible_description">Flowchart Description</button>
-      <div id="description" class="content">
-        {{ description|safe }}
-      </div>
+      <div id="description" class="content"></div>
     </div>
   </div>
-  <script src="{{ url_for('static', filename='js/collapsible.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/render_flowchart.js') }}"></script>
-  </body>
+
+  
+</body>
 
 </html>
