@@ -39,7 +39,7 @@ class Job(db.Model):
     __tablename__ = 'jobs'
 
     id = db.Column(db.Integer, primary_key=True)
-    path = db.Column(db.String, nullable=False)
+    path = db.Column(db.String, nullable=False, unique=True)
     flowchart_id = db.Column(db.String, db.ForeignKey("flowcharts.id"))
     submission_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     author = db.Column(db.String, nullable=True)
