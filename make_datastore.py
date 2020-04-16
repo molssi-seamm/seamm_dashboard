@@ -111,5 +111,5 @@ def create_datastore(location):
                 job_name = os.path.basename(potential_job)
             
                 if os.path.isdir(potential_job):
-                    job_name = os.path.basename(potential_job,)
+                    job_name = os.path.basename(potential_job)
                     add_job(potential_job, job_name)

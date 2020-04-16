@@ -67,8 +67,6 @@ def process_job(job_path):
     flow_path = os.path.join(job_path, "*.flow")
     flowchart = glob.glob(flow_path)
 
-    print("The job path is {}.".format(flow_path))
-
     if len(flowchart) > 1:
         raise ValueError("More than one flowchart found! Cannot add job.")
 
@@ -82,5 +80,11 @@ def process_job(job_path):
     job_info['path'] = os.path.abspath(job_path)
     job_info['submission_date'] = datetime.fromtimestamp(os.path.getmtime(flowchart_info['path']))
     job_info['flowchart_path'] = flowchart_info['path']
+
+    # Attempt to read job ID from file path
+    dir_name = os.path.basename(job_path)
+    job_id = dir_name.split('_')[1]
+    job_id = float(job_id)
+    job_info['id'] = job_id
 
     return job_info
