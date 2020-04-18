@@ -42,7 +42,13 @@ def process_flowchart(flowchart_path):
     flowchart_info['id'] = hashlib.md5(flowchart_info['flowchart_file'].encode('utf-8')).hexdigest()
 
     # Get the flowchart description.
-    flowchart_info['description'] = flowchart_info['flowchart_json']['nodes'][0]["attributes"]['_description']
+    try:
+        node0 = flowchart_info['flowchart_json']['nodes'][0]
+        flowchart_info['description'] = node0["attributes"]['_description']
+    except KeyError:
+        flowchart_info['description'] = 'No description given.'
+    except Exception:
+        flowchart_info['description'] = 'The flowchart may be corrupted.'
 
     return flowchart_info
 
