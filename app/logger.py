@@ -3,7 +3,7 @@ import logging
 from datetime import datetime
 
 
-def setup_logging(config_name):
+def setup_logging(options):
     """
     Sets up logging to console (INFO+) and logging of log file
     logs/myapp-<timestamp>.log. You can create a an extra logger to represent
@@ -26,7 +26,7 @@ def setup_logging(config_name):
         to continue running.
 
     Params
-        config_name
+        options
     """
 
     # Make sure the logs folder exists (avoid FileNotFoundError)
@@ -34,39 +34,35 @@ def setup_logging(config_name):
     if not os.path.isdir(path):
         os.makedirs(path)
 
-    # Set the logging levels
-    log_lvl_file = 'DEBUG'
-    log_lvl_console = 'DEBUG'
-
-    # if config_name == 'development':
-    #     log_lvl_console = 'DEBUG'
-    # elif config_name == 'production':
-    #     log_lvl_file = 'INFO'
-
     # Set up logging to a file (overwriting)
-    log_filename = (os.path.join(path, 'myapp-{}.log').format(datetime.utcnow().strftime(
-        "%Y%m%d")))
+    log_filename = (
+        os.path.join(path, 'dashboard-{}.log').format(
+            datetime.utcnow().strftime("%Y%m%d")
+        )
+    )
+
     # Possibly use %(pathname)s:%(lineno)d
-    logging.basicConfig(format='%(asctime)s.%(msecs)03d - %(name)-12s - '
-                               '%(levelname)-8s - %(message)s',
-                        datefmt='%Y-%m-%d %H:%M:%S',
-                        filename=log_filename,
-                        filemode='a',
-                        level=log_lvl_file)
+    # logging.basicConfig(datefmt='%Y-%m-%d %H:%M:%S')
+
+    # Get root logger
+    logger = logging.getLogger()
+    logger.setLevel('DEBUG')
 
     # Create a handler that writes INFO messages or higher to sys.stderr
     console = logging.StreamHandler()
-    console.setLevel(log_lvl_console)
-
-    # Create a formatter without timestamp for the console handler
-    console_formatter = logging.Formatter(
-        '%(name)-12s - %(levelname)-8s - %(message)s')
-
-    # Add formatter to console handler
+    console.setLevel(options.console_log_level)
+    console_formatter = logging.Formatter('%(name)s:%(levelname)s:%(message)s')
     console.setFormatter(console_formatter)
+    logger.addHandler(console)
 
-    # Add console handler to root logger
-    logging.getLogger('').addHandler(console)
+    # And one to log in files
+    file_ = logging.FileHandler(filename=log_filename, mode='a')
+    file_.setLevel(options.log_level)
+    file_formatter = logging.Formatter(
+        '%(asctime)s %(name)s:%(levelname)s:%(message)s'
+    )
+    file_.setFormatter(file_formatter)
+    logger.addHandler(file_)
 
     # Demo usage
     # logger = logging.getLogger('setup_logging')

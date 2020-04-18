@@ -10,7 +10,8 @@ from .template_filters import replace_empty
 # from flask_login import LoginManager
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_moment import Moment
-from . import logger
+from .logger import setup_logging
+import logging
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
@@ -32,21 +33,22 @@ toolbar = DebugToolbarExtension()
 db = SQLAlchemy()
 ma = Marshmallow()
 
-def create_app(config_name):
+logger = logging.getLogger()
+
+def create_app(options):
     """Flask app factory pattern
       separately creating the extensions and later initializing"""
 
-    # Setup logging levels
-    logger.setup_logging(config_name=config_name)
-
     conn_app = connexion.App(__name__, specification_dir='./')
     app = conn_app.app
-    app.config.from_object(config[config_name])
+    logger.info('Startup mode is ' + options.mode)
+    logger.info(' Database = ' + config[options.mode].SQLALCHEMY_DATABASE_URI)
+    app.config.from_object(config[options.mode])
 
     conn_app.add_api('swagger.yml')
     db.init_app(app)
     
-    with app.app_context():
+    with app.app_context() as context:
         db.create_all()
 
     # init
