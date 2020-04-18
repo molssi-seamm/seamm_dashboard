@@ -1,12 +1,54 @@
 """Flask app configuration
 """
+import configargparse
 import os
+
+# Argument/config parsing
+parser = configargparse.ArgParser(
+    auto_env_var_prefix='',
+    default_config_files=[
+        '/etc/seamm/seamm.ini',
+        '~/.seamm/seamm.ini',
+    ]
+)
+parser.add_argument(
+    '--seamm-configfile',
+    is_config_file=True,
+    default=None,
+    help='a configuration file to override others'
+)
+
+# Options for the dashboard
+parser.add_argument(
+    '--development',
+    action='store_true',
+    help='use the development mode'
+)
+parser.add_argument(
+    "--datastore",
+    dest="datastore",
+    default='.',
+    action="store",
+    env_var='SEAMM_DATASTORE',
+    help="The datastore (directory)."
+)
+parser.add_argument(
+    "--database",
+    dest="database",
+    default='seamm.db',
+    action="store",
+    env_var='SEAMM_DATABASE',
+    help="The database file."
+)
+
+# And actually parse the arguments & config file
+options, unknown = parser.parse_known_args()
 
 class BaseConfig:
 
     _basedir = os.path.abspath(os.path.dirname(__file__))
     STATIC_FOLDER = 'static'
-    ADMINS = frozenset(['daltarawy@vt.edu'])  ##
+    ADMINS = frozenset(['janash@vt.edu', 'psaxe@vt.edu'])  ##
     SECRET_KEY = 'SecretKeyForSessionSigning'
     EDIT_SOFTWARE_SALT = 'ThisIsAnotherSalt'
     THREADS_PER_PAGE = 8
@@ -21,7 +63,7 @@ class BaseConfig:
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD', 'passhere')
     MAIL_SUBJECT_PREFIX = '[MolSSI Molecular Software DB]'
     MAIL_SENDER = 'MolSSI Molecular DB Admin <info@molssi.org>'
-    APP_ADMIN = os.environ.get('APP_ADMIN', 'daltarawy@vt.edu')
+    APP_ADMIN = os.environ.get('APP_ADMIN', 'janash@vt.edu')
     EMAIL_CONFIRMATION_ENABLED = False
 
     # Client-side config
@@ -34,29 +76,10 @@ class BaseConfig:
     WTF_CSRF_ENABLED = True   # it's true by default, important to prevent CSRF attacks
 
 class SEAMMConfig(BaseConfig):
-    _basedir = os.path.abspath(os.path.dirname(__file__))
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(_basedir, 'data', 'projects', 'molssi_jobstore.db')
-
-    _seamm_home = os.path.join(os.path.expanduser("~"), ".seamm")
-
-    _seamm_ini = os.path.join(_seamm_home, "seamm.ini")
-
-    # Should move this into a function.
-    # This section reads a seamm settings file.
-    if os.path.exists(_seamm_ini):
-        _datastore_location = None
-        with open(_seamm_ini) as f:
-            settings = f.readlines()
-            for line in settings:
-                if 'datastore' in line.lower():
-                    _datastore_location = line.split('=')[1].strip()
-                
-            if not _datastore_location:
-                raise AttributeError('No datastore location found in seamm.ini file!')
-    
-        _datastore_location = os.path.expanduser(_datastore_location)
-
-        SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(_datastore_location, 'projects', 'molssi_jobstore.db')
+    SQLALCHEMY_DATABASE_URI = (
+        'sqlite:///' +
+        os.path.join(os.path.expanduser(options.datastore), options.database)
+    )
 
 class DevelopmentConfig(BaseConfig):
     _basedir = os.path.abspath(os.path.dirname(__file__))
@@ -89,7 +112,7 @@ class ProductionConfig(BaseConfig):
 config = {
     'development': DevelopmentConfig,
     'testing': TestingConfig,
-    'production': ProductionConfig,
+    'production': SEAMMConfig,
     'seamm': SEAMMConfig,
     # 'docker': DockerConfig,
     'default': DevelopmentConfig
