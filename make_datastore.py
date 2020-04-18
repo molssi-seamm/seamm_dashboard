@@ -2,36 +2,14 @@ import os
 import glob
 
 from datetime import datetime
+import logging
 
 from app.models import Flowchart, Job, Project, JobProject
 from app.models.util import process_flowchart, process_job
 
 from app import db
 
-def read_seamm_settings(seamm_location='default'):
-    
-    if seamm_location == 'default':
-        # Get the home directory
-        seamm_home = os.path.join(os.path.expanduser("~"), ".seamm")   
-    else:
-        seamm_home = seamm_location
-    
-    seamm_ini = os.path.join(seamm_home, "seamm.ini")
-
-    if os.path.exists(seamm_ini):
-        datastore_location = None
-        with open(seamm_ini) as f:
-            settings = f.readlines()
-            for line in settings:
-                if 'datastore' in line.lower():
-                    datastore_location = line.split('=')[1].strip()
-                
-            if not datastore_location:
-                raise AttributeError('No datastore location found in seamm.ini file!') 
-    else:
-        raise FileNotFoundError(F'No seamm.ini file found in {seamm_home}')
-
-    return os.path.expanduser(datastore_location)
+logger = logging.getLogger()
 
 
 def add_flowchart(flowchart_path):
@@ -98,11 +76,15 @@ def add_project(project_path, project_name):
 
 def create_datastore(location):
 
+    n_projects = 0
+    n_jobs = 0
     for potential_project in os.listdir(location):
         potential_project = os.path.join(location, potential_project)
 
         if os.path.isdir(potential_project):
+            n_projects += 1
             project_name = os.path.basename(potential_project)
+            logger.debug('Adding project {}'.format(project_name))
             add_project(potential_project, project_name)
         
             for potential_job in os.listdir(potential_project):
@@ -111,5 +93,8 @@ def create_datastore(location):
                 job_name = os.path.basename(potential_job)
             
                 if os.path.isdir(potential_job):
+                    n_jobs += 1
                     job_name = os.path.basename(potential_job)
+                    logger.debug('       job {}'.format(job_name))
                     add_job(potential_job, job_name)
+    return (n_projects, n_jobs)
