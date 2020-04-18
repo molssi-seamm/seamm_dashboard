@@ -1,5 +1,6 @@
 import os
 import logging
+import logging.handlers
 from datetime import datetime
 
 
@@ -30,42 +31,45 @@ def setup_logging(options):
     """
 
     # Make sure the logs folder exists (avoid FileNotFoundError)
-    path = os.getcwd() + '/logs'
-    if not os.path.isdir(path):
-        os.makedirs(path)
+    log_dir = options.logdir.replace('%datastore%', options.datastore)
+    
+    if not os.path.isdir(log_dir):
+        os.makedirs(log_dir)
 
     # Set up logging to a file (overwriting)
-    log_filename = (
-        os.path.join(path, 'dashboard-{}.log').format(
-            datetime.utcnow().strftime("%Y%m%d")
-        )
-    )
-
-    # Possibly use %(pathname)s:%(lineno)d
-    # logging.basicConfig(datefmt='%Y-%m-%d %H:%M:%S')
+    log_filename = os.path.join(log_dir, 'dashboard.log')
 
     # Get root logger
     logger = logging.getLogger()
     logger.setLevel('DEBUG')
 
     # Create a handler that writes INFO messages or higher to sys.stderr
-    console = logging.StreamHandler()
-    console.setLevel(options.console_log_level)
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(options.console_log_level)
     console_formatter = logging.Formatter('%(name)s:%(levelname)s:%(message)s')
-    console.setFormatter(console_formatter)
-    logger.addHandler(console)
+    console_handler.setFormatter(console_formatter)
+    logger.addHandler(console_handler)
 
     # And one to log in files
-    file_ = logging.FileHandler(filename=log_filename, mode='a')
-    file_.setLevel(options.log_level)
+    file_handler = logging.handlers.TimedRotatingFileHandler(
+        log_filename, when='W6', backupCount=4
+    )
+    file_handler.setLevel(options.log_level)
     file_formatter = logging.Formatter(
         '%(asctime)s %(name)s:%(levelname)s:%(message)s'
     )
-    file_.setFormatter(file_formatter)
-    logger.addHandler(file_)
+    file_handler.setFormatter(file_formatter)
+    logger.addHandler(file_handler)
+
+    logger.info(
+        'Logging to the console at level {}.'.format(options.console_log_level)
+    )
+    logger.info(
+        'Logging to {} at level {}.'.format(log_filename, options.log_level)
+    )
 
     # Demo usage
-    # logger = logging.getLogger('setup_logging')
+    # logger = logging.getLogger(__name__)
     # logger.debug('a debug log message')
     # logger.info('an info log message')
     # logger.warning('a warning log message')

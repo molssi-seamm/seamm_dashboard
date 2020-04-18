@@ -68,6 +68,14 @@ if __name__ == "__main__":
         help="The database file."
     )
     parser.add_argument(
+        "--logdir",
+        dest="logdir",
+        default='%datastore%/logs',
+        action="store",
+        env_var='SEAMM_LOGDIR',
+        help="The directory for logging"
+    )
+    parser.add_argument(
         '--initialize',
         action='store_true',
         help='initialize the database from scratch'
