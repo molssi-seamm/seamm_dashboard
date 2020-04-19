@@ -4,12 +4,17 @@ util.py
 Utility functions.
 """
 
+from datetime import datetime
 import os
 import json
 import glob
 import hashlib
+import logging
 
-from datetime import datetime
+
+logger = logging.getLogger(__name__)
+
+time_format = '%Y-%m-%d %H:%M:%S %Z'
 
 def process_flowchart(flowchart_path):
     """Read in flowchart from file and process for addition to SEAMM datastore.
@@ -81,6 +86,28 @@ def process_job(job_path):
         return None
 
     flowchart_info = process_flowchart(flowchart[0])
+
+    # If there is a job_data.json file, extract data
+    data_file = os.path.join(job_path, 'job_data.json')
+    if os.path.exists(data_file):
+        try:
+            with open(data_file, 'r') as fd:
+                data = json.load(fd)
+            
+            if 'title' in data:
+                job_info['title'] = data['title']
+            if 'state' in data:
+                job_info['status'] = data['state']
+            else:
+                job_info['status'] = 'unknown'
+            if 'start time' in data:
+                job_info['submitted'] = datetime.strptime(data['start time'], time_format)
+                job_info['started'] = datetime.strptime(data['start time'], time_format)
+            if 'end time' in data:
+                job_info['finished'] = datetime.strptime(data['end time'], time_format)
+        except Exception as e:
+            logger.warning('Encountered error reading job {}'.format(job_path))
+            logger.warning('Error: {}'.format(e))
 
     job_info['flowchart_id'] = flowchart_info['id']
     job_info['path'] = os.path.abspath(job_path)
