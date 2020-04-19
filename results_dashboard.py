@@ -109,4 +109,4 @@ if __name__ == "__main__":
         logger.info('Imported {} jobs in {} projects in {:.2f} s.'
                     .format(n_jobs, n_projects, t1 - t0))
 
-    app.run(debug=False)  # , use_reloader=False)
+    app.run(debug=True, use_reloader=False)
