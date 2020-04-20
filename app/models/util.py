@@ -35,20 +35,20 @@ def process_flowchart(flowchart_path):
 
     # Get the flowchart text
     with open(flowchart_path, 'r') as f:
-        flowchart_info['flowchart_file'] = f.read()
+        flowchart_info['text'] = f.read()
     
     # Get the flowchart description
     with open(flowchart_path) as f:
         f.readline()
         f.readline()
-        flowchart_info['flowchart_json'] = json.load(f)
+        flowchart_info['json'] = json.load(f)
 
     # Get a hash of the flowchart contents
-    flowchart_info['id'] = hashlib.md5(flowchart_info['flowchart_file'].encode('utf-8')).hexdigest()
+    flowchart_info['id'] = hashlib.md5(flowchart_info['text'].encode('utf-8')).hexdigest()
 
     # Get the flowchart description.
     try:
-        node0 = flowchart_info['flowchart_json']['nodes'][0]
+        node0 = flowchart_info['json']['nodes'][0]
         flowchart_info['description'] = node0["attributes"]['_description']
     except KeyError:
         flowchart_info['description'] = 'No description given.'
@@ -111,13 +111,11 @@ def process_job(job_path):
 
     job_info['flowchart_id'] = flowchart_info['id']
     job_info['path'] = os.path.abspath(job_path)
-    job_info['submission_date'] = datetime.fromtimestamp(os.path.getmtime(flowchart_info['path']))
     job_info['flowchart_path'] = flowchart_info['path']
 
     # Attempt to read job ID from file path
     dir_name = os.path.basename(job_path)
-    job_id = dir_name.split('_')[1]
-    job_id = float(job_id)
+    job_id = dir_name.split('_')[1].lstrip('0')
     job_info['id'] = job_id
 
     return job_info

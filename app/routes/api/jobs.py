@@ -63,7 +63,7 @@ def get_jobs(createdSince=None, createdBefore=None, limit=None):
     if limit is None:
         limit = Job.query.count()
     
-    jobs = Job.query.filter(and_(Job.submission_date>createdSince, Job.submission_date<createdBefore)).limit(limit)
+    jobs = Job.query.filter(and_(Job.submitted>createdSince, Job.submitted<createdBefore)).limit(limit)
 
     jobs_schema = JobSchema(many=True)
     
@@ -78,8 +78,8 @@ def add_job():
 
     # Get the flowchart and put it in place
     flowchart_data = {
-        'flowchart_file': 'unknown',
-        'flowchart_json': job_data.pop('flowchart'),
+        'path': 'unknown',
+        'json': job_data.pop('flowchart'),
         'description': 'there is no description!'
     }
     flowchart_data['id'] = hashlib.md5(

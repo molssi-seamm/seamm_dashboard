@@ -46,7 +46,6 @@ def add_job(job_path, job_name):
     job_info = process_job(job_path)
 
     if job_info:
-        job_info['name'] = job_name
         flowchart_path = job_info.pop('flowchart_path')
         job = Job(**job_info)
 
@@ -65,10 +64,10 @@ def add_project(project_path, project_name):
     Add a project to datastore.
     """
 
-    project = Project(project_path=project_path, name=project_name)
+    project = Project(path=project_path, name=project_name)
 
     # Check if in DB
-    found = db.session.query(Project).filter_by(name=project.name, project_path=project.project_path).all()
+    found = db.session.query(Project).filter_by(name=project.name, path=project.path).all()
 
     if not found:
         db.session.add(project)
