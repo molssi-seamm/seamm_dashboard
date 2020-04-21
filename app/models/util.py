@@ -11,10 +11,10 @@ import glob
 import hashlib
 import logging
 
-
 logger = logging.getLogger(__name__)
 
 time_format = '%Y-%m-%d %H:%M:%S %Z'
+
 
 def process_flowchart(flowchart_path):
     """Read in flowchart from file and process for addition to SEAMM datastore.
@@ -36,7 +36,7 @@ def process_flowchart(flowchart_path):
     # Get the flowchart text
     with open(flowchart_path, 'r') as f:
         flowchart_info['text'] = f.read()
-    
+
     # Get the flowchart description
     with open(flowchart_path) as f:
         f.readline()
@@ -44,7 +44,8 @@ def process_flowchart(flowchart_path):
         flowchart_info['json'] = json.load(f)
 
     # Get a hash of the flowchart contents
-    flowchart_info['id'] = hashlib.md5(flowchart_info['text'].encode('utf-8')).hexdigest()
+    flowchart_info['id'] = hashlib.md5(
+        flowchart_info['text'].encode('utf-8')).hexdigest()
 
     # Get the flowchart description.
     try:
@@ -72,7 +73,9 @@ def process_job(job_path):
             The job information to be added to the datastore.
     """
 
-    job_info = {}
+    job_info = {
+        'description': ''
+    }
 
     # Look for a flowchart in the job path
     flow_path = os.path.join(job_path, "*.flow")
@@ -93,7 +96,7 @@ def process_job(job_path):
         try:
             with open(data_file, 'r') as fd:
                 data = json.load(fd)
-            
+
             if 'title' in data:
                 job_info['title'] = data['title']
             if 'state' in data:
@@ -101,10 +104,13 @@ def process_job(job_path):
             else:
                 job_info['status'] = 'unknown'
             if 'start time' in data:
-                job_info['submitted'] = datetime.strptime(data['start time'], time_format)
-                job_info['started'] = datetime.strptime(data['start time'], time_format)
+                job_info['submitted'] = datetime.strptime(
+                    data['start time'], time_format)
+                job_info['started'] = datetime.strptime(
+                    data['start time'], time_format)
             if 'end time' in data:
-                job_info['finished'] = datetime.strptime(data['end time'], time_format)
+                job_info['finished'] = datetime.strptime(
+                    data['end time'], time_format)
         except Exception as e:
             logger.warning('Encountered error reading job {}'.format(job_path))
             logger.warning('Error: {}'.format(e))
@@ -116,6 +122,6 @@ def process_job(job_path):
     # Attempt to read job ID from file path
     dir_name = os.path.basename(job_path)
     job_id = dir_name.split('_')[1].lstrip('0')
-    job_info['id'] = job_id
+    job_info['id'] = int(job_id)
 
     return job_info
