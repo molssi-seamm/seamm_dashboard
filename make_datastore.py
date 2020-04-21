@@ -80,7 +80,6 @@ def add_flowchart(flowchart_path, project):
         db.session.add(flowchart)
         db.session.commit()
     elif project not in flowchart.projects:
-        print ('adding project {} to flowchart {}'.format(project.name, flowchart.id))
         flowchart.projects.append(project)
         db.session.commit()
 
@@ -137,14 +136,17 @@ def add_project(project_path, project_name):
     Add a project to datastore.
     """
 
-    project = Project(path=project_path, name=project_name)
 
     # Check if in DB
     found = db.session.query(Project).filter_by(
-        name=project.name, path=project.path
+        name=project_name, path=project_path
     ).one_or_none()
 
     if found is None:
+        user, group = file_owner(project_path)
+        project = Project(
+            path=project_path, name=project_name, owner=user, group=group
+        )
         db.session.add(project)
         db.session.commit()
         return project
