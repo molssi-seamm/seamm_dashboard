@@ -74,24 +74,6 @@ paths:
       description: |
         Get jobs. By passing parameters you can get jobs fitting a certain criteria.
       operationId: app.routes.api.get_jobs
-      responses:
-        "200":
-          description: search results matching criteria
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Job'
-        "400":
-          description: bad input parameter
-    post:
-      tags:
-      - developers
-      summary: adds a new job
-      description: |
-        Add a job. By passing parameters you can get jobs fitting a certain criteria.
-      operationId: app.routes.api.add_job
       parameters:
       - name: createdSince
         in: query
@@ -119,6 +101,24 @@ paths:
           minimum: 1
           type: integer
           format: int32
+      responses:
+        "200":
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Job'
+        "400":
+          description: bad input parameter
+    post:
+      tags:
+      - developers
+      summary: adds a new job
+      description: |
+        Add a job. By passing parameters you can get jobs fitting a certain criteria.
+      operationId: app.routes.api.add_job
       responses:
         "200":
           description: id of submitted job
