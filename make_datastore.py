@@ -4,7 +4,7 @@ import glob
 from datetime import datetime
 import logging
 
-from app.models import Flowchart, Job, Project, JobProject
+from app.models import Flowchart, Job, Project
 from app.models.util import process_flowchart, process_job
 
 from app import db
