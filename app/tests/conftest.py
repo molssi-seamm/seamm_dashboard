@@ -27,14 +27,14 @@ def app():
         "flowchart_id": "ABCD",
         "id": 1,
         "path": os.path.realpath(os.path.join(dir_path, "..", "..", "data", "projects", "MyProject", "Job_000001")),
-        "submission_date": parser.parse("2016-08-29T09:12:33.001000+00:00")
+        "submitted": parser.parse("2016-08-29T09:12:33.001000+00:00")
         }
 
     job2_data = {
         "flowchart_id": "ABCD",
         "id": 2,
         "path": "/Users/username/seamm/projects",
-        "submission_date": parser.parse("2019-08-29T09:12:33.001000+00:00")
+        "submitted": parser.parse("2019-08-29T09:12:33.001000+00:00")
         }
     
     # Load a simple flowchart

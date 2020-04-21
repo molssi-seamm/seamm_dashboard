@@ -40,13 +40,13 @@ def test_get_job_by_id(client):
         "flowchart_id": "ABCD",
         "id": 2,
         "path": "/Users/username/seamm/projects",
-        "submission_date": parser.parse("2019-08-29T09:12:33.001000+00:00").replace(tzinfo=None)
+        "submitted": parser.parse("2019-08-29T09:12:33.001000+00:00").replace(tzinfo=None)
         }
 
     received = response.json
 
     for k in expected_response.keys():
-        if k == "submission_date":
+        if k == "submitted":
             received[k] = parser.parse(received[k])
         assert received[k] == expected_response[k]
 
