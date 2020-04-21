@@ -96,7 +96,7 @@ if __name__ == "__main__":
     if options.initialize and os.path.exists(db_file):
         os.remove(db_file)
 
-    app = create_app(options)
+    app = create_app(options.mode)
 
     if initialize or options.initialize:
         logger.info('Initializing the database ({})'.format(db_file))
