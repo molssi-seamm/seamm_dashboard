@@ -3,7 +3,6 @@ Table models for SEAMM datastore SQLAlchemy database.
 """
 
 from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
 from app import db, ma
 
 #############################
@@ -15,20 +14,40 @@ from app import db, ma
 user_group = db.Table(
     'user_group',
     db.Column('user', db.Integer, db.ForeignKey('user.id'), primary_key=True),
-    db.Column('group', db.Integer, db.ForeignKey('group.id'), primary_key=True)
+    db.Column(
+        'group', db.Integer, db.ForeignKey('group.id'), primary_key=True
+    )
+)
+
+flowchart_project = db.Table(
+    'flowchart_project',
+    db.Column(
+        'flowchart',
+        db.String(32),
+        db.ForeignKey('flowchart.id'),
+        primary_key=True
+    ),
+    db.Column(
+        'project', db.Integer, db.ForeignKey('project.id'), primary_key=True
+    )
 )
 
 job_project = db.Table(
     'job_project',
     db.Column('job', db.Integer, db.ForeignKey('job.id'), primary_key=True),
-    db.Column('project', db.Integer, db.ForeignKey('project.id'), primary_key=True)
+    db.Column(
+        'project', db.Integer, db.ForeignKey('project.id'), primary_key=True
+    )
 )
 
 user_project = db.Table(
     'user_project',
     db.Column('user', db.Integer, db.ForeignKey('user.id'), primary_key=True),
-    db.Column('project',db.Integer, db.ForeignKey('project.id'), primary_key=True)
+    db.Column(
+        'project', db.Integer, db.ForeignKey('project.id'), primary_key=True
+    )
 )
+
 
 class User(db.Model):
     __tablename__ = 'user'
@@ -37,21 +56,18 @@ class User(db.Model):
     username = db.Column(db.String, unique=True, nullable=False)
     first_name = db.Column(db.String)
     last_name = db.Column(db.String)
-    email = db.Column(db.String, nullable=False)
-    password = db.Column(db.String, nullable=False)
+    email = db.Column(db.String)
+    password = db.Column(db.String)
     added = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     status = db.Column(db.String, default='active')
 
     groups = db.relationship(
-        'Group',
-        secondary=user_group,
-        back_populates='users'
+        'Group', secondary=user_group, back_populates='users'
     )
     projects = db.relationship(
-        'Project',
-        secondary=user_project,
-        back_populates='users'
+        'Project', secondary=user_project, back_populates='users'
     )
+
 
 class Group(db.Model):
     __tablename__ = 'group'
@@ -60,10 +76,9 @@ class Group(db.Model):
     name = db.Column(db.String, unique=True, nullable=False)
 
     users = db.relationship(
-        'User',
-        secondary=user_group,
-        back_populates='groups'
+        'User', secondary=user_group, back_populates='groups'
     )
+
 
 class Flowchart(db.Model):
     __tablename__ = 'flowchart'
@@ -88,9 +103,12 @@ class Flowchart(db.Model):
     world_x = db.Column(db.Boolean, nullable=False, default=False)
 
     job = db.relationship('Job', back_populates='flowchart', lazy=True)
+    projects = db.relationship(
+        'Project', secondary=flowchart_project, back_populates='flowcharts'
+    )
 
     def __repr__(self):
-        return F'Flowchart(id={self.id}, description={self.description}, path={self.path})'
+        return F'Flowchart(id={self.id}, description={self.description}, path={self.path})'  # noqa: E501
 
 
 class Job(db.Model):
@@ -119,13 +137,12 @@ class Job(db.Model):
 
     flowchart = db.relationship('Flowchart', back_populates='job')
     projects = db.relationship(
-       'Project',
-       secondary=job_project,
-       back_populates='jobs'
+        'Project', secondary=job_project, back_populates='jobs'
     )
 
     def __repr__(self):
-        return F'Job(path={self.path}, flowchart_id={self.flowchart}, submission_date={self.submitted})'
+        return F'Job(path={self.path}, flowchart_id={self.flowchart}, submitted={self.submitted})'  # noqa: E501
+
 
 class Project(db.Model):
     __tablename__ = 'project'
@@ -146,19 +163,19 @@ class Project(db.Model):
     world_w = db.Column(db.Boolean, nullable=False, default=False)
     world_x = db.Column(db.Boolean, nullable=False, default=False)
 
+    flowcharts = db.relationship(
+        'Flowchart', secondary=flowchart_project, back_populates='projects'
+    )
     jobs = db.relationship(
-        'Job',
-        secondary=job_project,
-        back_populates='projects'
+        'Job', secondary=job_project, back_populates='projects'
     )
     users = db.relationship(
-        'User',
-        secondary=user_project,
-        back_populates='projects'
+        'User', secondary=user_project, back_populates='projects'
     )
 
     def __repr__(self):
-        return F'Project(name={self.name}, path={self.path}, description={self.description})'
+        return F'Project(name={self.name}, path={self.path}, description={self.description})'  # noqa: E501
+
 
 #############################
 #
@@ -166,27 +183,37 @@ class Project(db.Model):
 #
 #############################
 
+
 class JobSchema(ma.ModelSchema):
+
     class Meta:
         include_fk = True
         model = Job
 
+
 class FlowchartSchema(ma.ModelSchema):
+
     class Meta:
         include_fk = True
         model = Flowchart
 
+
 class ProjectSchema(ma.ModelSchema):
+
     class Meta:
         include_fk = True
         model = Project
 
+
 class UserSchema(ma.ModelSchema):
+
     class Meta:
         include_fk = True
         model = User
 
+
 class GroupSchema(ma.ModelSchema):
+
     class Meta:
         include_fk = True
         model = Group
