@@ -15,6 +15,7 @@ dependencies:
     - flask-marshmallow
     - marshmallow-sqlalchemy
     - nodejs
+    - configargparse
     - pip:
       - selenium
       - pytest-flask
