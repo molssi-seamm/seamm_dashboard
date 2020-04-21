@@ -35,15 +35,15 @@ ma = Marshmallow()
 
 logger = logging.getLogger()
 
-def create_app(options):
+def create_app(mode):
     """Flask app factory pattern
       separately creating the extensions and later initializing"""
 
     conn_app = connexion.App(__name__, specification_dir='./')
     app = conn_app.app
-    logger.info('Startup mode is ' + options.mode)
-    logger.info(' Database = ' + config[options.mode].SQLALCHEMY_DATABASE_URI)
-    app.config.from_object(config[options.mode])
+    logger.info('Startup mode is ' + mode)
+    logger.info(' Database = ' + config[mode].SQLALCHEMY_DATABASE_URI)
+    app.config.from_object(config[mode])
 
     conn_app.add_api('swagger.yml')
     db.init_app(app)
