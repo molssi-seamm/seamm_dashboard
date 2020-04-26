@@ -5,11 +5,15 @@ Utility functions.
 """
 
 from datetime import datetime
-import os
-import json
 import glob
 import hashlib
+import json
 import logging
+from pathlib import Path
+import os
+
+from . import User, Group
+from app import db
 
 logger = logging.getLogger(__name__)
 
@@ -125,3 +129,40 @@ def process_job(job_path):
     job_info['id'] = int(job_id)
 
     return job_info
+
+def file_owner(path):
+    """Return the User object for the owner of a file or directory.
+
+    The User is created if it does not exist.
+
+    Parameters:
+    -----------
+    path : str or path
+        The directory or file to check.
+
+    Returns
+    -------
+    User object
+    """
+
+    item = Path(path)
+    if item.exists():
+        # Get the group first
+        name = item.group()
+        group = db.session.query(Group).filter_by(name=name).one_or_none()
+        if group is None:
+            group = Group(name=name)
+            db.session.add(group)
+            db.session.commit()
+
+        # and now the user
+        name = item.owner()
+        user = db.session.query(User).filter_by(username=name).one_or_none()
+        if user is None:
+            user = User(username=name)
+            user.groups.append(group)
+            db.session.add(user)
+            db.session.commit()
+        return user.id, group.id
+    else:
+        return None

@@ -4,7 +4,7 @@ import logging.handlers
 from datetime import datetime
 
 
-def setup_logging(options):
+def setup_logging(datastore, options):
     """
     Sets up logging to console (INFO+) and logging of log file
     logs/myapp-<timestamp>.log. You can create a an extra logger to represent
@@ -31,7 +31,7 @@ def setup_logging(options):
     """
 
     # Make sure the logs folder exists (avoid FileNotFoundError)
-    log_dir = options.logdir.replace('%datastore%', options.datastore)
+    log_dir = options.log_dir.replace('%datastore%', datastore)
     
     if not os.path.isdir(log_dir):
         os.makedirs(log_dir)
@@ -61,10 +61,11 @@ def setup_logging(options):
     file_handler.setFormatter(file_formatter)
     logger.addHandler(file_handler)
 
-    logger.info(
+    new_logger = logging.getLogger('dashboard')
+    new_logger.info(
         'Logging to the console at level {}.'.format(options.console_log_level)
     )
-    logger.info(
+    new_logger.info(
         'Logging to {} at level {}.'.format(log_filename, options.log_level)
     )
 

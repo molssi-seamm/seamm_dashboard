@@ -1,51 +1,68 @@
+"""
+import_jobs.py
+
+Functions to import jobs into the database
+"""
 import logging
 import os
-from pathlib import Path
 
-from app.models import Flowchart, Job, Project, User, Group
-from app.models.util import process_flowchart, process_job
+from . import Flowchart, Job, Project
+from .util import process_flowchart, process_job, file_owner
 
 from app import db
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
-def file_owner(path):
-    """Return the User object for the owner of a file or directory.
+def import_jobs(location):
+    """Import all the projects and jobs at <location>.
 
-    The User is created if it does not exist.
+    <location> should be the path to the 'projects' directory in a datastore.
+    All subdirectories will be added as projects, and the jobs within them
+    added also.
 
-    Parameters:
-    -----------
-    path : str or path
-        The directory or file to check.
+    Parameters
+    ----------
+    location : str or path
+        The projects directory in a datastore.
 
     Returns
     -------
-    User object
+    (n_projects, n_jobs) : int, integer
+        The number of projects and jobs added to the database.
     """
+    n_projects = 0
+    n_added_projects = 0
+    n_jobs = 0
+    n_added_jobs = 0
+    for potential_project in os.listdir(location):
+        potential_project = os.path.join(location, potential_project)
 
-    item = Path(path)
-    if item.exists():
-        # Get the group first
-        name = item.group()
-        group = db.session.query(Group).filter_by(name=name).one_or_none()
-        if group is None:
-            group = Group(name=name)
-            db.session.add(group)
-            db.session.commit()
+        if os.path.isdir(potential_project):
+            n_projects += 1
+            project_name = os.path.basename(potential_project)
+            logger.debug('Adding project {}'.format(project_name))
+            project, added = add_project(potential_project, project_name)
+            if added:
+                n_added_projects += 1
 
-        # and now the user
-        name = item.owner()
-        user = db.session.query(User).filter_by(username=name).one_or_none()
-        if user is None:
-            user = User(username=name)
-            user.groups.append(group)
-            db.session.add(user)
-            db.session.commit()
-        return user.id, group.id
-    else:
-        return None
+            for potential_job in os.listdir(potential_project):
+
+                potential_job = os.path.join(potential_project, potential_job)
+                job_name = os.path.basename(potential_job)
+
+                if os.path.isdir(potential_job):
+                    job_name = os.path.basename(potential_job)
+                    logger.debug('       job {}'.format(job_name))
+                    job, added = add_job(potential_job, job_name, project)
+                    if job is None:
+                        logger.debug('         was not a job!')
+                    else:
+                        n_jobs += 1
+                        if added:
+                            n_added_jobs += 1
+                        
+    return (n_projects, n_added_projects, n_jobs, n_added_jobs)
 
 
 def add_flowchart(flowchart_path, project):
@@ -121,21 +138,20 @@ def add_job(job_path, job_name, project):
 
             db.session.add(job)
             db.session.commit()
-            return job
+            return job, True
         else:
-            return found
+            return found, False
     else:
         print(
             "No job found in directory {}. No job added to data store".format(
                 job_path))
-        return None
+        return None, False
 
 
 def add_project(project_path, project_name):
     """
     Add a project to datastore.
     """
-
 
     # Check if in DB
     found = db.session.query(Project).filter_by(
@@ -149,51 +165,7 @@ def add_project(project_path, project_name):
         )
         db.session.add(project)
         db.session.commit()
-        return project
+        return project, True
     else:
-        return found
+        return found, False
 
-
-def create_datastore(location):
-    """Import all the projects and jobs at <location>.
-
-    <location> should be the path to the 'projects' directory in a datastore.
-    All subdirectories will be added as projects, and the jobs within them
-    added also.
-
-    Parameters
-    ----------
-    location : str or path
-        The projects directory in a datastore.
-
-    Returns
-    -------
-    (n_projects, n_jobs) : int, integer
-        The number of projects and jobs added to the database.
-    """
-    n_projects = 0
-    n_jobs = 0
-    for potential_project in os.listdir(location):
-        potential_project = os.path.join(location, potential_project)
-
-        if os.path.isdir(potential_project):
-            n_projects += 1
-            project_name = os.path.basename(potential_project)
-            logger.debug('Adding project {}'.format(project_name))
-            project = add_project(potential_project, project_name)
-
-            for potential_job in os.listdir(potential_project):
-
-                potential_job = os.path.join(potential_project, potential_job)
-                job_name = os.path.basename(potential_job)
-
-                if os.path.isdir(potential_job):
-                    job_name = os.path.basename(potential_job)
-                    logger.debug('       job {}'.format(job_name))
-                    job = add_job(potential_job, job_name, project)
-                    if job is None:
-                        logger.debug('         was not a job!')
-                    else:
-                        n_jobs += 1
-                        
-    return (n_projects, n_jobs)
