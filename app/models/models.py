@@ -3,7 +3,8 @@ Table models for SEAMM datastore SQLAlchemy database.
 """
 
 from datetime import datetime
-from app import db, ma
+from app import db
+from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 
 #############################
 #
@@ -184,35 +185,35 @@ class Project(db.Model):
 #############################
 
 
-class JobSchema(ma.ModelSchema):
+class JobSchema(SQLAlchemyAutoSchema):
 
     class Meta:
         include_fk = True
         model = Job
 
 
-class FlowchartSchema(ma.ModelSchema):
+class FlowchartSchema(SQLAlchemyAutoSchema):
 
     class Meta:
         include_fk = True
         model = Flowchart
 
 
-class ProjectSchema(ma.ModelSchema):
+class ProjectSchema(SQLAlchemyAutoSchema):
 
     class Meta:
         include_fk = True
         model = Project
 
 
-class UserSchema(ma.ModelSchema):
+class UserSchema(SQLAlchemyAutoSchema):
 
     class Meta:
         include_fk = True
         model = User
 
 
-class GroupSchema(ma.ModelSchema):
+class GroupSchema(SQLAlchemyAutoSchema):
 
     class Meta:
         include_fk = True
