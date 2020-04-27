@@ -15,6 +15,7 @@ from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 
+from config import config
 from .template_filters import replace_empty
 from .setup_logging import setup_logging
 from .setup_argparsing import options
@@ -75,40 +76,47 @@ db = SQLAlchemy()
 ma = Marshmallow()
 
 
-def create_app():
+def create_app(config_name=None):
     """Flask app factory pattern
       separately creating the extensions and later initializing"""
 
     conn_app = connexion.App(__name__, specification_dir='./')
     app = conn_app.app
     
-    # Report where options come from
-    parser = configargparse.get_argument_parser('dashboard')
     logger.info('')
-    logger.info('Where options are set:')
-    logger.info(60*'-')
-    for line in parser.format_values().splitlines():
-        logger.info(line)
+    if config_name is not None:
+        logger.info('Configuring from configuration ' + config_name)
+        app.config.from_object(config[config_name])
 
-    # Now set the options!
-    logger.info('')
-    logger.info('Configuration:')
-    logger.info(60*'-')
-    for key, value in vars(options).items():
-        if key not in (
-                'env',
-                'debug',
-                'initialize',
-                'log_dir',
-                'log_level',
-                'console_log_level',
-                'dashboard_configfile'
-        ):
-            key = key.upper()
-            if isinstance(value, str):
-                value = value.replace('%datastore%', datastore)
-            logger.info('\t{:>30s} = {}'.format(key, value))
-            app.config[key] = value
+        options.initialize = False
+        options.no_check = True
+    else:
+        # Report where options come from
+        parser = configargparse.get_argument_parser('dashboard')
+        logger.info('Where options are set:')
+        logger.info(60*'-')
+        for line in parser.format_values().splitlines():
+            logger.info(line)
+
+        # Now set the options!
+        logger.info('')
+        logger.info('Configuration:')
+        logger.info(60*'-')
+        for key, value in vars(options).items():
+            if key not in (
+                    'env',
+                    'debug',
+                    'initialize',
+                    'log_dir',
+                    'log_level',
+                    'console_log_level',
+                    'dashboard_configfile'
+            ):
+                key = key.upper()
+                if isinstance(value, str):
+                    value = value.replace('%datastore%', datastore)
+                logger.info('\t{:>30s} = {}'.format(key, value))
+                app.config[key] = value
 
     logger.info('')
 
