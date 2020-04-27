@@ -102,7 +102,7 @@ class Flowchart(db.Model):
     world_w = db.Column(db.Boolean, nullable=False, default=False)
     world_x = db.Column(db.Boolean, nullable=False, default=False)
 
-    job = db.relationship('Job', back_populates='flowchart', lazy=True)
+    jobs = db.relationship('Job', back_populates='flowchart', lazy=True)
     projects = db.relationship(
         'Project', secondary=flowchart_project, back_populates='flowcharts'
     )
@@ -135,7 +135,7 @@ class Job(db.Model):
     world_w = db.Column(db.Boolean, nullable=False, default=False)
     world_x = db.Column(db.Boolean, nullable=False, default=False)
 
-    flowchart = db.relationship('Flowchart', back_populates='job')
+    flowchart = db.relationship('Flowchart', back_populates='jobs')
     projects = db.relationship(
         'Project', secondary=job_project, back_populates='jobs'
     )
