@@ -32,7 +32,7 @@ function ajaxJobs(job_id) {
         async: false,
         dataType: 'json',
         success: function(data){
-            job_link = `<a class="nav-link p-0" href="/jobs/${data.id}" title="View Details">`+data.name+'</a><br>'
+            job_link = `<a class="nav-link p-0" href="/jobs/${data.id}" title="View Details">`+data.id+'</a><br>'
         }
     })
     return job_link;
