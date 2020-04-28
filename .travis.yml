@@ -1,25 +1,5 @@
 language: python
 
-# Run jobs on container-based infrastructure, can be overridden per job
-
-matrix:
-  include:
-    # Extra includes for OSX since python language is not available by default on OSX
-    - os: osx
-      language: generic
-      env: PYTHON_VER=3.6
-    - os: osx
-      language: generic
-      env: PYTHON_VER=3.7
-
-
-    - os: linux
-      language: generic  # No need to set Python version since its conda
-      env: PYTHON_VER=3.6
-    - os: linux
-      language: generic
-      env: PYTHON_VER=3.7
-
 addons:
   chrome: stable
 
@@ -28,7 +8,6 @@ branches:
     only:
     - master
     - consume-api
-
 
 before_install:
     # Additional info about the build
@@ -41,27 +20,59 @@ before_install:
   - python -V
 
 install:
-
-  - source devtools/scripts/install_chromedriver.sh
+  # - source devtools/scripts/install_chromedriver.sh
     # Create test environment for package
   - python devtools/scripts/create_conda_env.py -n=test -p=$PYTHON_VER devtools/conda-envs/test_env.yaml
     # Activate the test environment
   - conda activate test
-  - conda list
   - cd app
   - cd static
   - npm install
   - cd ../../
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version; fi
     # Build and install package
-  - python setup.py develop --no-deps
+    #- python setup.py develop --no-deps
+  - pip install -e .
+    # Print details of the environment
+  - conda list
+  - pip freeze
 
-
-script:
-   - pytest -v --cov=app app/tests/
 
 notifications:
     email: false
 
-after_success:
-  - codecov
+
+stages:
+  # - lint
+  - test
+  # - deploy
+
+jobs:
+  fast_finish: true
+  include:
+    - stage: lint
+      name: "Check formatting of code for PEP-8"
+      os: linux
+      language: generic
+      env: PYTHON_VER=3.7
+      script:
+        - flake8 app
+        - yapf --diff --recursive app
+
+    - stage: test
+      name: "Tests on MacOS Python 3.8"
+      script:
+        - pytest -v app/tests/
+      os: osx
+      language: generic
+      env: PYTHON_VER=3.8
+
+    - stage: test
+      name: "Tests and coverage on Linux Python 3.8"
+      script:
+        - pytest -v --cov=app app/tests/
+      after_success:
+        - codecov
+      os: linux
+      language: generic
+      env: PYTHON_VER=3.8

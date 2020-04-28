@@ -25,7 +25,7 @@ dependencies:
     - sqlalchemy
     - wtforms
     # For testing:
-    - chromedriver-binary
+    - chromedriver-binary==80.0.3987.106.0
     - pytest
     - pytest-selenium
     - pytest-flask
