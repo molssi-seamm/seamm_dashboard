@@ -1,18 +1,14 @@
 import pytest
 
 import os
-import json
-
-from app import create_app, db
 from dateutil import parser
 
+from app import create_app, db
 from app.models.util import process_flowchart
-
 from app.models import Job, Flowchart
-
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+import chromedriver_binary  # Adds chromedriver binary to path
+
 
 @pytest.fixture(scope="session")
 def app():
@@ -66,8 +62,8 @@ def client(app):
 def chrome_driver():
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument("--headless")
-    executable_path = os.getenv('EXECUTABLE_PATH')
-    driver = webdriver.Chrome(executable_path=executable_path, options=chrome_options)
+    # executable_path = os.getenv('EXECUTABLE_PATH')
+    driver = webdriver.Chrome(options=chrome_options)
     
     yield driver
 
