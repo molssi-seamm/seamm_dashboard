@@ -1,38 +1,36 @@
 name: seamm-dashboard-new
 channels:
-  - anaconda
-  - conda-forge
   - defaults
 dependencies:
-    - python>3.7
-    - pip
-    - readline
-    - setuptools
-    - sqlalchemy
-    - sqlite
-    - connexion>=2.6.0
-    - swagger-ui-bundle
-    - flask-marshmallow
-    - marshmallow-sqlalchemy
-    - nodejs
+  - python>=3.8
+  - pip
+  - pip:
     - configargparse
-    - pip:
-      - selenium
-      - pytest-flask
-      - flask
-      - flask-bootstrap
-      - flask-cors
-      - flask-debugtoolbar
-      - flask-httpauth
-      - flask-jsonpify
-      - flask-login
-      - flask-mail
-      - flask-moment
-      - flask-mongoengine
-      - flask-sqlalchemy
-      - flask-wtf
-      - pytest-cov
-      - python-dateutil
-      - werkzeug>=0.12.2
-      - wtforms>=2.1
-
+    - connexion[swagger-ui]
+    - flask
+    - flask_bootstrap
+    - flask_cors
+    - flask_debugtoolbar
+    - flask_login
+    - flask_mail
+    - flask_marshmallow
+    - flask_moment
+    - flask_sqlalchemy
+    - flask_wtf
+    - marshmallow
+    - marshmallow_sqlalchemy
+    - python_dateutil
+    - requests
+    - selenium
+    - sqlalchemy
+    - wtforms
+    # For testing:
+    - chromedriver-binary
+    - pytest
+    - pytest-selenium
+    - pytest-flask
+    - pytest-cov
+    # For development
+    - flake8
+    - twine
+    - yapf
