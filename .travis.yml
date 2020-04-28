@@ -4,10 +4,10 @@ addons:
   chrome: stable
 
 # branches to build
-branches:
-    only:
-    - master
-    - consume-api
+# branches:
+#     only:
+#     - master
+#     - consume-api
 
 before_install:
     # Additional info about the build
