@@ -189,6 +189,7 @@ class JobSchema(SQLAlchemyAutoSchema):
 
     class Meta:
         include_fk = True
+        include_relationships = True
         model = Job
 
 
@@ -196,6 +197,7 @@ class FlowchartSchema(SQLAlchemyAutoSchema):
 
     class Meta:
         include_fk = True
+        include_relationships = True
         model = Flowchart
 
 
@@ -203,6 +205,7 @@ class ProjectSchema(SQLAlchemyAutoSchema):
 
     class Meta:
         include_fk = True
+        include_relationships = True
         model = Project
 
 
@@ -210,6 +213,7 @@ class UserSchema(SQLAlchemyAutoSchema):
 
     class Meta:
         include_fk = True
+        include_relationships = True
         model = User
 
 
@@ -217,4 +221,5 @@ class GroupSchema(SQLAlchemyAutoSchema):
 
     class Meta:
         include_fk = True
+        include_relationships = True
         model = Group
