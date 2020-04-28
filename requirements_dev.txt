@@ -1,0 +1,12 @@
+-r requirements_install.txt
+
+# For testing:
+chromedriver-binary==80.0.3987.106.0
+pytest
+pytest-selenium
+pytest-flask
+pytest-cov
+# For development
+flake8
+twine
+yapf
