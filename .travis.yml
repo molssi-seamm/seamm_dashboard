@@ -50,14 +50,14 @@ stages:
 jobs:
   fast_finish: true
   include:
-    - stage: lint
-      name: "Check formatting of code for PEP-8"
-      os: linux
-      language: generic
-      env: PYTHON_VER=3.7
-      script:
-        - flake8 app
-        - yapf --diff --recursive app
+    # - stage: lint
+    #   name: "Check formatting of code for PEP-8"
+    #   os: linux
+    #   language: generic
+    #   env: PYTHON_VER=3.7
+    #   script:
+    #     - flake8 app
+    #     - yapf --diff --recursive app
 
     - stage: test
       name: "Tests on MacOS Python 3.8"
