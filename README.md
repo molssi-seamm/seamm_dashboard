@@ -62,7 +62,7 @@ results_dashboard --datastore <path>/data
 At the moment you need to use the full, not relative path. To use an SQLite database in memory use
 
 ```
-results_dashboard.py --datastore /Users/psaxe/Work/SEAMM_master/seamm_dashboard/data --sqlalchemy-database-uri 'sqlite:///:memory:'
+results_dashboard.py --datastore <path>/data --sqlalchemy-database-uri 'sqlite:///:memory:'
 ```
 
 You might also wish to add `--env development` to activate debugging, etc.
