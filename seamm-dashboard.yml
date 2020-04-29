@@ -3,6 +3,8 @@ channels:
   - defaults
 dependencies:
   - python>=3.8
+  # Nodejs needed for npm! Pip version is different
+  - nodejs
   - pip
   - pip:
     - configargparse
