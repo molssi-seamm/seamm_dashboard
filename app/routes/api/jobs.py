@@ -5,18 +5,23 @@ API calls for jobs.
 import os
 
 from datetime import datetime
+import hashlib
+from marshmallow import ValidationError
 from sqlalchemy import and_
 from flask import Response, request
 from dateutil import parser
 from flask import send_file
+import logging
 
 import urllib.parse
 
 from app import db
 
-from app.models import Job, JobSchema
+from app.models import Job, JobSchema, Flowchart, FlowchartSchema
 
-__all__ = ['get_jobs', 'get_job', 'get_job_files']
+logger = logging.getLogger('__file__')
+
+__all__ = ['get_jobs', 'get_job', 'get_job_files', 'add_job']
 
 file_icons = {
     'graph': 'fas fa-chart-line',
@@ -58,7 +63,7 @@ def get_jobs(createdSince=None, createdBefore=None, limit=None):
     if limit is None:
         limit = Job.query.count()
     
-    jobs = Job.query.filter(and_(Job.submission_date>createdSince, Job.submission_date<createdBefore)).limit(limit)
+    jobs = Job.query.filter(and_(Job.submitted>createdSince, Job.submitted<createdBefore)).limit(limit)
 
     jobs_schema = JobSchema(many=True)
     
@@ -66,33 +71,69 @@ def get_jobs(createdSince=None, createdBefore=None, limit=None):
 
 def add_job():
 
-    # Job data is in request since not listed
-    # as parameter in swagger.yml
-    job_data = request.get_json(force=True)
+    job_data = request.get_json()
 
-    # Make sure this job isn't in the DB
-    jobs = Job.query.get(job_data['id'])
+    if not job_data:
+        return {"message": "No input data provided"}, 400
 
-    if jobs is not None:
-        return Response(status=409)
+    # Get the flowchart and put it in place
+    flowchart_data = {
+        'path': 'unknown',
+        'json': job_data.pop('flowchart'),
+        'description': 'there is no description!'
+    }
+    flowchart_data['id'] = hashlib.md5(
+        flowchart_data['flowchart_file'].encode('utf-8')
+    ).hexdigest()
+
+
+    # Validate and deserialize the flowchart data
+    flowchart_schema = FlowchartSchema(many=False)
+    try:
+        data = flowchart_schema.load(flowchart_data, session=db.session)
+    except ValidationError as err:
+        return err.messages, 422
+
+    flowchart = Flowchart(**flowchart_data)
+
+    found = db.session.query(Flowchart).filter_by(id=flowchart_data['id']).all()
+    if found:
+        flowchart_id = found[0].id
+    else:
+        db.session.add(flowchart)
+        db.session.commit()
+        flowchart_id = flowchart.id
+
+    # Validate and deserialize the job data
+    job_data['status'] = 'Submitted'
+    job_data['flowchart_id'] = flowchart_id
 
     job_schema = JobSchema(many=False)
-
-    job_schema.load(job_data, session=db.session)
-
-    # Check validity
     try:
-        job_schema.load(job_data)
-    except:
-        return Response(status=400)
+        data = job_schema.load(job_data, session=db.session)
+    except ValidationError as err:
+        logger.error('ValidationError (job): {}'.format(err.messages))
+        logger.info('   valid data: {}'.format(err.valid_data))
+        return err.messages, 422
 
-    job_data['submission_date'] = parser.parse(job_data['submission_date'])
-    job_to_add = Job(**job_data)
+    
+    # job_schema.load(job_data, session=db.session)
 
-    db.session.add(job_to_add)
+    # # Check validity
+    # try:
+    #     job_schema.load(job_data)
+    # except:
+    #     return Response(status=400)
+
+    # job_data['submission_date'] = parser.parse(job_data['submission_date'])
+
+    job = Job(**job_data)
+
+    db.session.add(job)
     db.session.commit()
 
-    return Response(status=201)
+    # return Response(status=201)
+    return job.id, 201
 
 def get_job(id):
     """

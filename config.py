@@ -2,11 +2,12 @@
 """
 import os
 
+
 class BaseConfig:
 
     _basedir = os.path.abspath(os.path.dirname(__file__))
     STATIC_FOLDER = 'static'
-    ADMINS = frozenset(['daltarawy@vt.edu'])  ##
+    ADMINS = frozenset(['janash@vt.edu', 'psaxe@vt.edu'])
     SECRET_KEY = 'SecretKeyForSessionSigning'
     EDIT_SOFTWARE_SALT = 'ThisIsAnotherSalt'
     THREADS_PER_PAGE = 8
@@ -21,7 +22,7 @@ class BaseConfig:
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD', 'passhere')
     MAIL_SUBJECT_PREFIX = '[MolSSI Molecular Software DB]'
     MAIL_SENDER = 'MolSSI Molecular DB Admin <info@molssi.org>'
-    APP_ADMIN = os.environ.get('APP_ADMIN', 'daltarawy@vt.edu')
+    APP_ADMIN = os.environ.get('APP_ADMIN', 'janash@vt.edu')
     EMAIL_CONFIRMATION_ENABLED = False
 
     # Client-side config
@@ -32,31 +33,6 @@ class BaseConfig:
     GOOGLE_ANALYTICS_GTAG = 'UA-116673029-1'
     GOOGLE_ANALYTICS_GTAG_submit = 'UA-116673029-2'
     WTF_CSRF_ENABLED = True   # it's true by default, important to prevent CSRF attacks
-
-class SEAMMConfig(BaseConfig):
-    _basedir = os.path.abspath(os.path.dirname(__file__))
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(_basedir, 'data', 'projects', 'molssi_jobstore.db')
-
-    _seamm_home = os.path.join(os.path.expanduser("~"), ".seamm")
-
-    _seamm_ini = os.path.join(_seamm_home, "seamm.ini")
-
-    # Should move this into a function.
-    # This section reads a seamm settings file.
-    if os.path.exists(_seamm_ini):
-        _datastore_location = None
-        with open(_seamm_ini) as f:
-            settings = f.readlines()
-            for line in settings:
-                if 'datastore' in line.lower():
-                    _datastore_location = line.split('=')[1].strip()
-                
-            if not _datastore_location:
-                raise AttributeError('No datastore location found in seamm.ini file!')
-    
-        _datastore_location = os.path.expanduser(_datastore_location)
-
-        SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(_datastore_location, 'projects', 'molssi_jobstore.db')
 
 class DevelopmentConfig(BaseConfig):
     _basedir = os.path.abspath(os.path.dirname(__file__))
@@ -89,8 +65,4 @@ class ProductionConfig(BaseConfig):
 config = {
     'development': DevelopmentConfig,
     'testing': TestingConfig,
-    'production': ProductionConfig,
-    'seamm': SEAMMConfig,
-    # 'docker': DockerConfig,
-    'default': DevelopmentConfig
 }

@@ -112,6 +112,22 @@ paths:
                   $ref: '#/components/schemas/Job'
         "400":
           description: bad input parameter
+    post:
+      tags:
+      - developers
+      summary: adds a new job
+      description: |
+        Add a job. By passing parameters you can get jobs fitting a certain criteria.
+      operationId: app.routes.api.add_job
+      responses:
+        "200":
+          description: id of submitted job
+          content:
+            application/json:
+              schema:
+                type: int
+        "400":
+          description: bad input parameter
   /api/flowcharts:
     get:
       tags:

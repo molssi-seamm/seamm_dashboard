@@ -1,18 +1,26 @@
 import setuptools
 
+with open('requirements_install.txt') as fd:
+    requirements = fd.read()
+
 if __name__ == "__main__":
+    with open('requirements_install.txt') as fd:
+        requirements = fd.read()
+
     setuptools.setup(
-        name='SEAMM Dashboard',
+        name='seamm-dashboard',
         version="0.1.0",
         description='MolSSI SEAMM Dashboard',
-        author='Doaa Altarawy',
-        author_email='daltarawy@vt.edu',
+        author='Jessica Nash',
+        author_email='janash@vt.edu',
         url="https://github.com/molssi-seamm/seamm_dashboard.git",
         license='BSD-3C',
 
         packages=setuptools.find_packages(),
 
-        #install_requires=read_requirements(),
+        # Required packages, pulls from pip if needed; do not use for Conda
+        # deployment
+        install_requires=requirements,
 
         include_package_data=True,
 
@@ -26,7 +34,17 @@ if __name__ == "__main__":
         classifiers=[
             'Development Status :: 4 - Beta',
             'Intended Audience :: Science/Research',
-            'Programming Language :: Python :: 3',
+            'License :: OSI Approved :: BSD License',
+            'Natural Language :: English',
+            'Programming Language :: Python :: 3 :: Only',
+            'Programming Language :: Python :: 3.8',
         ],
-        zip_safe=True,
+        zip_safe=False,
+
+        entry_points={
+            'console_scripts': [
+                'seamm_dashboard=seamm_dashboard.results_dashboard.run',
+                'seamm-dashboard=seamm_dashboard.results_dashboard.run',
+            ],
+        }
     )
