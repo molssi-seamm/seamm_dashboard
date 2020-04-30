@@ -3,6 +3,8 @@ channels:
   - defaults
 dependencies:
   - python>=3.8
+  # Nodejs needed from anaconda, not pip, to have npm
+  - nodejs
   - pip
   - pip:
     - configargparse

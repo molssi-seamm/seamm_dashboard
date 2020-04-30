@@ -1,4 +1,4 @@
-.PHONY: clean clean-test clean-pyc clean-build docs help
+.PHONY: clean clean-test clean-pyc clean-build docs help environment
 .DEFAULT_GOAL := help
 define BROWSER_PYSCRIPT
 import os, webbrowser, sys
@@ -72,6 +72,18 @@ coverage: ## check code coverage quickly with the default Python
 	coverage report -m
 	coverage html
 	$(BROWSER) htmlcov/index.html
+
+environment: ## create the environment for running the dashboard
+	@echo 'Creating the Conda/pip environment. This will take some time!'
+	@echo ''
+	@conda env create --force --file seamm-dashboard.yml
+	@echo ''
+	@echo 'Installing the Javascript, which will also take a couple minutes!'
+	@echo ''
+	@cd app/static && npm install
+	@echo ''
+	@echo 'To use the environment, type'
+	@echo '   conda activate seamm-dashboard'
 
 docs: ## generate Sphinx HTML documentation, including API docs
 	rm -f docs/app.rst
