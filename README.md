@@ -25,7 +25,21 @@ If your conda environment is activated, you're ready to start running the dashbo
 
 ## Running the dashboard
 
-You can then run the dashboard after you have installed and activated the dashboard environment. In the top level of the repository, type the following command into the terminal:
+You can then run the dashboard after you have installed and activated the dashboard environment. 
+
+### Run a demo dashboard
+
+If you do not have SEAMM installed, you can view a demo dashboard by using the data in this repository. Use the command
+
+```
+./results_dashboard.py --initialize --datastore $(pwd)/data
+```
+
+Open a browser and navigate to `http://localhost:5000/` to  view the sample dashboard. 
+
+### Running with SEAMM installed
+
+If you have SEAMM installed, you can connect to your seamm datastore. In the top level of the repository, type the following command into the terminal:
 
 ```
 results_dashboard.py
