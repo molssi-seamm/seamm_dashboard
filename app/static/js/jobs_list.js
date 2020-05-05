@@ -27,5 +27,6 @@ function inittable(data) {
             { className: "sidebar-nav", "targets": [0]}
         ],
         "autoWidth": true,
+        "order": [[ 0, "desc"]]
     } );
 }
