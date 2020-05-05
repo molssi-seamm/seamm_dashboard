@@ -1,20 +1,11 @@
-from flask import request, render_template, flash, g, \
-                render_template_string, session, \
-                redirect, url_for, abort, jsonify, send_from_directory
-import os
-import json
-import logging
-import random
+from flask import request, render_template, flash, redirect, url_for
 
 from app import db
 
 from . import jobs
 
-#import seamm
-import subprocess
-
 from app.routes.jobs.forms import EditJob
-from app.models import Job, Flowchart
+from app.models import Job
 
 @jobs.route('/views/jobs/')
 @jobs.route('/views//jobs/')

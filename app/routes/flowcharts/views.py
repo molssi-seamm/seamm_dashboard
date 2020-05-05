@@ -1,17 +1,5 @@
-from flask import request, render_template, flash, g, \
-                render_template_string, session, \
-                redirect, url_for, abort, jsonify, send_from_directory,\
-                current_app
-import json
+from flask import render_template, session
 from . import flowcharts
-import logging
-import random
-
-#import seamm
-#import subprocess
-
-from app.routes.jobs.forms import EditJob
-from app.models import Job, Flowchart
 
 @flowcharts.route("/views/flowcharts")
 def flowchart_list():
