@@ -899,7 +899,7 @@ pre code {
     flex: 0 0 58.333333%;
     max-width: 58.333333%;
   }
-  .col-sm-8 {
+  .col-sm-8{
     -ms-flex: 0 0 66.666667%;
     flex: 0 0 66.666667%;
     max-width: 66.666667%;
@@ -914,12 +914,12 @@ pre code {
     flex: 0 0 83.333333%;
     max-width: 83.333333%;
   }
-  .col-sm-11 {
+  .col-sm-11{
     -ms-flex: 0 0 91.666667%;
     flex: 0 0 91.666667%;
     max-width: 91.666667%;
   }
-  .col-sm-12 {
+  .col-sm-12{
     -ms-flex: 0 0 100%;
     flex: 0 0 100%;
     max-width: 100%;
@@ -1826,7 +1826,7 @@ pre code {
   border: 0;
 }
 
-.form-control {
+.form-control{
   display: block;
   width: 100%;
   padding: 0.375rem 0.75rem;
@@ -2271,7 +2271,7 @@ select.form-control-lg:not([size]):not([multiple]), .input-group-lg > select.for
     align-items: center;
     margin-bottom: 0;
   }
-  .form-inline .form-control {
+  .form-inline .form-control{
     display: inline-block;
     width: auto;
     vertical-align: middle;
@@ -3319,9 +3319,9 @@ tbody.collapse.show {
   z-index: 3;
 }
 
-.input-group > .form-control + .form-control,
-.input-group > .form-control + .custom-select,
-.input-group > .form-control + .custom-file,
+.input-group > .form-control+ .form-control,
+.input-group > .form-control+ .custom-select,
+.input-group > .form-control+ .custom-file,
 .input-group > .custom-select + .form-control,
 .input-group > .custom-select + .custom-select,
 .input-group > .custom-select + .custom-file,
@@ -11260,7 +11260,7 @@ canvas {
   background: rgba(0, 0, 0, 0.2);
 }
 
-.sidebar .sidebar-form .form-control {
+.sidebar .sidebar-form .form-control{
   color: #fff;
   background: #181b1e;
   border: 0;

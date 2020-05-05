@@ -7,27 +7,27 @@
                 <div class="form-group">
                         {{ form.name.label(class="form-control-label") }}
                         {% if form.name.errors %}
-                        {{ form.name(class="form-control form-control-lg is-invalid") }}
+                        {{ form.name(class="form-controlform-control-lg is-invalid") }}
                         <div class="invalid-feedback">
                             {% for error in form.name.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.name(class="form-control form-control-lg") }}
+                        {{ form.name(class="form-controlform-control-lg") }}
                     {% endif %}
                 </div>
                 <div class="form-group">
                         {{ form.notes.label(class="form-control-label") }}
                         {% if form.notes.errors %}
-                        {{ form.notes(class="form-control form-control-lg is-invalid") }}
+                        {{ form.notes(class="form-controlform-control-lg is-invalid") }}
                         <div class="invalid-feedback">
                             {% for error in form.notes.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.notes(class="form-control form-control-lg") }}
+                        {{ form.notes(class="form-controlform-control-lg") }}
                     {% endif %}
                 </div>
             </fieldset>

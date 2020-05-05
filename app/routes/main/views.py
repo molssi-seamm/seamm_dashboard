@@ -1,17 +1,7 @@
-from flask import request, render_template, flash, g, \
-                render_template_string, session, \
-                redirect, url_for, abort, jsonify, send_from_directory,\
-                current_app
-import os
-import json
-import logging
-import random
-
+from flask import render_template,  \
+    redirect, send_from_directory
 
 from . import main
-
-#import seamm
-import subprocess
 
 from app.models import Job, Flowchart, Project
 

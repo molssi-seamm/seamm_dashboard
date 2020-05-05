@@ -9,7 +9,6 @@ import hashlib
 from marshmallow import ValidationError
 from sqlalchemy import and_
 from flask import Response, request
-from dateutil import parser
 from flask import send_file
 import logging
 
@@ -116,23 +115,12 @@ def add_job():
         logger.info('   valid data: {}'.format(err.valid_data))
         return err.messages, 422
 
-    
-    # job_schema.load(job_data, session=db.session)
-
-    # # Check validity
-    # try:
-    #     job_schema.load(job_data)
-    # except:
-    #     return Response(status=400)
-
-    # job_data['submission_date'] = parser.parse(job_data['submission_date'])
 
     job = Job(**job_data)
 
     db.session.add(job)
     db.session.commit()
-
-    # return Response(status=201)
+    
     return job.id, 201
 
 def get_job(id):

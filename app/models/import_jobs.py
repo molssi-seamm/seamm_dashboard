@@ -49,7 +49,6 @@ def import_jobs(location):
             for potential_job in os.listdir(potential_project):
 
                 potential_job = os.path.join(potential_project, potential_job)
-                job_name = os.path.basename(potential_job)
 
                 if os.path.isdir(potential_job):
                     job_name = os.path.basename(potential_job)
