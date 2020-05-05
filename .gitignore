@@ -194,6 +194,7 @@ node_modules/
 vendors/
 .DS_Store
 data/jobs/
+data/logs
 
 *.db
 *.vscode
