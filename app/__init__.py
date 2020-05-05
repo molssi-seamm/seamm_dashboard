@@ -139,10 +139,12 @@ def create_app(config_name=None):
         from .routes.main import main as main_blueprint
         from .routes.jobs import jobs as jobs_blueprint
         from .routes.flowcharts import flowcharts as flowchart_blueprint
+        from .routes.projects import projects as project_blueprint
 
         app.register_blueprint(main_blueprint)
         app.register_blueprint(jobs_blueprint)
         app.register_blueprint(flowchart_blueprint)
+        app.register_blueprint(project_blueprint)
 
         # from .api import api as api_blueprint
         # app.register_blueprint(api_blueprint, url_prefix='/api/v1')
