@@ -10,14 +10,12 @@ var arrayReturn = [];
                 for (var j = 0, jlen = data[i].jobs.length; j < jlen; j++) {
                     var retrieved_link = ajaxJobs(data[i].jobs[j])
                     job_links = job_links + retrieved_link
-                    console.log(job_links)
                 }
 
                 var flowchart_links = ''
                 for (var j = 0, jlen = data[i].jobs.length; j < jlen; j++) {
                     var retrieved_link = ajaxFlowcharts(data[i].flowcharts[j])
                     flowchart_links = flowchart_links + retrieved_link
-                    console.log(flowchart_links)
                 }
 
                 arrayReturn.push([data[i].name, 
