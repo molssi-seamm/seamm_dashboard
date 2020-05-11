@@ -39,7 +39,7 @@ function ajaxJobs(job_id) {
 }
 
 function inittable(data) {	
-    $('#jobs').DataTable( {
+    $('#flowcharts').DataTable( {
         "responsive": true,
         "aaData": data,
         "columnDefs": [
