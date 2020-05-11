@@ -12,11 +12,19 @@ var arrayReturn = [];
                     job_links = job_links + retrieved_link
                     console.log(job_links)
                 }
+
+                var flowchart_links = ''
+                for (var j = 0, jlen = data[i].jobs.length; j < jlen; j++) {
+                    var retrieved_link = ajaxFlowcharts(data[i].flowcharts[j])
+                    flowchart_links = flowchart_links + retrieved_link
+                    console.log(flowchart_links)
+                }
+
                 arrayReturn.push([data[i].name, 
                 data[i].description,
                 job_links,
-                `<a class="nav-link p-0 btn btn-secondary" href="flowcharts/${data[i].id}"><i class="fas fa-project-diagram"></i><span class="d-none d-md-inline">&nbsp;View Flowchart</span></a>`,
-                `<a class="nav-link p-0 btn btn-primary" href="/flowcharts/${data[i].id}/edit">
+                flowchart_links,
+                `<a class="nav-link p-0 btn btn-primary my-1" href="/projects/${data[i].id}/edit">
             <i class="fa fa-edit"></i><span class="d-none d-md-inline">&nbsp; Edit</span></a>
             <a class="nav-link p-0 btn btn-danger" href="#">
                 <i class="fa fa-trash"></i><span class="d-none d-md-inline">&nbsp; Delete</span></a>` ]);
@@ -33,10 +41,24 @@ function ajaxJobs(job_id) {
         async: false,
         dataType: 'json',
         success: function(data){
-            job_link = `<a class="nav-link p-0" href="/jobs/${data.id}" title="View Details">${data.id}</a>`
+            job_link = `<a class="nav-link p-0 my-1" href="/jobs/${data.id}" title="View Details">${data.id}</a>`
         }
     })
     return job_link;
+}
+
+function ajaxFlowcharts(flowchart_id) {
+    var flowchart_link = ''
+    $.ajax({
+        url: `api/flowcharts/${flowchart_id}`,
+        async: false,
+        dataType: 'json',
+        success: function(data){
+            flowchart_link = `<a class="nav-link p-0 btn btn-secondary my-1" href="flowcharts/${data.id}"><i class="fas fa-project-diagram"></i><span class="d-none d-md-inline">&nbsp;View Flowchart</span></a>`
+
+        }
+    })
+    return flowchart_link;
 }
 
 function inittable(data) {	
