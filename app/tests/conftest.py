@@ -5,7 +5,8 @@ from dateutil import parser
 
 from app import create_app, db
 from app.models.util import process_flowchart
-from app.models import Job, Flowchart
+from app.models import Job, Flowchart, Project
+from app.models.import_jobs import add_project
 from selenium import webdriver
 import chromedriver_binary  # Adds chromedriver binary to path
 
@@ -18,20 +19,31 @@ def app():
 
     dir_path = os.path.dirname(os.path.realpath(__file__))
 
+    test_project = {
+    'name': 'MyProject',
+    'path': 'os.path.realpath(os.path.join(dir_path, "..", "..", "data", "projects", "MyProject")',
+    }
+    
+    project = Project(**test_project)
+
     # Fill in some data
     job1_data = {
         "flowchart_id": "ABCD",
         "id": 1,
         "path": os.path.realpath(os.path.join(dir_path, "..", "..", "data", "projects", "MyProject", "Job_000001")),
-        "submitted": parser.parse("2016-08-29T09:12:33.001000+00:00")
+        "submitted": parser.parse("2016-08-29T09:12:33.001000+00:00"),
+        "projects": [project]
         }
 
     job2_data = {
         "flowchart_id": "ABCD",
         "id": 2,
         "path": "/Users/username/seamm/projects",
-        "submitted": parser.parse("2019-08-29T09:12:33.001000+00:00")
+        "submitted": parser.parse("2019-08-29T09:12:33.001000+00:00"),
+        "projects": [project]
         }
+
+
     
     # Load a simple flowchart
     current_location = os.path.dirname(os.path.realpath(__file__))
@@ -40,13 +52,18 @@ def app():
     # Make the ID easier
     flowchart_data['id'] = 'ABCD'
 
+    # Save the fake data to the db
     job1 = Job(**job1_data)
     job2 = Job(**job2_data)
     flowchart = Flowchart(**flowchart_data)
+    db.session.add(project)
     db.session.add(job1)
     db.session.add(job2)
     db.session.add(flowchart)
     db.session.commit()
+
+    
+
     yield flask_app
 
     # clean up
