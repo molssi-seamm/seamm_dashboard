@@ -9,7 +9,7 @@ import configargparse
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_bootstrap import Bootstrap
 from flask_cors import CORS
-# from flask_login import LoginManager
+from flask_login import LoginManager
 from flask_mail import Mail
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
@@ -66,8 +66,8 @@ bootstrap = Bootstrap()
 #     base_template='admin/custom_base.html'
 # )
 
-# login_manager = LoginManager()
-# login_manager.login_view = 'auth.login'   # endpoint name for the login view
+login_manager = LoginManager()
+login_manager.login_view = 'auth.login'   # endpoint name for the login view
 
 moment = Moment()
 toolbar = DebugToolbarExtension()
@@ -133,8 +133,8 @@ def create_app(config_name=None):
             db.drop_all()
         db.create_all()
 
-        # from .auth import auth as auth_blueprint
-        # app.register_blueprint(auth_blueprint, url_prefix='/auth')
+        from .auth import auth as auth_blueprint
+        app.register_blueprint(auth_blueprint, url_prefix='/auth')
 
         from .routes.main import main as main_blueprint
         from .routes.jobs import jobs as jobs_blueprint
@@ -157,7 +157,7 @@ def create_app(config_name=None):
     mail.init_app(app)
     cors.init_app(app)
     bootstrap.init_app(app)
-    # login_manager.init_app(app)
+    login_manager.init_app(app)
     # app_admin.init_app(app)
     moment.init_app(app)
     # toolbar.init_app(app)
