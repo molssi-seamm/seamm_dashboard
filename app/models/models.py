@@ -3,8 +3,11 @@ Table models for SEAMM datastore SQLAlchemy database.
 """
 
 from datetime import datetime
-from app import db
+from werkzeug.security import generate_password_hash, check_password_hash
+from app import db, login_manager
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
+
+from flask_login import UserMixin, AnonymousUserMixin
 
 #############################
 #
@@ -50,7 +53,7 @@ user_project = db.Table(
 )
 
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = 'user'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -68,6 +71,23 @@ class User(db.Model):
     projects = db.relationship(
         'Project', secondary=user_project, back_populates='users'
     )
+
+    @property
+    def password(self):
+        raise AttributeError('password is not a readable attribute')
+
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
+    
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+@login_manager.user_loader
+def load_user(user_id):
+    """User loader func is needed by flask-login to load users
+       which DB engine dependent"""
+    return User.query.get(user_id)
 
 
 class Group(db.Model):
@@ -176,6 +196,12 @@ class Project(db.Model):
 
     def __repr__(self):
         return F'Project(name={self.name}, path={self.path}, description={self.description})'  # noqa: E501
+
+#############################
+#
+# Login Manager
+#
+#############################
 
 
 #############################
