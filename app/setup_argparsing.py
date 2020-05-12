@@ -62,7 +62,7 @@ parser.add_argument(
 )
 
 # The rest of the options are for Flask, SQLAlchemy, Bootstrap, etc.
-# and will be added to the Flaks configuration.
+# and will be added to the Flask configuration.
 
 # Flask options
 parser.add_argument(
@@ -552,6 +552,107 @@ parser.add_argument(
         'Flask-Bootstrap, these resources are refreshed.'
         '\n'
         'default=True'
+    )
+)
+
+## Mail arguments - for flask mail
+# https://pythonhosted.org/Flask-Mail/
+parser.add_argument(
+    '--mail-server',
+    default = configargparse.SUPPRESS,
+    help=(
+        ''
+        'default=localhost'
+    )
+)
+
+parser.add_argument(
+    '--mail-port',
+    default = configargparse.SUPPRESS,
+    help = (
+        ''
+        'default=25'
+    )
+)
+
+parser.add_argument(
+    '--mail-use-TLS',
+    default = configargparse.SUPPRESS,
+    help = (
+        ''
+        'default=False'
+    )
+)
+
+parser.add_argument(
+    '--mail-use-SSL',
+    default = configargparse.SUPPRESS,
+    help = (
+        ''
+        'default=False'
+    )
+)
+
+parser.add_argument(
+    '--mail-debug',
+    default = configargparse.SUPPRESS,
+    help = (
+        '',
+        'default=app.debug'
+    )
+)
+
+parser.add_argument(
+    '--mail-username',
+    default = configargparse.SUPPRESS,
+    help=(
+        ''
+        'default=None'
+    )
+)
+
+parser.add_argument(
+    '--mail-password',
+    default = configargparse.SUPPRESS,
+    help = (
+        ''
+        'default=None'
+    )
+)
+
+parser.add_argument(
+    '--mail-default-sender',
+    default = configargparse.SUPPRESS,
+    help = (
+        ''
+        'default=None'
+    )
+)
+
+parser.add_argument(
+    '--mail-max-emails',
+    default = configargparse.SUPPRESS,
+    help = (
+        ''
+        'default=None'
+    )
+)
+
+parser.add_argument(
+    '--mail-suppress-send',
+    default = configargparse.SUPPRESS,
+    help = (
+        ''
+        'defulat=app.testing'
+    )
+)
+
+parser.add_argument(
+    '--mail-ascii-attachments',
+    default = configargparse.SUPPRESS,
+    help = (
+        ''
+        'default=False'
     )
 )
 
