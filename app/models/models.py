@@ -4,10 +4,12 @@ Table models for SEAMM datastore SQLAlchemy database.
 
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-from app import db, login_manager
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
-
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_login import UserMixin, AnonymousUserMixin
+from flask import current_app
+
+from app import db, login_manager
 
 #############################
 #
@@ -60,7 +62,8 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String, unique=True, nullable=False)
     first_name = db.Column(db.String)
     last_name = db.Column(db.String)
-    email = db.Column(db.String)
+    email = db.Column(db.String, unique=True)
+    confirmed = db.Column(db.Boolean, default=False)
     password = db.Column(db.String)
     added = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     status = db.Column(db.String, default='active')
@@ -82,6 +85,10 @@ class User(db.Model, UserMixin):
     
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
+    
+    def generate_confirmation_token(self, expiration=3600):
+        s = Serializer(current_app.config['SECRET_KEY'], expiration)
+        return s.dumps({'confirm': str(self.id)}).decode('utf-8')
 
 @login_manager.user_loader
 def load_user(user_id):
