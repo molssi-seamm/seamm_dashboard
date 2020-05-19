@@ -6,7 +6,7 @@ from . import auth
 from app import db
 from app.models import User
 from ..email import send_email
-from .forms import LoginForm, RegistrationForm, ChangePasswordForm,\
+from .forms import LoginForm, CreateUserForm, ChangePasswordForm,\
     PasswordResetRequestForm, PasswordResetForm, ChangeEmailForm
 import logging
 
@@ -56,18 +56,19 @@ def logout():
     return redirect(url_for('main.index'))
 
 
-@auth.route('/register', methods=['GET', 'POST'])
-def register():
-    form = RegistrationForm()
+@auth.route('/create_user', methods=['GET', 'POST'])
+def create_user():
+    form = CreateUserForm()
     if form.validate_on_submit():
         user = User(email=form.email.data,
                     username=form.username.data)
         user.password = form.password.data
         db.session.add(user)
-        token = user.generate_confirmation_token()
-        send_email(user.email, 'SEAMM Dashboard - Confirm Your Account',
-                   'auth/email/confirm', user=user, token=token)
-        flash('A confirmation email has been sent to you by email.')
+        db.session.commit()
+        #token = user.generate_confirmation_token()
+        #send_email(user.email, 'SEAMM Dashboard - Confirm Your Account',
+        #           'auth/email/confirm', user=user, token=token)
+        flash(F'The user {user.username} has been created')
         return redirect(url_for('auth.login'))
     return render_template('auth/register.html', form=form)
 

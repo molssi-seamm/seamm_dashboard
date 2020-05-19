@@ -63,7 +63,7 @@ class User(db.Model, UserMixin):
     first_name = db.Column(db.String)
     last_name = db.Column(db.String)
     email = db.Column(db.String, unique=True)
-    confirmed = db.Column(db.Boolean, default=False)
+    #confirmed = db.Column(db.Boolean, default=False)
     password = db.Column(db.String)
     added = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     status = db.Column(db.String, default='active')
