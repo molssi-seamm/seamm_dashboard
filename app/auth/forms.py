@@ -4,6 +4,8 @@ from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
 from wtforms import ValidationError
 from app.models import User
 
+from app import db
+
 
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Length(3, 64),
@@ -27,11 +29,12 @@ class RegistrationForm(FlaskForm):
     submit = SubmitField('Register')
 
     def validate_email(self, field):
-        if User.objects(email=field.data).first():
-            raise ValidationError('Email already registered.')
+        print(User.query.filter(User.email == field.data).first())
+        if User.query.filter(User.email == field.data).first():
+            raise ValidationError(F'Email ({field.data}) already registered. ')
 
     def validate_username(self, field):
-        if User.objects(username=field.data).first():
+        if User.query.filter(User.username == field.data).first():
             raise ValidationError('Username already in use.')
 
 
