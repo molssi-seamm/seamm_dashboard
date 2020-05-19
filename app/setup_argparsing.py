@@ -656,6 +656,32 @@ parser.add_argument(
     )
 )
 
+parser.add_argument(
+    '--mail-ascii-attachments',
+    default = configargparse.SUPPRESS,
+    help = (
+        ''
+        'default=False'
+    )
+)
+
+parser.add_argument(
+    '--mail-subject-prefix',
+    default = configargparse.SUPPRESS,
+    help = (
+        ''
+    )
+)
+
+parser.add_argument(
+    '--mail-sender',
+    default = configargparse.SUPPRESS,
+    help = (
+        ''
+    )
+
+)
+
 options, unknown_options = parser.parse_known_args()
 
 if __name__ == "__main__":
