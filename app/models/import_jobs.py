@@ -53,7 +53,12 @@ def import_jobs(location):
                 if os.path.isdir(potential_job):
                     job_name = os.path.basename(potential_job)
                     logger.debug('       job {}'.format(job_name))
-                    job, added = add_job(potential_job, job_name, project)
+                    try:
+                        job, added = add_job(potential_job, job_name, project)
+                    except sqlite3.IntegrityError as e:
+                        logger.warning(
+                            'Adding job {} failed: {}'.format(job_name, e)
+                        )
                     if job is None:
                         logger.debug('         was not a job!')
                     else:
