@@ -115,19 +115,51 @@ paths:
     post:
       tags:
       - developers
-      summary: adds a new job
+      summary: submit a job
       description: |
-        Add a job. By passing parameters you can get jobs fitting a certain criteria.
+        Submits a new job to the system
       operationId: app.routes.api.add_job
+      requestBody:
+        description: The job being submitted.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - flowchart
+              properties:
+                username:
+                  type: string
+                project:
+                  type: string
+                flowchart:
+                  type: string
+                title:
+                  type: string
+                description:
+                  type: string
       responses:
-        "200":
+        "201":
           description: id of submitted job
           content:
             application/json:
               schema:
-                type: integer
+                properties:
+                  id:
+                    type: integer
+                    example: 53
+                  path:
+                    type: string
+                    format: filepath
+                    example: /Users/username/seamm/projects/username/Job000053
         "400":
           description: bad input parameter
+        "403":
+          description: user not registered
+        "422":
+          description: error validating job data
   /api/flowcharts:
     get:
       tags:
@@ -219,11 +251,26 @@ paths:
                   $ref: '#/components/schemas/Flowchart'
         "400":
           description: bad input parameter
+  /api/list-projects:
+    get:
+      summary: gets a list of projects
+      description: |
+        Get a list of the projects.
+      operationId: app.routes.api.list_projects
+      responses:
+        "200":
+          description: the list of projects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
   /api/projects:
     get:
       tags:
       - developers
-      summary: searches projectss database
+      summary: searches projects database
       description: |
         Get projects
       operationId: app.routes.api.get_projects
@@ -282,6 +329,20 @@ paths:
                   $ref: '#/components/schemas/Project'
         "400":
           description: bad input parameter
+  /api/status:
+    get:
+      summary: return the status of the dashboard
+      description: |
+        Return the status of the dashboard. Currently 'running' |
+        but in the furtire may return other status strings.
+      operationId: app.routes.api.status
+      responses:
+        "200":
+          description: the status
+          content:
+            text/plain:
+              schema:
+                type: string
 components:
   schemas:
     Flowchart:
