@@ -14,15 +14,15 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-@auth.before_app_request
-def before_request():
-    logger.debug('current_user is: %s', current_user)
-    if current_user.is_authenticated:
-        if not current_user.confirmed and current_app.config['EMAIL_CONFIRMATION_ENABLED'] \
-                and request.endpoint \
-                and request.blueprint != 'auth' \
-                and request.endpoint != 'static':
-            return redirect(url_for('auth.unconfirmed'))
+#@auth.before_app_request
+#def before_request():
+#    logger.debug('current_user is: %s', current_user)
+#    if current_user.is_authenticated:
+#        if not current_user.confirmed and current_app.config['EMAIL_CONFIRMATION_ENABLED'] \
+#                and request.endpoint \
+#                and request.blueprint != 'auth' \
+#                and request.endpoint != 'static':
+#            return redirect(url_for('auth.unconfirmed'))
 
 
 @auth.route('/unconfirmed')
@@ -36,11 +36,13 @@ def unconfirmed():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.objects(email=form.email.data).first()
+        user = User.query.filter_by(username=form.username.data).one_or_none()
+
         if user is not None and user.verify_password(form.password.data):
-            logging.debug('Used found in DB: %s', user.username)
+            logging.debug('User found in DB: %s', user.username)
             login_user(user, form.remember_me.data)
             next_page = request.args.get('next')
+
             if next_page is None or not next_page.startswith('/'):
                 next_page = url_for('main.index')
             return redirect(next_page)
@@ -73,6 +75,7 @@ def create_user():
     return render_template('auth/register.html', form=form)
 
 
+# Not being used currently - still uses MongoDB if ever needs to be used.
 @auth.route('/confirm/<token>')
 @login_required
 def confirm(token):
@@ -86,6 +89,7 @@ def confirm(token):
     return redirect(url_for('main.index'))
 
 
+# Not being used currently - still uses MongoDB if ever needs to be used.
 @auth.route('/confirm')
 @login_required
 def resend_confirmation():
@@ -95,7 +99,7 @@ def resend_confirmation():
     flash('A new confirmation email has been sent to you by email.')
     return redirect(url_for('main.index'))
 
-
+# Hasn't been rewritten
 @auth.route('/change-password', methods=['GET', 'POST'])
 @login_required
 def change_password():
@@ -110,7 +114,7 @@ def change_password():
             flash('Invalid password.')
     return render_template("auth/change_password.html", form=form)
 
-
+# Hasn't been rewritten
 @auth.route('/reset', methods=['GET', 'POST'])
 def password_reset_request():
     if not current_user.is_anonymous:
@@ -129,7 +133,7 @@ def password_reset_request():
         return redirect(url_for('auth.login'))
     return render_template('auth/reset_password.html', form=form)
 
-
+# Hasn't been rewritten
 @auth.route('/reset/<token>', methods=['GET', 'POST'])
 def password_reset(token):
     if not current_user.is_anonymous:
@@ -143,7 +147,7 @@ def password_reset(token):
             return redirect(url_for('main.index'))
     return render_template('auth/reset_password.html', form=form)
 
-
+# Hasn't been rewritten
 @auth.route('/change_email', methods=['GET', 'POST'])
 @login_required
 def change_email_request():
@@ -162,7 +166,7 @@ def change_email_request():
             flash('Invalid password.')
     return render_template("auth/change_email.html", form=form)
 
-
+# Hasn't been rewritten
 @auth.route('/change_email/<token>')
 @login_required
 def change_email(token):

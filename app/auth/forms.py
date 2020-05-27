@@ -8,21 +8,20 @@ from app import db
 
 
 class LoginForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired(), Length(3, 64),
-                                             Email()])
+    username = StringField('Username', validators=[DataRequired(), Length(3, 64)])
     password = PasswordField('Password', validators=[DataRequired()])
     remember_me = BooleanField('Keep me logged in')
     submit = SubmitField('Log In')
 
 
 class CreateUserForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired(), Length(3, 64),
-                                             Email()])
     username = StringField('Username', validators=[
         DataRequired(), Length(3, 64),
         Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
                'Usernames must have only letters, numbers, dots or '
                'underscores')])
+    email = StringField('Email', validators=[DataRequired(), Length(3, 64),
+                                             Email()])
     password = PasswordField('Password', validators=[
         DataRequired(), Length(min=7), EqualTo('password2', message='Passwords must match.')])
     password2 = PasswordField('Confirm password', validators=[DataRequired()])
