@@ -64,7 +64,7 @@ class User(db.Model, UserMixin):
     last_name = db.Column(db.String)
     email = db.Column(db.String, unique=True)
     #confirmed = db.Column(db.Boolean, default=False)
-    password = db.Column(db.String)
+    password_hash = db.Column(db.String)
     added = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     status = db.Column(db.String, default='active')
 
@@ -85,10 +85,6 @@ class User(db.Model, UserMixin):
     
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
-    
-    def generate_confirmation_token(self, expiration=3600):
-        s = Serializer(current_app.config['SECRET_KEY'], expiration)
-        return s.dumps({'confirm': str(self.id)}).decode('utf-8')
 
 @login_manager.user_loader
 def load_user(user_id):
