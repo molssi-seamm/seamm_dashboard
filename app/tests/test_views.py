@@ -38,26 +38,31 @@ class TestLiveServer:
         chrome_driver.get(self.base_url)
         ui_view = chrome_driver.find_element_by_id("ui-view")
         displayed_values = ui_view.find_elements_by_class_name("text-value")
-        expected_values = "0 2 0 1 0".split()
+        expected_values = "0 2 0 1 1".split()
         displayed_values = [x for x in displayed_values if x != '']
 
         for i, value in enumerate(displayed_values):
             assert expected_values[i] == value.get_attribute('innerHTML')
 
-    def test_jobs_list(self, app, chrome_driver):
-        chrome_driver.get(f"{self.base_url}#jobs")
+    @pytest.mark.parametrize("list_type, num_columns, num_rows", [
+        ("jobs", 5, 3),
+        ("flowcharts", 5, 2),
+        ("projects", 5, 2)
+    ])
+    def test_jobs_list(self, app, chrome_driver, list_type, num_columns, num_rows):
+        chrome_driver.get(f"{self.base_url}#{list_type}")
 
         # Get the jobs table. Will want to wait for this to be loaded,
         # of course.
         jobs_table = WebDriverWait(chrome_driver, 20).until(
-            EC.presence_of_element_located((By.ID, "jobs"))
+            EC.presence_of_element_located((By.ID, list_type))
         )
 
         # Check table dimensions.
         table_headings = jobs_table.find_elements_by_tag_name("th")
         table_rows = jobs_table.find_elements_by_tag_name("tr")
-        assert len(table_headings) == 5
-        assert len(table_rows) == 3
+        assert len(table_headings) == num_columns
+        assert len(table_rows) == num_rows
 
         # Check the response code of the links in the table.
         table_links = jobs_table.find_elements_by_class_name('nav-link')

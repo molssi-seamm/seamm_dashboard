@@ -125,7 +125,7 @@ paths:
           content:
             application/json:
               schema:
-                type: int
+                type: integer
         "400":
           description: bad input parameter
   /api/flowcharts:
@@ -160,7 +160,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Job'
+                  $ref: '#/components/schemas/Flowchart'
         "400":
           description: bad input parameter
   /api/flowcharts/{id}:
@@ -219,6 +219,69 @@ paths:
                   $ref: '#/components/schemas/Flowchart'
         "400":
           description: bad input parameter
+  /api/projects:
+    get:
+      tags:
+      - developers
+      summary: searches projectss database
+      description: |
+        Get projects
+      operationId: app.routes.api.get_projects
+      parameters:
+      - name: description
+        in: query
+        schema: 
+          type: string
+        description: Search within project description.
+      - name: limit
+        in: query
+        description: maximum number of records to return
+        required: false
+        style: form
+        explode: true
+        schema:
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+        "400":
+          description: bad input parameter
+  /api/projects/{id}:
+    get:
+      tags:
+      - developers
+      summary: searches database by project id
+      description: |
+        Get flowchart by ID.
+      operationId: app.routes.api.get_project
+      parameters:
+      - name: id
+        in: path
+        description: retrieve project by id.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+        "400":
+          description: bad input parameter
 components:
   schemas:
     Flowchart:
@@ -256,3 +319,21 @@ components:
         submission_date:
           format: date-time
           example: 2016-08-29T09:12:33.001Z
+    Project:
+      required:
+      - id
+      - path
+      - name
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        path:
+          type: string
+          format: filepath
+          example: /Users/username/seamm/projects
+        name:
+          type: string
+          example: MyProject
+      
