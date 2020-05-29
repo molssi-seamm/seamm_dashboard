@@ -251,9 +251,13 @@ def add_job(body):
 
     # Write the json data file for the job
     data = {
-        'datastore': datastore,
+        'command line': '',
+        'title': body['title'],
+        'working directory': str(directory),
         'state': 'Submitted',
-        'working directory': str(directory)
+        'projects': [project_name],
+        'datastore': datastore,
+        'job id': job.id,
     }
     path = directory / 'job_data.json'
     with path.open('w') as fd:
