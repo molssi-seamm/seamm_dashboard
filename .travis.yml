@@ -20,6 +20,9 @@ before_install:
   - python -V
 
 install:
+  - echo $TRAVIS_OS_NAME
+  # Make it so we can use aliases
+  - shopt -s expand_aliases
   # - source devtools/scripts/install_chromedriver.sh
     # Create test environment for package
   - python devtools/scripts/create_conda_env.py -n=test -p=$PYTHON_VER devtools/conda-envs/test_env.yaml
@@ -29,7 +32,14 @@ install:
   - cd static
   - npm install
   - cd ../../
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then alias google-chrome='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'; fi
+  - google-chrome --version
+    # Google Chrome version
+  - export chrome_version=$(google-chrome --version | cut -d ' ' -f 3 | cut -d . -f 1)
+  - # Get upper level of chromedriver-binary version we can install
+  - export chrome_version_max=$(($chrome_version+1))
+  - pip uninstall -y chromedriver-binary
+  - pip install "chromedriver-binary<=$chrome_version_max"
     # Build and install package
     #- python setup.py develop --no-deps
   - pip install -e .
