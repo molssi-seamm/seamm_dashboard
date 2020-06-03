@@ -127,8 +127,20 @@ function build_cyto_graph(elements, container_id) {
     return graph
 }
 
+function setFileDivSize() {
+    $("#ui-view").height($(window).height())
+    $("#js-tree").height($(window).innerHeight()-$('#js-tree').offset().top*0.9)
+    $("#view-card-content").height($(window).innerHeight()-$('#js-tree').offset().top*0.9)
+
+    if ($("#file-content").height() != 0) {
+        $("#file-content").height($(window).innerHeight()-$('#js-tree').offset().top*0.9)
+    }
+}
+
 $(document).ready(function() {
-    $('#view-card').height($(window).height()-$('#js-tree').offset().top+50)
+
+    // add listener for resize event
+    window.addEventListener('resize', setFileDivSize)
 
     var job_data = get_job_data();
     var tree_elements = buildTree();
@@ -156,11 +168,12 @@ $(document).ready(function() {
     var content_div = document.getElementById('file-content');
     $('#js-tree').height($(window).height()-$('#js-tree').offset().top+50)
 
+    var viewCardHeight = $("#view-card-content").height()
+    console.log(viewCardHeight)
+
     $('#js-tree').bind("select_node.jstree", function (e, data) {
         if (data.node.a_attr.href != '#') {
             
-            $('#view-card').height($(window).height()-$('#js-tree').offset().top+50)
-
             // Clear div content before new content loading 
             content_div.innerHTML = "";
 
@@ -215,9 +228,8 @@ $(document).ready(function() {
                     filename: data.node.text,
                     scale: 10 // Multiply title/legend/axis/canvas sizes by this factor
                   }});
-
+                  
                   $('#view-card').height($('.plotly').height()+150);
-                
             }
 
             else if (file_type=='csv'){
@@ -242,14 +254,11 @@ $(document).ready(function() {
                     },
                 });
 
-                $('#view-card').height($('#csv-data_wrapper').height()+150)
-
-
             }
             // Try to load as text file.
             else { 
                 $('#cytoscape').height("0px")
-                $('#file-content').height($('#ui-view').height());
+                $('#file-content').height($(window).innerHeight()-$('#js-tree').offset().top*0.9);
                 $("#file-content").load(href); 
             }
         }

@@ -3,30 +3,10 @@
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/custom_flowchart.css') }}">
 
 
-<div class="animated fadeIn">
-  <div id='job_title' class='h1' style="margin-bottom:25px"></div>
-    <div class='h5'>Job Info</div>
-    <table id="job-info" class="table" style="width:100%">
-      <thead>
-        <tr>
-          <th>
-            Job Name
-          </th>
-          <th>
-            Job Status
-          </th>
-          <th>
-            Flowchart
-          </th>
-          <th>
-            Actions
-          </th>
-        </tr>
-      </thead>
-    </table>
+<div class="animated fadeIn vh-100">
     <div class="row">
       <div class="col-sm-3">
-        <div class='h5', style="margin-top:20px">Browse job files</div>
+        <div class='h5', style="margin-top:20px">Browse files for job <span id="job-title"></span></div>
         <div class="input-group">
           <input type="text" class="form-control" placeholder="Search Files" id="search">
           <span class="input-group-btn">
@@ -35,4 +15,17 @@
         </div>
         <div style="margin:15px; white-space:pre-wrap; overflow-y: auto; overflow-x: auto;" id='js-tree'></div>
       </div>
-      <div class="col-sm-9 card" id='view-card'><div id="file-name" class="h4 btn btn-info" style="margin:15px;">Click Files to view</div><div id='file-content' style="margin:15px; font-family: Courier; white-space:pre-wrap; overflow-y: auto; overflow-x: hidden;"></div><div id="cytoscape"></div><table id="csv-data"></table></div></div></div>
+      <div class="col-sm-9 mt-3 mh-100" id="view-card">
+        <div class= "card h-100">
+          <div id="file-name" class="card-header btn">
+            Click Files to view
+          </div>
+          <div id ="view-card-content" class="px-2 py-2 h-100">
+            <div id='file-content' class="my-0" style="font-family: Courier; white-space:pre-wrap; overflow-y: auto; overflow-x: hidden;"></div>
+            <div id="cytoscape"></div>
+            <table id="csv-data"></table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
