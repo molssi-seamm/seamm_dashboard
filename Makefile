@@ -62,6 +62,7 @@ typing: ## check typing
 	pytype app_ff_util
 
 test: ## run tests quickly with the default Python
+	devtools/scripts/install_chromedriver.py
 	pytest
 
 test-all: ## run tests on every Python version with tox
