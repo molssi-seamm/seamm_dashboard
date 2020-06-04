@@ -143,6 +143,8 @@ $(document).ready(function() {
 
     var job_data = get_job_data();
     var tree_elements = buildTree();
+
+    $("#job-status").html(job_data.status)
     
     // JS Tree stuff
     $('#js-tree').jstree({ 'core' : {
