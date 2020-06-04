@@ -19,7 +19,9 @@
     <link href="node_modules/font-awesome/css/font-awesome.min.css" rel="stylesheet">
     <link href="node_modules/simple-line-icons/css/simple-line-icons.css" rel="stylesheet">
     <!-- Main styles for this application-->
-    <link href="css/style.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
+      
   </head>
   <body class="app flex-row align-items-center">
     <div class="container">
@@ -30,18 +32,10 @@
             <h4 class="pt-3">Oops! You're lost.</h4>
             <p class="text-muted">The page you are looking for was not found.</p>
           </div>
-          <div class="input-prepend input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text">
-                <i class="fa fa-search"></i>
-              </span>
-            </div>
-            <input id="prependedInput" class="form-control" size="16" type="text" placeholder="What are you looking for?">
-            <span class="input-group-append">
-              <button class="btn btn-info" type="button">Search</button>
-            </span>
+            <div class="text-center">
+              <input type="button"  value="Go back to previous page" onclick="history.back(-1)" />
           </div>
-        </div>
+          </div>
       </div>
     </div>
 
@@ -52,8 +46,5 @@
     <script src="node_modules/pace-progress/pace.min.js"></script>
     <script src="node_modules/perfect-scrollbar/dist/perfect-scrollbar.min.js"></script>
     <script src="node_modules/@coreui/coreui/dist/js/coreui.min.js"></script>
-    <script>
-      $('#ui-view').ajaxLoad();
-    </script>
   </body>
 </html>

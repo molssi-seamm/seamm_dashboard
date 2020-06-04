@@ -1,6 +1,7 @@
 
 var url = location.href.split('/');
 var job_id = url.slice(-1)[0];
+var viewCardHeight;
 
 function inittable(data, div_id) {	
     var my_table = $(`#${div_id}`).DataTable( {
@@ -35,7 +36,6 @@ function buildTree() {
 
 function load_file(file_url, data_type){
     var return_data = []
-    console.log(file_url)
     $.ajax({
         url: file_url,
         async: false,
@@ -127,12 +127,24 @@ function build_cyto_graph(elements, container_id) {
     return graph
 }
 
+function setFileDivSize() {
+    viewCardHeight = $(window).outerHeight()*0.90
+    $("#js-tree").height(viewCardHeight)
+
+    if ($("#file-content").height() != 0) {
+        $("#file-content").height(viewCardHeight)
+    }
+}
+
 $(document).ready(function() {
-    $('#view-card').height($(window).height()-$('#js-tree').offset().top+50)
+
+    // add listener for resize event
+    window.addEventListener('resize', setFileDivSize)
 
     var job_data = get_job_data();
     var tree_elements = buildTree();
-    build_job_table(job_data);
+
+    $("#job-status").html(job_data.status)
     
     // JS Tree stuff
     $('#js-tree').jstree({ 'core' : {
@@ -151,16 +163,13 @@ $(document).ready(function() {
         $('#js-tree').jstree('search', $(this).val());
     });
 
-    $('#job_title').text(tree_elements[0].text)
+    $('#job-title').text(tree_elements[0].text)
 
     var content_div = document.getElementById('file-content');
-    $('#js-tree').height($(window).height()-$('#js-tree').offset().top+50)
 
     $('#js-tree').bind("select_node.jstree", function (e, data) {
         if (data.node.a_attr.href != '#') {
             
-            $('#view-card').height($(window).height()-$('#js-tree').offset().top+50)
-
             // Clear div content before new content loading 
             content_div.innerHTML = "";
 
@@ -187,7 +196,7 @@ $(document).ready(function() {
             // Handle the file.
             if (file_type=='flow'){
                 $('#file-content').height("0px")
-                $('#cytoscape').height($(window).height()-$('#js-tree').offset().top+50);
+                $('#cytoscape').height(viewCardHeight);
 
                 var cy = window.cy = build_cyto_graph(cyto_elements, 'cytoscape')
                 cy.nodes('[name = "Join"]').style( {
@@ -215,9 +224,8 @@ $(document).ready(function() {
                     filename: data.node.text,
                     scale: 10 // Multiply title/legend/axis/canvas sizes by this factor
                   }});
-
+                  
                   $('#view-card').height($('.plotly').height()+150);
-                
             }
 
             else if (file_type=='csv'){
@@ -242,18 +250,22 @@ $(document).ready(function() {
                     },
                 });
 
-                $('#view-card').height($('#csv-data_wrapper').height()+150)
-
+                $('#outer-card').height($("#csv-data_wrapper").height()*1.1)
 
             }
             // Try to load as text file.
             else { 
                 $('#cytoscape').height("0px")
-                $('#file-content').height($('#ui-view').height());
+                $('#file-content').height(viewCardHeight);
                 $("#file-content").load(href); 
             }
         }
     });
+
+    viewCardHeight = $(window).outerHeight()*0.90
+    $("#outer-card").height(viewCardHeight*1.10)
+    $("#js-tree").height(viewCardHeight*1.10)
+    $("#file-content").height(viewCardHeight)
 
 })
 
