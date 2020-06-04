@@ -3,20 +3,23 @@ API calls for jobs.
 """
 
 import os
-
+import os.path
 from datetime import datetime
+import fasteners
 import hashlib
-from marshmallow import ValidationError
-from sqlalchemy import and_
-from flask import Response, request
-from flask import send_file
+import json
 import logging
-
+from pathlib import Path
+import re
 import urllib.parse
 
-from app import db
+from marshmallow import ValidationError
+from sqlalchemy import and_
+from flask import send_file, Response
 
-from app.models import Job, JobSchema, Flowchart, FlowchartSchema
+from app import db, datastore
+from app.models import User, Project, Job, JobSchema, Flowchart
+from app.models import FlowchartSchema
 
 logger = logging.getLogger('__file__')
 
@@ -30,6 +33,7 @@ file_icons = {
     'folder': 'far fa-folder-open'
     
 }
+
 
 def get_jobs(createdSince=None, createdBefore=None, limit=None):
     """
@@ -68,60 +72,199 @@ def get_jobs(createdSince=None, createdBefore=None, limit=None):
     
     return jobs_schema.dump(jobs), 200
 
-def add_job():
 
-    job_data = request.get_json()
+def get_job_id(filename):
+    """Get the next job id from the given file.
 
-    if not job_data:
-        return {"message": "No input data provided"}, 400
+    This uses the fasteners module to provide locking so that
+    only one job at a time can access the file, so that the job
+    ids are unique and monotonically increasing.
+    """
 
+    lock_file = filename + '.lock'
+    lock = fasteners.InterProcessLock(lock_file)
+    locked = lock.acquire(blocking=True, timeout=5)
+
+    if locked:
+        if not os.path.isfile(filename):
+            job_id = 1
+            with open(filename, 'w') as fd:
+                fd.write('!MolSSI job_id 1.0\n')
+                fd.write('1\n')
+            lock.release()
+        else:
+            with open(filename, 'r+') as fd:
+                line = fd.readline()
+                pos = fd.tell()
+                if line == '':
+                    lock.release()
+                    raise EOFError(
+                        "job_id file '{}' is empty".format(filename)
+                    )
+                line = line.strip()
+                match = re.fullmatch(
+                    r'!MolSSI job_id ([0-9]+(?:\.[0-9]+)*)', line
+                )
+                if match is None:
+                    lock.release()
+                    raise RuntimeError(
+                        'The job_id file has an incorrect header: {}'
+                        .format(line)
+                    )
+                line = fd.readline()
+                if line == '':
+                    lock.release()
+                    raise EOFError(
+                        "job_id file '{}' is truncated".format(filename)
+                    )
+                try:
+                    job_id = int(line)
+                except TypeError:
+                    raise TypeError(
+                        "The job_id in file '{}' is not an integer: {}".format(
+                            filename, line
+                        )
+                    )
+                job_id += 1
+                fd.seek(pos)
+                fd.write('{:d}\n'.format(job_id))
+    else:
+        raise RuntimeError(
+            "Could not lock the job_id file '{}'".format(filename)
+        )
+
+    return job_id
+
+
+def add_job(body):
+    """Add a new job to the queue.
+
+    Parameters
+    ----------
+    body : dict
+        The description of the job.
+
+    Returns
+    -------
+    The job id (integer)
+    """
+
+    logger.debug('Adding a job. Items in the body are:')
+    for key, value in body.items():
+        logger.debug('  {:15s}: {}'.format(key, str(value)[:20]))
+
+    # Get the project
+    project_name = body.pop('project')
+    project = db.session.query(Project).filter_by(
+        name=project_name
+    ).one_or_none()
+    if project is None:
+        return "There is no project '{}'".format(project_name), 403
+
+    logger.debug('  project = {}'.format(project.id))
+    
+    # Get the user...
+    username = body.pop('username')
+    user = db.session.query(User).filter_by(username=username).one_or_none()
+    if user is None:
+        return "User '{}' is not registered".format(username), 403
+    user_id = user.id
+    group_id = user.groups[0].id
+    body['owner'] = user_id
+    body['group'] = group_id
+
+    logger.debug('  user {} is {}:{}'.format(username, user_id, group_id))
+    
     # Get the flowchart and put it in place
+    flowchart_text = body.pop('flowchart')
     flowchart_data = {
-        'path': 'unknown',
-        'json': job_data.pop('flowchart'),
-        'description': 'there is no description!'
+        'id': hashlib.md5(flowchart_text.encode('utf-8')).hexdigest(),
+        'owner': user_id,
+        'group': group_id,
+        'text': flowchart_text,
+        'json': '\n'.join(flowchart_text.splitlines()[2:])
     }
-    flowchart_data['id'] = hashlib.md5(
-        flowchart_data['flowchart_file'].encode('utf-8')
-    ).hexdigest()
-
 
     # Validate and deserialize the flowchart data
     flowchart_schema = FlowchartSchema(many=False)
     try:
-        data = flowchart_schema.load(flowchart_data, session=db.session)
+        flowchart_schema.load(flowchart_data, session=db.session)
     except ValidationError as err:
         return err.messages, 422
 
-    flowchart = Flowchart(**flowchart_data)
-
-    found = db.session.query(Flowchart).filter_by(id=flowchart_data['id']).all()
-    if found:
-        flowchart_id = found[0].id
+    # See if it already in the db, if not, add it
+    flowchart_is_new = False
+    flowchart = db.session.query(Flowchart).filter_by(
+        id=flowchart_data['id']
+    ).one_or_none()
+    if flowchart:
+        if project not in flowchart.projects:
+            flowchart.projects.append(project)
+            db.session.commit()
+        
     else:
+        flowchart = Flowchart(**flowchart_data)
+        flowchart.projects.append(project)
         db.session.add(flowchart)
         db.session.commit()
-        flowchart_id = flowchart.id
+        flowchart_is_new = True
+    flowchart_id = flowchart.id
 
     # Validate and deserialize the job data
-    job_data['status'] = 'Submitted'
-    job_data['flowchart_id'] = flowchart_id
+    body['status'] = 'Submitted'
+    body['flowchart_id'] = flowchart_id
 
     job_schema = JobSchema(many=False)
     try:
-        data = job_schema.load(job_data, session=db.session)
+        job_schema.load(body, session=db.session)
     except ValidationError as err:
         logger.error('ValidationError (job): {}'.format(err.messages))
         logger.info('   valid data: {}'.format(err.valid_data))
         return err.messages, 422
 
+    job = Job(**body)
 
-    job = Job(**job_data)
+    # Get the unique ID for the job...
+    job_id_file = os.path.join(datastore, 'job.id')
+    job.id = get_job_id(job_id_file)
 
-    db.session.add(job)
-    db.session.commit()
+    # And the path
+    project_path = Path(datastore) / 'projects' / project_name
+    directory = project_path / 'Job_{:06d}'.format(job.id)
+    print('Writing job files to ' + str(directory))
+    directory.mkdir(parents=True, exist_ok=True)
+    job.path = str(directory)
     
-    return job.id, 201
+    # Finally add the job to the database.
+    db.session.add(job)
+    job.projects.append(project)
+
+    db.session.commit()
+
+    path = directory / 'flowchart.flow'
+    with path.open('w') as fd:
+        fd.write(flowchart_text)
+    if flowchart_is_new:
+        flowchart.path = str(path)
+
+    db.session.commit()
+
+    # Write the json data file for the job
+    data = {
+        'command line': '',
+        'title': body['title'],
+        'working directory': str(directory),
+        'state': 'Submitted',
+        'projects': [project_name],
+        'datastore': datastore,
+        'job id': job.id,
+    }
+    path = directory / 'job_data.json'
+    with path.open('w') as fd:
+        json.dump(data, fd, sort_keys=True, indent=3)
+    
+    return {'id': job.id}, 201, {'location': format('/jobs/{}'.format(job.id))}
+
 
 def get_job(id):
     """

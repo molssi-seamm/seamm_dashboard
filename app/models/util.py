@@ -130,6 +130,7 @@ def process_job(job_path):
 
     return job_info
 
+
 def file_owner(path):
     """Return the User object for the owner of a file or directory.
 
