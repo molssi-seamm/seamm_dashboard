@@ -1,4 +1,24 @@
-var arrayReturn = [];
+function inittable(data) {	
+
+    $('#jobs').DataTable( {
+        "responsive": true,
+        "aaData": data,
+        "columnDefs": [
+            { "className": "sidebar-nav", 
+            "targets": [1]},
+        ],
+        "select": {
+            "style":    'os',
+            "selector": 'td:first-child'
+        },
+        "autoWidth": true,
+        "order": [[ 1, "desc"]]
+    } );
+}
+
+
+$(document).ready(function () {
+    var arrayReturn = [];
     $.ajax({
         url: "api/jobs",
         async: false,
@@ -6,7 +26,7 @@ var arrayReturn = [];
         success: function (data) {
             for (var i = 0, len = data.length; i < len; i++) {
                 arrayReturn.push(
-		    [`<a class="nav-link p-0" href="/jobs/${data[i].id}" title="View Details">`+data[i].id+'</a>', 
+		    ['', `<a class="nav-link p-0" href="/jobs/${data[i].id}" title="View Details">`+data[i].id+'</a>', 
 		     data[i].title, 
 		     data[i].status,
 		     data[i].submitted,
@@ -18,15 +38,5 @@ var arrayReturn = [];
         inittable(arrayReturn);
         }
     });
+})
 
-function inittable(data) {	
-    $('#jobs').DataTable( {
-        "responsive": true,
-        "aaData": data,
-        "columnDefs": [
-            { className: "sidebar-nav", "targets": [0]}
-        ],
-        "autoWidth": true,
-        "order": [[ 0, "desc"]]
-    } );
-}
