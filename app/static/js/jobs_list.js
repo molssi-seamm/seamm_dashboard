@@ -1,16 +1,20 @@
 function inittable(data) {	
 
-    $('#jobs').DataTable( {
+    var table = $('#jobs').DataTable( {
         "responsive": true,
         "aaData": data,
+        "select": {
+            "style": "multi"
+        },
         "columnDefs": [
             { "className": "sidebar-nav", 
             "targets": [1]},
+            {
+                orderable: false,
+                className: 'select-checkbox',
+                targets:   0
+            },
         ],
-        "select": {
-            "style":    'os',
-            "selector": 'td:first-child'
-        },
         "autoWidth": true,
         "order": [[ 1, "desc"]]
     } );
@@ -38,5 +42,6 @@ $(document).ready(function () {
         inittable(arrayReturn);
         }
     });
+    
 })
 
