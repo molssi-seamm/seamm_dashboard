@@ -19,7 +19,10 @@ function jobAction(selectedRows, action) {
             jobNumbers.push(jobNum)
         }
 
-        alert(`You have chosen to ${action} job(s): ${jobNumbers}` );
+        //alert(`You have chosen to ${action} job(s): ${jobNumbers}` );
+         if (confirm(`You have chosen to ${action} job(s): ${jobNumbers}. Are you sure?`)) {
+             console.log(`${action} the jobs`)
+         }
 
     }
 }
@@ -34,7 +37,7 @@ function inittable(data) {
         },
         "buttons": [
             {
-                className: "col-lg-2 col-md-3 col-sm-12 btn btn-success m-1",
+                className: "col-lg-2 col-md-3 col-sm-12 btn btn-success m-1 confirmation",
                 text: '<i class="fas fa-play mr-1"></i>Start',
                 action: function ( ) {
                     var rows = table.rows( { selected: true } );
@@ -43,7 +46,7 @@ function inittable(data) {
                 }
             },
             {
-                className: "col-lg-2 col-md-3 col-sm-12 btn btn-info m-1",
+                className: "col-lg-2 col-md-3 col-sm-12 btn btn-info m-1 confirmation",
                 text: '<i class="fas fa-redo mr-1"></i>Rerun',
                 action: function () {
                     var rows = table.rows( { selected: true } );
@@ -51,7 +54,7 @@ function inittable(data) {
                 }
             },
             {
-                className: "col-lg-2 col-md-3 col-sm-12 btn btn-secondary m-1",
+                className: "col-lg-2 col-md-3 col-sm-12 btn btn-secondary m-1 confirmation",
                 text: '<i class="fas fa-pause mr-1"></i>Pause',
                 action: function () {
                     var rows = table.rows( { selected: true } );
@@ -59,7 +62,7 @@ function inittable(data) {
                 }
             },
             {
-                className: "col-lg-2 col-md-3 col-sm-12 btn btn-danger m-1",
+                className: "col-lg-2 col-md-3 col-sm-12 btn btn-danger m-1 confirmation",
                 text: '<i class="fas fa-trash mr-1"></i>Delete',
                 action: function () {
                     var rows = table.rows( { selected: true } );
