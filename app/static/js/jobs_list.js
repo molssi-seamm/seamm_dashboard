@@ -1,9 +1,44 @@
 function jobAction(selectedRows, action) {
+
+    var actionDescriptions = {
+        "run": `
+
+This action will submit all selected jobs which are paused to be run starting at their current step. Jobs which are currently running will be unaffected. 
+
+Do you wish to continue?
+        `,
+
+        "re-run": `
+
+This action will stop all selected jobs are run them from the beginning of their flowchart.
+        
+Any progress from previous runs will be lost.
+
+Do you wish to continue?
+        `,
+
+        "pause": `Pausing is not yet available.`,
+
+        "delete": `
+
+
+This action will delete all selected jobs.
+        
+The jobs will be stopped if running and the associated files will be deleted from the file system.
+
+This action cannot be undone. 
+        
+Do you wish to continue?
+        `,
+    };
+
     var numberSelected = selectedRows.count()
 
+    // Send alert if no jobs selected
     if (numberSelected == 0) {
         alert(`No jobs selected for ${action} action`)
     }
+    // If jobs have been selected.
     else {
         var selectedData = selectedRows.data()
 
@@ -14,13 +49,11 @@ function jobAction(selectedRows, action) {
             
             temp.innerHTML = selectedData[i]
             var jobNum = temp.children[0].textContent
-
-            console.log(jobNum)
             jobNumbers.push(jobNum)
         }
 
-        //alert(`You have chosen to ${action} job(s): ${jobNumbers}` );
-         if (confirm(`You have chosen to ${action} job(s): ${jobNumbers}. Are you sure?`)) {
+        // Confirm this is what they want
+         if (confirm(`You have chosen to ${action} job(s): ${jobNumbers}. ${actionDescriptions[action]}`)) {
              console.log(`${action} the jobs`)
          }
 
