@@ -1,3 +1,29 @@
+function jobAction(selectedRows, action) {
+    var numberSelected = selectedRows.count()
+
+    if (numberSelected == 0) {
+        alert(`No jobs selected for ${action} action`)
+    }
+    else {
+        var selectedData = selectedRows.data()
+
+        // Create a temporary div so we can read link text
+        var temp = document.createElement('div')
+        var jobNumbers = [];
+        for (i=0; i<numberSelected; i++) {
+            
+            temp.innerHTML = selectedData[i]
+            var jobNum = temp.children[0].textContent
+
+            console.log(jobNum)
+            jobNumbers.push(jobNum)
+        }
+
+        alert(`You have chosen to ${action} job(s): ${jobNumbers}` );
+
+    }
+}
+
 function inittable(data) {	
 
     var table = $('#jobs').DataTable( {
@@ -10,29 +36,34 @@ function inittable(data) {
             {
                 className: "col-lg-2 col-md-3 col-sm-12 btn btn-success m-1",
                 text: '<i class="fas fa-play mr-1"></i>Start',
-                action: function ( e, dt, node, config ) {
-                    alert( 'Button activated' );
+                action: function ( ) {
+                    var rows = table.rows( { selected: true } );
+                    jobAction(rows, "run")
+                    
                 }
             },
             {
                 className: "col-lg-2 col-md-3 col-sm-12 btn btn-info m-1",
                 text: '<i class="fas fa-redo mr-1"></i>Rerun',
-                action: function ( e, dt, node, config ) {
-                    alert( 'Button activated' );
+                action: function () {
+                    var rows = table.rows( { selected: true } );
+                    jobAction(rows, "re-run")
                 }
             },
             {
                 className: "col-lg-2 col-md-3 col-sm-12 btn btn-secondary m-1",
                 text: '<i class="fas fa-pause mr-1"></i>Pause',
-                action: function ( e, dt, node, config ) {
-                    alert( 'Button activated' );
+                action: function () {
+                    var rows = table.rows( { selected: true } );
+                    jobAction(rows, "pause")
                 }
             },
             {
                 className: "col-lg-2 col-md-3 col-sm-12 btn btn-danger m-1",
                 text: '<i class="fas fa-trash mr-1"></i>Delete',
-                action: function ( e, dt, node, config ) {
-                    alert( 'This action will delete all files with the selected job(s). Are you sure?' );
+                action: function () {
+                    var rows = table.rows( { selected: true } );
+                    jobAction(rows, "delete")
                 }
             },
         ],
