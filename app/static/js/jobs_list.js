@@ -104,7 +104,7 @@ Do you wish to continue?
                         })
                     };
             } 
-            //location.reload()
+            location.reload()
          }
     }
 }
