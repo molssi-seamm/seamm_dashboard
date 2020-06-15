@@ -23,7 +23,7 @@ from app.models import FlowchartSchema
 
 logger = logging.getLogger('__file__')
 
-__all__ = ['get_jobs', 'get_job', 'get_job_files', 'add_job']
+__all__ = ['get_jobs', 'get_job', 'get_job_files', 'add_job', 'update_job']
 
 file_icons = {
     'graph': 'fas fa-chart-line',
@@ -33,7 +33,6 @@ file_icons = {
     'folder': 'far fa-folder-open'
     
 }
-
 
 def get_jobs(createdSince=None, createdBefore=None, limit=None):
     """
@@ -284,6 +283,30 @@ def get_job(id):
 
     job_schema = JobSchema(many=False)
     return job_schema.dump(job), 200
+
+def update_job(id, body):
+    """
+    Function to update jobs - endpoint api/jobs/{id}
+
+    Parameters
+    ----------
+    id : int
+        The ID of the job to update
+
+    body : json
+        The job information to update.
+    """
+    job = Job.query.get(id)
+
+    if not job:
+        return Response(status=404)
+
+    for key, value in body.items():
+        setattr(job, key, value)
+
+    db.session.commit()
+
+    return Response(status=201)
 
 def get_job_files(id, file_path=None):
     """
