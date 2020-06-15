@@ -124,7 +124,7 @@ class Job(db.Model):
     path = db.Column(db.String, unique=True)
     submitted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     started = db.Column(db.DateTime)
-    finished = db.Column(db.DateTime)
+    finished = db.Column(db.DateTime, nullable=True)
     status = db.Column(db.String, nullable=False, default='imported')
     owner_r = db.Column(db.Boolean, nullable=False, default=True)
     owner_w = db.Column(db.Boolean, nullable=False, default=True)

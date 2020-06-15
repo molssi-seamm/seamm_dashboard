@@ -4,7 +4,9 @@ API calls for jobs.
 
 import os
 import os.path
+import shutil
 from datetime import datetime
+from dateutil import parser
 import fasteners
 import hashlib
 import json
@@ -23,7 +25,7 @@ from app.models import FlowchartSchema
 
 logger = logging.getLogger('__file__')
 
-__all__ = ['get_jobs', 'get_job', 'get_job_files', 'add_job', 'update_job']
+__all__ = ['get_jobs', 'get_job', 'get_job_files', 'add_job', 'update_job', 'delete_job']
 
 file_icons = {
     'graph': 'fas fa-chart-line',
@@ -302,11 +304,30 @@ def update_job(id, body):
         return Response(status=404)
 
     for key, value in body.items():
+        if key == 'submitted' or key == 'finished' or key == 'started':
+            if value:
+                value = datetime.fromtimestamp(value/1000)
+            else:
+                value = None
         setattr(job, key, value)
 
     db.session.commit()
 
     return Response(status=201)
+
+def delete_job(id):
+    job = Job.query.get(id)
+    print("deleting job")
+
+    if not job:
+        return Response(status=404)
+    else:
+        path = job.path
+        job_path = Path(path)
+        shutil.rmtree(job_path)
+        db.session.delete(job)
+        db.session.commit()
+        return Response(status=200)
 
 def get_job_files(id, file_path=None):
     """

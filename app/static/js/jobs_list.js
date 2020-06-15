@@ -1,14 +1,31 @@
 function jobAction(selectedRows, action) {
 
-    var actionDescriptions = {
-        "run": `
+    var actionInformation = {
+        "run": {
+            "request": {
+                "status": "Starting",
+                "started": "",
+                "finished": "",
+            },
+            "description":
+        `
 
 This action will submit all selected jobs which are paused to be run starting at their current step. Jobs which are currently running will be unaffected. 
 
 Do you wish to continue?
         `,
 
-        "re-run": `
+        },
+
+        "re-run": {
+            "request":{
+                "status": "Submitted",
+                "submitted": Date.now(),
+                "started": "",
+                "finished": "",
+            },
+            "description":
+        `
 
 This action will stop all selected jobs are run them from the beginning of their flowchart.
         
@@ -16,10 +33,20 @@ Any progress from previous runs will be lost.
 
 Do you wish to continue?
         `,
+        },
 
-        "pause": `Pausing is not yet available.`,
+        "pause": {
+            "request": {
+                "status": "",
+                },
+            "description": `Pausing is not yet available.`,},
 
-        "delete": `
+        "delete": {
+            "request":{
+                "status": "deleted",
+            },
+            
+            "description": `
 
 
 This action will delete all selected jobs.
@@ -29,7 +56,8 @@ The jobs will be stopped if running and the associated files will be deleted fro
 This action cannot be undone. 
         
 Do you wish to continue?
-        `,
+        `,},
+
     };
 
     var numberSelected = selectedRows.count()
@@ -53,10 +81,31 @@ Do you wish to continue?
         }
 
         // Confirm this is what they want
-         if (confirm(`You have chosen to ${action} job(s): ${jobNumbers}. ${actionDescriptions[action]}`)) {
-             console.log(`${action} the jobs`)
+         if (confirm(`You have chosen to ${action} job(s): ${jobNumbers}. ${actionInformation[action]["description"]}`)) {
+                for (let i=0; i<jobNumbers.length; i++) {
+                    let jobID = jobNumbers[i]
+                    if (action === "run" || action === "re-run" ) {
+                        let putData = JSON.stringify(actionInformation[action]["request"])
+                        $.ajax({
+                            url: `api/jobs/${jobID}`,
+                            type: 'PUT',
+                            dataType: 'json',
+                            headers: { 
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json' 
+                            },
+                            data: putData,
+                        });
+                    } else if (action === "delete") {
+                        console.log("Deleting")
+                        $.ajax({
+                            url: `api/jobs/${jobID}`,
+                            type: 'DELETE',
+                        })
+                    };
+            } 
+            //location.reload()
          }
-
     }
 }
 
@@ -71,7 +120,7 @@ function inittable(data) {
         "buttons": [
             {
                 className: "col-lg-2 col-md-3 col-sm-12 btn btn-success m-1 confirmation",
-                text: '<i class="fas fa-play mr-1"></i>Start',
+                text: '<i class="fas fa-play mr-1"></i>Continue',
                 action: function ( ) {
                     var rows = table.rows( { selected: true } );
                     jobAction(rows, "run")
@@ -80,7 +129,7 @@ function inittable(data) {
             },
             {
                 className: "col-lg-2 col-md-3 col-sm-12 btn btn-info m-1 confirmation",
-                text: '<i class="fas fa-redo mr-1"></i>Rerun',
+                text: '<i class="fas fa-redo mr-1"></i>Restart',
                 action: function () {
                     var rows = table.rows( { selected: true } );
                     jobAction(rows, "re-run")
