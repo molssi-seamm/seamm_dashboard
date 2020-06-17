@@ -1,8 +1,4 @@
 
-var url = location.href.split('/');
-var job_id = url.slice(-1)[0];
-var viewCardHeight;
-
 function inittable(data, div_id) {	
     var my_table = $(`#${div_id}`).DataTable( {
         "responsive": false,
@@ -21,10 +17,10 @@ function inittable(data, div_id) {
     return my_table
 }
 
-function buildTree() {
+function buildTree(jobID) {
     var elements = [];
         $.ajax({
-            url: `api/jobs/${job_id}/files`,
+            url: `api/jobs/${jobID}/files`,
             async: false,
             dataType: 'json',
             success: function (data) {
@@ -61,20 +57,20 @@ function buildFlowchart(flowchart_url) {
     return elements
     }
 
-function get_job_data() {
-    var job_data = {};
+function getJobData(jobID) {
+    var jobData = {};
     $.ajax({
-    url: `api/jobs/${job_id}`,
+    url: `api/jobs/${jobID}`,
     dataType: 'json',
     async: false,
     success: function (data) {
-        job_data = data;
+        jobData = data;
         },
     })
-    return job_data
+    return jobData
 }
 
-function build_job_table(data) {
+function buildJobTable(data) {
     var arrayReturn = [[`<a class="nav-link p-0" href="/jobs/${data.id}" title="View Details">`+data.name+'</a>', 
             data.status, 
             `<a class="nav-link p-0 btn btn-secondary" href="flowcharts/${data.flowchart_id}"><i class="fas fa-project-diagram"></i><span class="d-none d-md-inline">&nbsp;View Flowchart</span></a>`,
@@ -85,7 +81,7 @@ function build_job_table(data) {
         inittable(arrayReturn, "job-info");
 }
 
-function build_cyto_graph(elements, container_id) {
+function buildCytoGraph(elements, container_id) {
     var graph = cytoscape({
         container: document.getElementById(container_id),
       
@@ -137,18 +133,21 @@ function setFileDivSize() {
 }
 
 $(document).ready(function() {
+    var url = location.href.split('/');
+    var jobID = url.slice(-1)[0];
+    var viewCardHeight;
 
     // add listener for resize event
     window.addEventListener('resize', setFileDivSize)
 
-    var job_data = get_job_data();
-    var tree_elements = buildTree();
+    var jobData = getJobData(jobID);
+    var treeElements = buildTree(jobID);
 
-    $("#job-status").html(job_data.status)
+    $("#job-status").html(jobData.status)
     
     // JS Tree stuff
     $('#js-tree').jstree({ 'core' : {
-        'data' : tree_elements,
+        'data' : treeElements,
         },
 
     "plugins" : ["search", "wholerow"],
@@ -163,7 +162,7 @@ $(document).ready(function() {
         $('#js-tree').jstree('search', $(this).val());
     });
 
-    $('#job-title').text(tree_elements[0].text)
+    $('#job-title').text(treeElements[0].text)
 
     var content_div = document.getElementById('file-content');
 
@@ -189,16 +188,16 @@ $(document).ready(function() {
 
             // Figure out the file type.
             var href = data.node.a_attr.href;
-            var file_type = href.split(".").slice(-1);
-            var cyto_elements = buildFlowchart(`views/flowcharts/${job_data.flowchart_id}`)
+            var fileType = href.split(".").slice(-1);
+            var cytoElements = buildFlowchart(`views/flowcharts/${jobData.flowchart_id}`)
 
 
             // Handle the file.
-            if (file_type=='flow'){
+            if (fileType=='flow'){
                 $('#file-content').height("0px")
                 $('#cytoscape').height(viewCardHeight);
 
-                var cy = window.cy = build_cyto_graph(cyto_elements, 'cytoscape')
+                var cy = window.cy = buildCytoGraph(cytoElements, 'cytoscape')
                 cy.nodes('[name = "Join"]').style( {
                     'shape': 'ellipse',
                     'background-color': '#000000',
@@ -212,12 +211,12 @@ $(document).ready(function() {
                     });
             }
 
-            else if (file_type=='graph'){
+            else if (fileType=='graph'){
                 $('#cytoscape').height("0px")
                 $('#file-content').height("0px")
 
-                var plotly_data = load_file(href, 'json')
-                Plotly.newPlot(content_div, plotly_data.data, plotly_data.layout, 
+                var plotlyData = load_file(href, 'json')
+                Plotly.newPlot(content_div, plotlyData.data, plotlyData.layout, 
                     {'editable': true, 
                     'toImageButtonOptions': {
                     format: 'png', // one of png, svg, jpeg, webp
@@ -228,11 +227,11 @@ $(document).ready(function() {
                   $('#view-card').height($('.plotly').height()+150);
             }
 
-            else if (file_type=='csv'){
+            else if (fileType=='csv'){
                 $('#cytoscape').height("0px")
                 $('#file-content').height("0px")
-                var csv_data = load_file(href, 'text')
-                var separated = $.csv.toArrays(csv_data)
+                var csvData = load_file(href, 'text')
+                var separated = $.csv.toArrays(csvData)
 
                 var headers = [];
                 for (var j=0; j<separated[0].length; j++) {
