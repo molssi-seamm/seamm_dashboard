@@ -71,8 +71,20 @@ def test_get_flowchart(client):
 
 def test_get_cytoscape(client):
 
-        response = client.get("api/flowcharts/ABCD/cytoscape")
-        received = response.json
-        # Will be three nodes and two edges, for a length of 5.
-        assert len(received) == 5
-        assert response.status_code == 200
+    response = client.get("api/flowcharts/ABCD/cytoscape")
+    received = response.json
+    # Will be three nodes and two edges, for a length of 5.
+    assert len(received) == 5
+    assert response.status_code == 200
+
+def test_update_job(client):
+    original_info = client.get("api/jobs/1").json
+    assert original_info["status"].lower() == "imported"
+    
+    response = client.put("api/jobs/1", data=json.dumps({"status": "submitted"}), 
+        headers={'Accept': 'application/json','Content-Type': 'application/json'})
+    
+    assert response.status_code == 201
+
+    new_info = client.get("api/jobs/1").json
+    assert new_info["status"]  == "submitted"
