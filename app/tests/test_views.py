@@ -45,7 +45,7 @@ class TestLiveServer:
             assert expected_values[i] == value.get_attribute('innerHTML')
 
     @pytest.mark.parametrize("list_type, num_columns, num_rows", [
-        ("jobs", 5, 3),
+        ("jobs", 7, 3),
         ("flowcharts", 5, 2),
         ("projects", 5, 2)
     ])
