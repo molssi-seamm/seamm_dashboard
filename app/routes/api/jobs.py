@@ -6,7 +6,6 @@ import os
 import os.path
 import shutil
 from datetime import datetime
-from dateutil import parser
 import fasteners
 import hashlib
 import json

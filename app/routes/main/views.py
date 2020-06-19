@@ -1,5 +1,4 @@
-from flask import render_template,  \
-    redirect, send_from_directory
+from flask import render_template, send_from_directory
 
 from . import main
 

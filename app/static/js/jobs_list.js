@@ -73,7 +73,7 @@ Do you wish to continue?
         // Create a temporary div so we can read link text
         var temp = document.createElement('div')
         var jobNumbers = [];
-        for (i=0; i<numberSelected; i++) {
+        for (let i=0; i<numberSelected; i++) {
             
             temp.innerHTML = selectedData[i]
             var jobNum = temp.children[0].textContent
