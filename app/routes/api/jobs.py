@@ -305,6 +305,9 @@ def update_job(id, body):
     for key, value in body.items():
         if key == 'submitted' or key == 'finished' or key == 'started':
             if value:
+                # This assumes the timestamp is in format from javascript Date.now()
+                # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/now
+                # Number of milliseconds since January 1, 1970
                 value = datetime.fromtimestamp(value/1000)
             else:
                 value = None
@@ -315,6 +318,21 @@ def update_job(id, body):
     return Response(status=201)
 
 def delete_job(id):
+    """
+    Function for delete method of api endpoing api/jobs/{id}
+
+    This api route removes the job from the DB and deletes the associated job files from disk
+
+    Parameters
+    ----------
+    id : int
+        The ID of the job to delete
+    
+    Returns
+    -------
+    status : int
+        Response code for operation. 200 = successful, 404 = job not found.
+    """
     job = Job.query.get(id)
     print("deleting job")
 
@@ -330,7 +348,7 @@ def delete_job(id):
 
 def get_job_files(id, file_path=None):
     """
-    Function for api endpoint api/jobs/{id}/files
+    Function for get method of api endpoint api/jobs/{id}/files
 
     Parameters
     ----------
