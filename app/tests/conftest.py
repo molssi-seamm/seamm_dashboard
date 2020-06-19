@@ -1,6 +1,7 @@
 import pytest
 
 import os
+import shutil
 from dateutil import parser
 
 from app import create_app, db
@@ -10,18 +11,31 @@ from app.models.import_jobs import add_project
 from selenium import webdriver
 import chromedriver_binary  # Adds chromedriver binary to path
 
+@pytest.fixture(scope="session")
+def project_directory(tmpdir_factory):
+
+    # Copy our project files to a tmpdir
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    real_project_path = os.path.realpath(os.path.join(dir_path, "..", "..", "data", "projects", "MyProject"))
+
+    temp_project_path = str(tmpdir_factory.mktemp('fake_project'))
+    
+    return_path = shutil.copytree(real_project_path, temp_project_path, dirs_exist_ok=True)    
+    
+    return return_path
 
 @pytest.fixture(scope="session")
-def app():
+def app(project_directory):
+
+    test_project_path = project_directory
+
     flask_app = create_app('testing')
     app_context = flask_app.app_context()
     app_context.push()
 
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-
     test_project = {
     'name': 'MyProject',
-    'path': 'os.path.realpath(os.path.join(dir_path, "..", "..", "data", "projects", "MyProject")',
+    'path': test_project_path,
     }
     
     project = Project(**test_project)
@@ -30,11 +44,12 @@ def app():
     job1_data = {
         "flowchart_id": "ABCD",
         "id": 1,
-        "path": os.path.realpath(os.path.join(dir_path, "..", "..", "data", "projects", "MyProject", "Job_000001")),
+        "path": os.path.realpath(os.path.join(test_project_path, "Job_000001")),
         "submitted": parser.parse("2016-08-29T09:12:33.001000+00:00"),
         "projects": [project]
         }
 
+    # More data - this job path (probably) doesn't actually exist
     job2_data = {
         "flowchart_id": "ABCD",
         "id": 2,
@@ -43,8 +58,6 @@ def app():
         "projects": [project]
         }
 
-
-    
     # Load a simple flowchart
     current_location = os.path.dirname(os.path.realpath(__file__))
     flowchart_data = process_flowchart(os.path.join(current_location, "..", "..", "data", "sample.flow"))
@@ -61,8 +74,6 @@ def app():
     db.session.add(job2)
     db.session.add(flowchart)
     db.session.commit()
-
-    
 
     yield flask_app
 

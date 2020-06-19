@@ -112,6 +112,13 @@ def test_update_job(client):
     assert new_info["status"]  == "submitted"
 
 def test_add_job(client):
-    
+    """Check post method of api/jobs/"""
+    pass
 
-def test_delete_job(client:)
+
+
+
+def test_delete_job(client):
+    """Check delete method of api/jobs/{jobID}"""
+    pass
+    #response = client.delete("api/jobs/1")
