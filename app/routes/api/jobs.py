@@ -319,7 +319,7 @@ def update_job(id, body):
 
 def delete_job(id):
     """
-    Function for delete method of api endpoing api/jobs/{id}
+    Function for delete method of api endpoint api/jobs/{id}
 
     This api route removes the job from the DB and deletes the associated job files from disk
 
@@ -341,9 +341,15 @@ def delete_job(id):
     else:
         path = job.path
         job_path = Path(path)
-        shutil.rmtree(job_path)
+
+        # Remove job files if they exist
+        if job_path.exists():
+            shutil.rmtree(job_path)
+        
+        # Remove job info from DB
         db.session.delete(job)
         db.session.commit()
+        
         return Response(status=200)
 
 def get_job_files(id, file_path=None):
