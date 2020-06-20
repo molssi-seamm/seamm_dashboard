@@ -12,13 +12,13 @@ from dateutil import parser
 
 @pytest.mark.parametrize("createdSince, createdBefore, limit, expected_number", [
     ("01-01-2018", None, None, 1),
-    (None, "01-01-2018", None, 1),
+    (None, "01-01-2018", None, 2),
     (None, "01-01-2015", None, 0),
     (None, None, 1, 1),
-    (None, None, None, 2),
+    (None, None, None, 3),
 ])
 def test_get_jobs(createdSince, createdBefore, limit, expected_number, client):
-    """Tests api engpoing api/jobs with various query strings"""
+    """Tests get method for api/jobs with various query strings"""
     query_string = "api/jobs"
     
     if createdSince is not None:
@@ -37,11 +37,11 @@ def test_get_jobs(createdSince, createdBefore, limit, expected_number, client):
 def test_get_job_by_id(client):
     """API endpoint api/jobs/{jobID}"""
 
-    response = client.get("api/jobs/2")
+    response = client.get("api/jobs/3")
     
     expected_response =  {
         "flowchart_id": "ABCD",
-        "id": 2,
+        "id": 3,
         "path": "/Users/username/seamm/projects",
         "submitted": parser.parse("2019-08-29T09:12:33.001000+00:00").replace(tzinfo=None)
         }
@@ -113,12 +113,26 @@ def test_update_job(client):
 
 def test_add_job(client):
     """Check post method of api/jobs/"""
+    # Ask Paul
     pass
 
 
 
 
-def test_delete_job(client):
+def test_delete_job(client, project_directory):
     """Check delete method of api/jobs/{jobID}"""
-    pass
-    #response = client.delete("api/jobs/1")
+
+    expected_path = os.path.join(project_directory, "Job_000002")
+
+    assert os.path.exists(expected_path)
+
+    response = client.delete("api/jobs/2")
+
+    assert response.status_code == 200
+
+    assert not os.path.exists(expected_path)
+
+    # Check if the directory exists.
+   
+
+
