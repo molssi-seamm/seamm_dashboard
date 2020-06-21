@@ -4,7 +4,7 @@ from app import create_app
 
 def run():
     app = create_app()
-    app.run(debug=True, use_reloader=False)
+    app.run(debug=True, use_reloader=True)
 
 
 if __name__ == "__main__":
