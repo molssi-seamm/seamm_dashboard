@@ -137,6 +137,13 @@ function resizeOther(viewCardHeight) {
     $('#file-content').height(viewCardHeight);
 }
 
+function loadStructure(URL) {
+    var fileExtension = URL.split(".");
+    fileExtension = fileExtension[fileExtension.length - 1]
+    var stage = new NGL.Stage("file-content", {backgroundColor: "white"} );
+    stage.loadFile(URL, {defaultRepresentation: true, ext: fileExtension },);
+}
+
 var contentFunctions = {
     "flow" : {
         "load": [loadFlow, "jobData.flowchart_id"],
@@ -149,6 +156,14 @@ var contentFunctions = {
     "csv": {
         "load" : [loadTable, "href"],
         "resize": null,
+    },
+    "mmcif": {
+        "load" : [loadStructure, "href"],
+        "resize": [resizeOther, "viewCardHeight"],
+    },
+    "pdb": {
+        "load" : [loadStructure, "href"],
+        "resize": [resizeOther, "viewCardHeight"],
     },
     "other": {
         "load": [loadOther, "href"],
