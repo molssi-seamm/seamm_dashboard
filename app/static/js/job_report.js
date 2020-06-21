@@ -209,12 +209,15 @@ $(document).ready(function() {
     // Code to control loading content into div on button clicks
     $('#js-tree').bind("select_node.jstree", function (e, data) {
         if (data.node.a_attr.href != '#') {
+
+            cytoscape_div = document.getElementById('cytoscape');
+            
             
             // Clear div content before new content loading 
             content_div.innerHTML = "";
 
-            content_div = document.getElementById('cytoscape');
-            content_div.innerHTML = "";
+            
+            cytoscape_div.innerHTML = "";
             
             try {
                 table.destroy();
