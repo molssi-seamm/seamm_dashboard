@@ -4,6 +4,7 @@ API calls for jobs.
 
 import os
 import os.path
+import shutil
 from datetime import datetime
 import fasteners
 import hashlib
@@ -23,7 +24,7 @@ from app.models import FlowchartSchema
 
 logger = logging.getLogger('__file__')
 
-__all__ = ['get_jobs', 'get_job', 'get_job_files', 'add_job']
+__all__ = ['get_jobs', 'get_job', 'get_job_files', 'add_job', 'update_job', 'delete_job']
 
 file_icons = {
     'graph': 'fas fa-chart-line',
@@ -33,7 +34,6 @@ file_icons = {
     'folder': 'far fa-folder-open'
     
 }
-
 
 def get_jobs(createdSince=None, createdBefore=None, limit=None):
     """
@@ -285,9 +285,76 @@ def get_job(id):
     job_schema = JobSchema(many=False)
     return job_schema.dump(job), 200
 
+def update_job(id, body):
+    """
+    Function to update jobs - endpoint api/jobs/{id}
+
+    Parameters
+    ----------
+    id : int
+        The ID of the job to update
+
+    body : json
+        The job information to update.
+    """
+    job = Job.query.get(id)
+
+    if not job:
+        return Response(status=404)
+
+    for key, value in body.items():
+        if key == 'submitted' or key == 'finished' or key == 'started':
+            if value:
+                # This assumes the timestamp is in format from javascript Date.now()
+                # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/now
+                # Number of milliseconds since January 1, 1970
+                value = datetime.fromtimestamp(value/1000)
+            else:
+                value = None
+        setattr(job, key, value)
+
+    db.session.commit()
+
+    return Response(status=201)
+
+def delete_job(id):
+    """
+    Function for delete method of api endpoint api/jobs/{id}
+
+    This api route removes the job from the DB and deletes the associated job files from disk
+
+    Parameters
+    ----------
+    id : int
+        The ID of the job to delete
+    
+    Returns
+    -------
+    status : int
+        Response code for operation. 200 = successful, 404 = job not found.
+    """
+    job = Job.query.get(id)
+    print("deleting job")
+
+    if not job:
+        return Response(status=404)
+    else:
+        path = job.path
+        job_path = Path(path)
+
+        # Remove job files if they exist
+        if job_path.exists():
+            shutil.rmtree(job_path)
+        
+        # Remove job info from DB
+        db.session.delete(job)
+        db.session.commit()
+        
+        return Response(status=200)
+
 def get_job_files(id, file_path=None):
     """
-    Function for api endpoint api/jobs/{id}/files
+    Function for get method of api endpoint api/jobs/{id}/files
 
     Parameters
     ----------

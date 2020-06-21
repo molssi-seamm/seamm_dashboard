@@ -45,7 +45,7 @@ class TestLiveServer:
             assert expected_values[i] == value.get_attribute('innerHTML')
 
     @pytest.mark.parametrize("list_type, num_columns, num_rows", [
-        ("jobs", 5, 3),
+        ("jobs", 7, 3),
         ("flowcharts", 5, 2),
         ("projects", 5, 2)
     ])
@@ -74,20 +74,21 @@ class TestLiveServer:
             response = requests.get(actual_url)
             assert response.status_code == 200
 
-        #chrome_driver.get_screenshot_as_file('test_screenshot.png')
+        #chrome_driver.get_screenshot_as_file(F'{list_type}_screenshot.png')
 
-    def test_job_report_file_tree(self, app, chrome_driver):
+    def test_job_report_file_tree(self, app, chrome_driver, project_directory):
         """
         Test to make sure file tree loads with correct number of elements.
         """
         # Get page with chromedriver.
         chrome_driver.get(f"{self.base_url}#jobs/1")
 
-        # Set up samples for comparison.
+        # Set up samples for comparison - we need the location of the job
+        # which is in a temporary directory
         dir_path = os.path.dirname(os.path.realpath(__file__))
         test_dir = os.path.realpath(
             os.path.join(
-                dir_path, "..", "..", "data", "projects", "MyProject",
+                project_directory,
                 "Job_000001"
             )
         )
@@ -98,14 +99,17 @@ class TestLiveServer:
         # tree is loaded.
         file_tree = chrome_driver.find_element_by_id('js-tree')
 
-        dir_path = os.path.dirname(os.path.realpath(__file__))
         test_file = os.path.realpath(
             os.path.join(
-                dir_path, "..", "..", "data", "projects", "MyProject",
+                project_directory,
                 "Job_000001", "job.out"
             )
         )
+
         test_file_id = urllib.parse.quote(test_file, safe='') + '_anchor'
+
+        #chrome_driver.save_screenshot("screenshot.png")
+        
         WebDriverWait(chrome_driver, 20).until(
             EC.presence_of_element_located((By.ID, test_file_id))
         )
@@ -117,19 +121,19 @@ class TestLiveServer:
 
         assert num_files_in_tree == num_files + 1
 
-    def test_job_report_file_content(self, app, chrome_driver):
+    def test_job_report_file_content(self, app, chrome_driver, project_directory):
         """
         Test to click file and make sure it is loaded into div.
         """
 
         # Set up sample file for comparison.
-        dir_path = os.path.dirname(os.path.realpath(__file__))
         test_file = os.path.realpath(
             os.path.join(
-                dir_path, "..", "..", "data", "projects", "MyProject",
+                project_directory,
                 "Job_000001", "job.out"
             )
         )
+
         with open(test_file) as f:
             file_contents = f.read()
             file_contents_split = file_contents.split()
@@ -159,23 +163,20 @@ class TestLiveServer:
         assert initial_displayed_text == ''
         assert ' '.join(displayed_text_list) == ' '.join(file_contents_split)
 
-    def test_job_report_file_content_resize(self, app, chrome_driver):
+    def test_job_report_file_content_resize(self, app, chrome_driver, project_directory):
         """
         Test to make sure file content element resizes when next element is
         clicked.
         """
 
-        dir_path = os.path.dirname(os.path.realpath(__file__))
         first_file = os.path.realpath(
             os.path.join(
-                dir_path, "..", "..", "data", "projects", "MyProject",
-                "Job_000001", "job.out"
+                project_directory, "Job_000001", "job.out"
             )
         )
         second_file = os.path.realpath(
             os.path.join(
-                dir_path, "..", "..", "data", "projects", "MyProject",
-                "Job_000001", "flowchart.flow"
+                project_directory, "Job_000001", "flowchart.flow"
             )
         )
 
