@@ -142,6 +142,8 @@ function loadStructure(URL) {
     fileExtension = fileExtension[fileExtension.length - 1]
     var stage = new NGL.Stage("file-content", {backgroundColor: "white"} );
     stage.loadFile(URL, {defaultRepresentation: true, ext: fileExtension },);
+    $(".active-div").removeClass("active-div")
+    $("#file-content").addClass("active-div")
 }
 
 var contentFunctions = {
@@ -211,7 +213,7 @@ $(document).ready(function() {
         if (data.node.a_attr.href != '#') {
 
             cytoscape_div = document.getElementById('cytoscape');
-            
+
             
             // Clear div content before new content loading 
             content_div.innerHTML = "";
