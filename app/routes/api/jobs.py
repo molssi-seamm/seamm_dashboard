@@ -354,11 +354,15 @@ def delete_job(id):
 
 def get_job_files(id, file_path=None):
     """
-    Function for get method of api endpoint api/jobs/{id}/files
+    Function for get method of api endpoint api/jobs/{id}/files. If the file_path parameter is used, this endpoint will send the file which is indicated by the path.
 
     Parameters
     ----------
-    id : the ID of the job to return
+    id : int
+        the ID of the job to return
+
+    file_path : string
+        The encoded file path for the file to return.
     """
 
     job_info, status = get_job(id)
