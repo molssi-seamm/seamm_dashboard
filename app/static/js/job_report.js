@@ -53,6 +53,7 @@ function setFileDivSize() {
 function flowResize(viewCardHeight) {
     viewCardHeight = $(window).outerHeight()*0.90
     $('#file-content').height("0px")
+    $('#structure').height("0px")
     $('#cytoscape').height(viewCardHeight);
 }
 
@@ -134,16 +135,40 @@ function loadOther(file) {
 
 function resizeOther(viewCardHeight) {
     $('#cytoscape').height("0px")
+    $('#structure').height("0px")
     $('#file-content').height(viewCardHeight);
 }
 
+function resizeStructure(viewCardHeight) {
+    $('#cytoscape').height("0px")
+    $('#structure').height(viewCardHeight)
+    $('#file-content').height("0px");
+}
+
 function loadStructure(URL) {
+
+    // Put a button in file content div
+    $("#structure").html(`
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Representation Style
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <a class="dropdown-item" href="#">Action</a>
+            <a class="dropdown-item" href="#">Another action</a>
+            <a class="dropdown-item" href="#">Something else here</a>
+        </div>
+        <button type='button' class='btn btn-primary'>Export Image</button>
+    `)
+
+    // Figure out the file extension and load the file
     var fileExtension = URL.split(".");
     fileExtension = fileExtension[fileExtension.length - 1]
-    var stage = new NGL.Stage("file-content", {backgroundColor: "white"} );
+
+    // Make NGL Stage
+    var stage = new NGL.Stage("structure", {backgroundColor: "white"} );
     stage.loadFile(URL, {defaultRepresentation: true, ext: fileExtension },);
     $(".active-div").removeClass("active-div")
-    $("#file-content").addClass("active-div")
+    $("#structure").addClass("active-div")
 }
 
 var contentFunctions = {
@@ -161,11 +186,11 @@ var contentFunctions = {
     },
     "mmcif": {
         "load" : [loadStructure, "href"],
-        "resize": [resizeOther, "viewCardHeight"],
+        "resize": [resizeStructure, "viewCardHeight"],
     },
     "pdb": {
         "load" : [loadStructure, "href"],
-        "resize": [resizeOther, "viewCardHeight"],
+        "resize": [resizeStructure, "viewCardHeight"],
     },
     "other": {
         "load": [loadOther, "href"],
@@ -213,12 +238,10 @@ $(document).ready(function() {
         if (data.node.a_attr.href != '#') {
 
             cytoscape_div = document.getElementById('cytoscape');
-
-            
+            ngl_div = document.getElementById('structure')
             // Clear div content before new content loading 
             content_div.innerHTML = "";
-
-            
+            ngl_div.innerHTML = "";
             cytoscape_div.innerHTML = "";
             
             try {
