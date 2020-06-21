@@ -29,6 +29,7 @@
     "jquery-confirm": "^3.3.2",
     "jquery-csv": "^1.0.11",
     "jstree": "^3.3.9",
+    "ngl": "^0.10.4",
     "notifyjs": "^3.0.0",
     "pace-progress": "^1.0.2",
     "perfect-scrollbar": "^1.4.0",
