@@ -16,7 +16,7 @@ import urllib.parse
 
 from marshmallow import ValidationError
 from sqlalchemy import and_
-from flask import send_file, send_from_directory, Response
+from flask import send_from_directory, Response
 
 from app import db, datastore
 from app.models import User, Project, Job, JobSchema, Flowchart

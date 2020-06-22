@@ -152,7 +152,7 @@ function loadStructure(URL) {
     function loadStage(URL, representation="default") {
         
         // Clear stage if one exists
-        canvas = document.querySelector("#structure canvas")
+        let canvas = document.querySelector("#structure canvas")
         if (canvas) {
             canvas.remove()}
 
@@ -316,6 +316,8 @@ var contentFunctions = {
 $(document).ready(function() {
     let url = location.href.split('/');
     let content_div = document.getElementById('file-content');
+    let cytoscape_div = document.getElementById('cytoscape');
+    let ngl_div = document.getElementById('structure')
     $("#file-content").addClass("active-div")
     const jobID = url.slice(-1)[0];
     let viewCardHeight;
@@ -351,9 +353,6 @@ $(document).ready(function() {
     // Code to control loading content into div on button clicks
     $('#js-tree').bind("select_node.jstree", function (e, data) {
         if (data.node.a_attr.href != '#') {
-
-            cytoscape_div = document.getElementById('cytoscape');
-            ngl_div = document.getElementById('structure')
             // Clear div content before new content loading 
             content_div.innerHTML = "";
             ngl_div.innerHTML = "";
