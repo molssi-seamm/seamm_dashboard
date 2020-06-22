@@ -146,29 +146,86 @@ function resizeStructure(viewCardHeight) {
 }
 
 function loadStructure(URL) {
+    
+    // Inner function for NGL stage - only used in this function
+    function loadStage(URL, representation="default") {
+        
+        // Clear stage if one exists
+        canvas = document.querySelector("#structure canvas")
+        if (canvas) {
+            canvas.remove()}
 
-    // Put a button in file content div
+        // Figure out the file extension and load the file
+        var fileExtension = URL.split(".");
+        fileExtension = fileExtension[fileExtension.length - 1]
+        var stage = new NGL.Stage("structure", {backgroundColor: "white"} );
+        
+        if (representation == "default") {
+            stage.loadFile(URL, {defaultRepresentation: true, ext: fileExtension });
+        }
+
+        else {
+            stage.loadFile(URL, {ext: fileExtension }).then(function (component) {
+            // add a "cartoon" representation to the structure component
+            component.addRepresentation(representation);
+            // provide a "good" view of the structure
+            component.autoView();
+            });
+        }
+
+        return stage
+    }
+
+    // Put some buttons above the stage
     $("#structure").html(`
         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         Representation Style
         </button>
         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <a class="dropdown-item" href="#">Action</a>
-            <a class="dropdown-item" href="#">Another action</a>
-            <a class="dropdown-item" href="#">Something else here</a>
+            <a class="dropdown-item" href="#" id='default-rep'>Default</a>
+            <a class="dropdown-item" href="#" id="ball-stick-rep">Ball and Stick</a>
+            <a class="dropdown-item" href="#" id="licorice-rep">Licorice</a>
+            <a class="dropdown-item" href="#" id="cartoon-rep">Cartoon</a>
+            <a class="dropdown-item" href="#" id="surface-rep">Surface</a>
         </div>
         <button type='button' class='btn btn-primary'>Export Image</button>
     `)
 
-    // Figure out the file extension and load the file
-    var fileExtension = URL.split(".");
-    fileExtension = fileExtension[fileExtension.length - 1]
+    // Initial stage load
+    loadStage(URL)
 
-    // Make NGL Stage
-    var stage = new NGL.Stage("structure", {backgroundColor: "white"} );
-    stage.loadFile(URL, {defaultRepresentation: true, ext: fileExtension },);
+    // Change active div
     $(".active-div").removeClass("active-div")
     $("#structure").addClass("active-div")
+
+    $(document).on("click", "#default-rep", {'URL': URL, 'rep': 'default'},
+        function(event){ 
+        event.preventDefault();
+        loadStage(event.data.URL, event.data.rep);
+        });
+    
+    $(document).on("click", "#licorice-rep", {'URL': URL, 'rep': 'licorice'},
+        function(event){ 
+        event.preventDefault();
+        loadStage(event.data.URL, event.data.rep);
+        });
+
+    $(document).on("click", "#cartoon-rep", {'URL': URL, 'rep': 'cartoon'},
+        function(event){ 
+        event.preventDefault();
+        loadStage(event.data.URL, event.data.rep);
+        });
+
+    $(document).on("click", "#ball-stick-rep", {'URL': URL, 'rep': 'ball+stick'}, 
+        function(event){ 
+            event.preventDefault();
+            loadStage(event.data.URL, event.data.rep)
+            });
+    
+    $(document).on("click", "#surface-rep", {'URL': URL, 'rep': 'surface'}, 
+        function(event){ 
+            event.preventDefault();
+            loadStage(event.data.URL, event.data.rep)} );
 }
 
 var contentFunctions = {
