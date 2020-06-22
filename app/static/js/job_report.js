@@ -178,29 +178,31 @@ function loadStructure(URL) {
 
     // Put some buttons above the stage
     $("#structure").html(`
-        <span>
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Representation Style
-            </button>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item" href="#" id='default-rep'>Default</a>
-                <a class="dropdown-item" href="#" id="ball-stick-rep">Ball and Stick</a>
-                <a class="dropdown-item" href="#" id="licorice-rep">Licorice</a>
-                <a class="dropdown-item" href="#" id="cartoon-rep">Cartoon</a>
-                <a class="dropdown-item" href="#" id="surface-rep">Surface</a>
-            </div>
-        </span>
+        <div>
+            <span>
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Representation Style
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="#" id='default-rep'>Default</a>
+                    <a class="dropdown-item" href="#" id="ball-stick-rep">Ball and Stick</a>
+                    <a class="dropdown-item" href="#" id="licorice-rep">Licorice</a>
+                    <a class="dropdown-item" href="#" id="cartoon-rep">Cartoon</a>
+                    <a class="dropdown-item" href="#" id="surface-rep">Surface</a>
+                </div>
+            </span>
 
-        <span>
-            <button class="btn btn-primary dropdown-toggle" type="button" id="image-export" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Export Image
-            </button>
-            <div class="dropdown-menu" aria-labelledby="image-export">
-                <a class="dropdown-item" href="#" id='normal'>Normal Quality</a>
-                <a class="dropdown-item" href="#" id="high">High Quality</a>
-                <a class="dropdown-item" href="#" id="ultra-high">Ultra High Quality</a>
-            </div>
-        </span>
+            <span>
+                <button class="btn btn-primary dropdown-toggle" type="button" id="image-export" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Export Image
+                </button>
+                <div class="dropdown-menu" aria-labelledby="image-export">
+                    <a class="dropdown-item" href="#" id='normal'>Normal Quality</a>
+                    <a class="dropdown-item" href="#" id="high">High Quality</a>
+                    <a class="dropdown-item" href="#" id="ultra-high">Ultra High Quality</a>
+                </div>
+            </span>
+        </div>
     `)
 
     // Initial stage load
@@ -240,7 +242,6 @@ function loadStructure(URL) {
         function(event){ 
             event.preventDefault();
             myStage = loadStage(event.data.URL, event.data.rep)
-
         } );
 
     // Export image buttons
@@ -261,7 +262,7 @@ function loadStructure(URL) {
     function(event){ 
         event.preventDefault();
         myStage.makeImage( {
-            factor: 10,
+            factor: 5,
             antialias: true,
             trim: false,
             transparent: true,
