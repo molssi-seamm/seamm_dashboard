@@ -166,7 +166,7 @@ function loadStructure(URL) {
 
         else {
             stage.loadFile(URL, {ext: fileExtension }).then(function (component) {
-            // add a "cartoon" representation to the structure component
+            // add specified representation to the structure component
             component.addRepresentation(representation);
             // provide a "good" view of the structure
             component.autoView();
@@ -188,44 +188,63 @@ function loadStructure(URL) {
             <a class="dropdown-item" href="#" id="cartoon-rep">Cartoon</a>
             <a class="dropdown-item" href="#" id="surface-rep">Surface</a>
         </div>
-        <button type='button' class='btn btn-primary'>Export Image</button>
+
+        <button type='button' class='btn btn-primary' id='image-export'>Export Image</button>
     `)
 
     // Initial stage load
-    loadStage(URL)
+    var myStage;
+    myStage = loadStage(URL);
 
     // Change active div
     $(".active-div").removeClass("active-div")
     $("#structure").addClass("active-div")
 
+    // All the button behavior
     $(document).on("click", "#default-rep", {'URL': URL, 'rep': 'default'},
         function(event){ 
         event.preventDefault();
-        loadStage(event.data.URL, event.data.rep);
+        myStage = loadStage(event.data.URL, event.data.rep);
         });
     
     $(document).on("click", "#licorice-rep", {'URL': URL, 'rep': 'licorice'},
         function(event){ 
         event.preventDefault();
-        loadStage(event.data.URL, event.data.rep);
+        myStage = loadStage(event.data.URL, event.data.rep);
         });
 
     $(document).on("click", "#cartoon-rep", {'URL': URL, 'rep': 'cartoon'},
         function(event){ 
         event.preventDefault();
-        loadStage(event.data.URL, event.data.rep);
+        myStage = loadStage(event.data.URL, event.data.rep);
         });
 
     $(document).on("click", "#ball-stick-rep", {'URL': URL, 'rep': 'ball+stick'}, 
         function(event){ 
             event.preventDefault();
-            loadStage(event.data.URL, event.data.rep)
+            myStage = loadStage(event.data.URL, event.data.rep)
             });
     
     $(document).on("click", "#surface-rep", {'URL': URL, 'rep': 'surface'}, 
         function(event){ 
             event.preventDefault();
-            loadStage(event.data.URL, event.data.rep)} );
+            myStage = loadStage(event.data.URL, event.data.rep)
+
+        } );
+
+    // Export image button
+    $(document).on("click", "#image-export", {'stage': myStage}, 
+    function(event){ 
+        event.preventDefault();
+        myStage.makeImage( {
+            factor: 5,
+            antialias: true,
+            trim: false,
+            transparent: true,
+        } ).then( function( blob ){
+            NGL.download( blob, "molecule-view.png" );
+        } );
+    } );
 }
 
 var contentFunctions = {
