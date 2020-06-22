@@ -45,7 +45,7 @@ function load_file(file_url, data_type){
 
 
 function setFileDivSize() {
-    viewCardHeight = $(window).outerHeight()*0.90
+    viewCardHeight = $(window).outerHeight()*0.85
     $("#js-tree").height(viewCardHeight)
     $(".active-div").height(viewCardHeight)
 }
@@ -54,7 +54,7 @@ function flowResize(viewCardHeight) {
     viewCardHeight = $(window).outerHeight()*0.90
     $('#file-content').height("0px")
     $('#structure').height("0px")
-    $('#cytoscape').height(viewCardHeight);
+    $('#cytoscape').height(viewCardHeight*0.9);
 }
 
 function loadFlow(flowchartID) {
@@ -101,6 +101,7 @@ function loadGraph(nodeData) {
 function loadTable(href) {
     $('#cytoscape').height("0px")
     $('#file-content').height("0px")
+    $('#structure').height("0px")
     var csvData = load_file(href, 'text')
     var separated = $.csv.toArrays(csvData)
 
@@ -392,10 +393,10 @@ $(document).ready(function() {
         }
     });
 
-    viewCardHeight = $(window).outerHeight()*0.90
-    $("#outer-card").height(viewCardHeight*1.10)
-    $("#js-tree").height(viewCardHeight*1.10)
-    $("#file-content").height(viewCardHeight)
+    viewCardHeight = $(window).outerHeight()*0.85
+    $("#outer-card").height(viewCardHeight*1)
+    $("#js-tree").height(viewCardHeight*1)
+    $("#file-content").height(viewCardHeight*0.90)
 
 })
 
