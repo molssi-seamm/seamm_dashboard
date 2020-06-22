@@ -31,7 +31,9 @@ file_icons = {
     'csv': "fas fa-table",
     'flow': "fas fa-project-diagram",
     'other': "far fa-file-alt",
-    'folder': 'far fa-folder-open'
+    'folder': 'far fa-folder-open',
+    'pdb': 'fas fa-cubes',
+    'mmcif': 'fas fa-cubes'
     
 }
 
