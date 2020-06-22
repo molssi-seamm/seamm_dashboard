@@ -178,18 +178,29 @@ function loadStructure(URL) {
 
     // Put some buttons above the stage
     $("#structure").html(`
-        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Representation Style
-        </button>
-        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <a class="dropdown-item" href="#" id='default-rep'>Default</a>
-            <a class="dropdown-item" href="#" id="ball-stick-rep">Ball and Stick</a>
-            <a class="dropdown-item" href="#" id="licorice-rep">Licorice</a>
-            <a class="dropdown-item" href="#" id="cartoon-rep">Cartoon</a>
-            <a class="dropdown-item" href="#" id="surface-rep">Surface</a>
-        </div>
+        <span>
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Representation Style
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="#" id='default-rep'>Default</a>
+                <a class="dropdown-item" href="#" id="ball-stick-rep">Ball and Stick</a>
+                <a class="dropdown-item" href="#" id="licorice-rep">Licorice</a>
+                <a class="dropdown-item" href="#" id="cartoon-rep">Cartoon</a>
+                <a class="dropdown-item" href="#" id="surface-rep">Surface</a>
+            </div>
+        </span>
 
-        <button type='button' class='btn btn-primary' id='image-export'>Export Image</button>
+        <span>
+            <button class="btn btn-primary dropdown-toggle" type="button" id="image-export" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Export Image
+            </button>
+            <div class="dropdown-menu" aria-labelledby="image-export">
+                <a class="dropdown-item" href="#" id='normal'>Normal Quality</a>
+                <a class="dropdown-item" href="#" id="high">High Quality</a>
+                <a class="dropdown-item" href="#" id="ultra-high">Ultra High Quality</a>
+            </div>
+        </span>
     `)
 
     // Initial stage load
@@ -232,17 +243,43 @@ function loadStructure(URL) {
 
         } );
 
-    // Export image button
-    $(document).on("click", "#image-export", {'stage': myStage}, 
+    // Export image buttons
+    $(document).on("click", "#normal", {'stage': myStage}, 
     function(event){ 
         event.preventDefault();
         myStage.makeImage( {
-            factor: 5,
+            factor: 1,
             antialias: true,
             trim: false,
             transparent: true,
         } ).then( function( blob ){
             NGL.download( blob, "molecule-view.png" );
+        } );
+    } );
+
+    $(document).on("click", "#high", {'stage': myStage}, 
+    function(event){ 
+        event.preventDefault();
+        myStage.makeImage( {
+            factor: 10,
+            antialias: true,
+            trim: false,
+            transparent: true,
+        } ).then( function( blob ){
+            NGL.download( blob, "molecule-view-high.png" );
+        } );
+    } );
+
+    $(document).on("click", "#ultra-high", {'stage': myStage}, 
+    function(event){ 
+        event.preventDefault();
+        myStage.makeImage( {
+            factor: 10,
+            antialias: true,
+            trim: false,
+            transparent: true,
+        } ).then( function( blob ){
+            NGL.download( blob, "molecule-view-ultra-high.png" );
         } );
     } );
 }
