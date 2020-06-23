@@ -130,7 +130,7 @@ function loadTable(href) {
 
 function loadOther(file) {
     var fileType = file.split(".").slice(-1);
-    $("#file-content").html(`<pre class="line-numbers"><code id="codeBlock" class="language-${fileType}"></code>`)
+    $("#file-content").html(`<pre class="line-numbers" style="white-space:pre-wrap;"><code id="codeBlock" class="language-${fileType}"></code>`)
     $("#codeBlock").load(file, function(){ Prism.highlightAll() });
     $(".active-div").removeClass("active-div")
     $("#codeBlock").addClass("active-div") 
