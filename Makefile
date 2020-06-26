@@ -81,6 +81,21 @@ environment: ## create the environment for running the dashboard
 	@echo ''
 	@echo 'Installing the Javascript, which will also take a couple minutes!'
 	@echo ''
+	@echo 'Sometimes the next step will fail because it cannot find the'
+	@echo 'executable "npm". If it does, just activate the new environment:'
+	@echo '     conda activate seamm-dashboard'
+	@echo 'The run make again:'
+	@echo '     make finish_dashboard'
+	@echo ''
+	@echo ''
+	@cd app/static && `conda env list | awk '/seamm-dashboard/{print $2}'`/bin/npm install
+	@echo ''
+	@echo 'To use the environment, type'
+	@echo '   conda activate seamm-dashboard'
+
+finish_dashboard: ## finish create the environment for running the dashboard
+	@echo 'Installing the Javascript, which will also take a couple minutes!'
+	@echo ''
 	@cd app/static && npm install
 	@echo ''
 	@echo 'To use the environment, type'
