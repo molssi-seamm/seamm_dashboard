@@ -88,7 +88,7 @@ environment: ## create the environment for running the dashboard
 	@echo '     make finish_dashboard'
 	@echo ''
 	@echo ''
-	@cd app/static && `conda env list | awk '/seamm-dashboard/{print $2}'`/bin/npm install
+	@cd app/static && npm install
 	@echo ''
 	@echo 'To use the environment, type'
 	@echo '   conda activate seamm-dashboard'
