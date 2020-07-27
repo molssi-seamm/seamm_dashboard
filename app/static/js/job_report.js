@@ -193,6 +193,7 @@ function loadStructure(URL) {
                     <a class="dropdown-item" href="#" id="licorice-rep">Licorice</a>
                     <a class="dropdown-item" href="#" id="cartoon-rep">Cartoon</a>
                     <a class="dropdown-item" href="#" id="surface-rep">Surface</a>
+                    <a class="dropdown-item" href="#" id="spacefill-rep">Space Fill</a>
                 </div>
             </span>
 
@@ -243,6 +244,12 @@ function loadStructure(URL) {
             });
     
     $(document).on("click", "#surface-rep", {'URL': URL, 'rep': 'surface'}, 
+        function(event){ 
+            event.preventDefault();
+            myStage = loadStage(event.data.URL, event.data.rep)
+        } );
+
+    $(document).on("click", "#spacefill-rep", {'URL': URL, 'rep': 'spacefill'}, 
         function(event){ 
             event.preventDefault();
             myStage = loadStage(event.data.URL, event.data.rep)
