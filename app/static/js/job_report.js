@@ -130,8 +130,12 @@ function loadTable(href) {
 
 function loadOther(file) {
     var fileType = file.split(".").slice(-1);
-    $("#file-content").html(`<pre class="line-numbers" style="white-space:pre-wrap;"><code id="codeBlock" class="language-${fileType}"></code>`)
-    $("#codeBlock").load(file, function(){ Prism.highlightAll() });
+    $("#file-content").html(`<pre style="white-space:pre-wrap;" id="pre-code"><code id="codeBlock" class="language-${fileType}"></code>`)
+    $("#codeBlock").load(file, function(data){ 
+        if (data.length < 75000) {
+            $("#pre-code").addClass('line-numbers')
+            }
+        Prism.highlightAll() });
     $(".active-div").removeClass("active-div")
     $("#codeBlock").addClass("active-div") 
     $("#file-content").addClass("active-div") 
@@ -325,11 +329,13 @@ var contentFunctions = {
 
 $(document).ready(function() {
     let url = location.href.split('/');
+    const jobID = url.slice(-1)[0];
+
     let content_div = document.getElementById('file-content');
     let cytoscape_div = document.getElementById('cytoscape');
     let ngl_div = document.getElementById('structure')
     $("#file-content").addClass("active-div")
-    const jobID = url.slice(-1)[0];
+    
     let viewCardHeight;
 
     // Get info we need for page
