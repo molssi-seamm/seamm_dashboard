@@ -8,8 +8,8 @@ var arrayReturn = [];
             for (var i = 0, len = data.length; i < len; i++) {
                 var job_links = ''
                 for (var j = 0, jlen = data[i].jobs.length; j < jlen; j++) {
-                    var retrieved_link = ajaxJobs(data[i].jobs[j])
-                    job_links = job_links + retrieved_link
+                    let job_link = `<a class="nav-link p-0 my-1" href="/jobs/${data[i].jobs[j]}" title="View Details">${data[i].jobs[j]}</a>`
+                    job_links = job_links + job_link
                 }
 
                 var flowchart_links = ''
@@ -32,19 +32,6 @@ var arrayReturn = [];
     });
 }
 
-function ajaxJobs(job_id) {
-    var job_link = ''
-    $.ajax({
-        url: `api/jobs/${job_id}`,
-        async: false,
-        dataType: 'json',
-        success: function(data){
-            job_link = `<a class="nav-link p-0 my-1" href="/jobs/${data.id}" title="View Details">${data.id}</a>`
-        }
-    })
-    return job_link;
-}
-
 function ajaxFlowcharts(flowchart_id) {
     var flowchart_link = ''
     $.ajax({
@@ -52,8 +39,7 @@ function ajaxFlowcharts(flowchart_id) {
         async: false,
         dataType: 'json',
         success: function(data){
-            flowchart_link = `<a class="nav-link p-0 btn btn-secondary my-1" href="flowcharts/${data.id}"><i class="fas fa-project-diagram"></i><span class="d-none d-md-inline">&nbsp;View Flowchart</span></a>`
-
+            
         }
     })
     return flowchart_link;

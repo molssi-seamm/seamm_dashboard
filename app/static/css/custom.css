@@ -43,4 +43,12 @@ body{
     border-color: #f5302e;
 }
 
+
+.fade-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;  
+  }
+  
+
   
