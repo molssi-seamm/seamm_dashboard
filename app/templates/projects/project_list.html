@@ -1,5 +1,7 @@
 <script src="{{ url_for('static', filename='js/project_list.js') }}"></script>
 
+<h1 class="mt-2 mb-5">Projects List</h1>
+<!-- Save for when we have 'list view' and 'card view'
   <table id="projects" class="table table-responsive-sm table-bordered table-striped table-sm" style="width:100%">
     <thead>
       <tr>
@@ -21,3 +23,106 @@
       </tr>
     </thead>
   </table>
+  -->
+
+  <div id="project-holder">
+    <div class="row w-100">
+      <div class = "col-xs-12 col-lg-6 col-xl-4">
+        <div class="card text-white bg-projects" style="min-height:300px;">
+          <div class="card-body pb-0">
+            <div class="text-value-lg"><a class='nav-link' href="projects" style="color:white" class="card-title">My Project</a></div>
+            <div class="card-description fade-text" style="height:100px; overflow:hidden">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec imperdiet a leo condimentum tempus. Phasellus justo nunc, posuere sit amet congue nec, pretium lacinia felis. Cras iaculis, est sit amet congue congue, ex ante aliquet nulla, sed bibendum sapien nunc quis odio. Phasellus in malesuada risus. Etiam vitae dolor quis quam consequat aliquet ac quis urna. Fusce blandit sed erat sit amet eleifend. Aenean sit amet erat ac enim maximus rhoncus vitae ac lorem. Aenean eget porttitor nisl, in rhoncus nibh. Nunc id diam tellus.
+
+                Aliquam et dignissim nulla. Ut hendrerit sed tellus sit amet feugiat. Aliquam dignissim gravida tortor at efficitur. Ut posuere, nunc in vulputate interdum, massa nisi mattis dolor, quis sodales ipsum risus in nulla. Duis congue diam tellus, vitae interdum lectus tempor sed. Donec posuere ligula eget neque lobortis, a efficitur purus euismod. In molestie, purus sit amet dapibus varius, dolor metus porta nibh, nec porttitor ex nunc quis ex. Integer varius eu risus sit amet viverra. In orci nisi, ullamcorper viverra lacus eget, lobortis posuere nulla. Nullam ut ipsum quis justo sagittis sollicitudin sed non lacus.
+
+                Quisque pretium quam non magna vestibulum, vel laoreet nibh tempor. Aenean scelerisque consequat ligula ac tempus. In at sem nec nisl fermentum faucibus ac a dolor. Pellentesque non accumsan magna. Quisque et semper dolor. Curabitur malesuada varius risus, ac elementum libero lobortis sed. Sed nisi tortor, venenatis et sagittis sed, sodales vitae urna. Etiam a molestie mi, ut blandit lectus.
+
+                Pellentesque tincidunt eu metus fringilla accumsan. Ut id laoreet libero. Sed mollis, augue eu scelerisque varius, nisi ex finibus lacus, eu suscipit neque lacus nec ligula. Curabitur sed sapien quis ipsum bibendum egestas. Praesent fringilla non mauris in pulvinar. Donec nec dolor id est interdum dapibus. Morbi sed ex mi. Sed dignissim dignissim eros vitae ullamcorper. Sed fringilla, diam a pretium consequat, ligula metus feugiat dui, sed dignissim enim turpis convallis ante.
+
+                Donec ac lorem id nulla tincidunt auctor. Curabitur in cursus libero. Aliquam et lorem viverra, mattis lorem vel, elementum orci. Mauris bibendum, sem quis ornare pharetra, arcu ipsum lacinia quam, ac faucibus sem nunc eu ipsum. Sed non venenatis justo. Sed id turpis posuere, condimentum massa a, faucibus sem. Vivamus sed diam vitae mauris rhoncus tempus. Morbi ac molestie odio. Donec laoreet dignissim metus bibendum vestibulum. Sed vel metus metus. Sed quis nulla efficitur, dictum velit eu, congue lacus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Sed velit mauris, posuere a finibus pellentesque, dapibus nec turpis. Ut at mauris a mauris lacinia congue sit amet sed lorem. Duis condimentum convallis erat mollis ultrices. Donec non nibh ut quam pharetra ultrices vel eu orci.
+            
+            </div>
+            
+            <div class="mt-4 px-3">
+              <div class="row">
+                <div class="col">
+                  <div class="text-value-lg" class="job-number">100</div>jobs 
+                </div>
+                <div class="col">
+                  <div class="text-value-lg" class="flowchart-number">5</div>flowcharts
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class = "col-xs-12 col-lg-6 col-xl-4">
+        <div class="card text-white bg-projects" style="min-height:300px;">
+          <div class="card-body pb-0">
+            <div class="text-value-lg"><a class='nav-link' href="projects" style="color:white" class="card-title">My Second Project</a></div>
+            <div class="card-description fade-text" style="height:100px; overflow:hidden">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec imperdiet a leo condimentum tempus. Phasellus justo nunc, posuere sit amet congue nec, pretium lacinia felis. Cras iaculis, est sit amet congue congue, ex ante aliquet nulla, sed bibendum sapien nunc quis odio. Phasellus in malesuada risus. Etiam vitae dolor quis quam consequat aliquet ac quis urna. Fusce blandit sed erat sit amet eleifend. Aenean sit amet erat ac enim maximus rhoncus vitae ac lorem. Aenean eget porttitor nisl, in rhoncus nibh. Nunc id diam tellus.
+
+                Aliquam et dignissim nulla. Ut hendrerit sed tellus sit amet feugiat. Aliquam dignissim gravida tortor at efficitur. Ut posuere, nunc in vulputate interdum, massa nisi mattis dolor, quis sodales ipsum risus in nulla. Duis congue diam tellus, vitae interdum lectus tempor sed. Donec posuere ligula eget neque lobortis, a efficitur purus euismod. In molestie, purus sit amet dapibus varius, dolor metus porta nibh, nec porttitor ex nunc quis ex. Integer varius eu risus sit amet viverra. In orci nisi, ullamcorper viverra lacus eget, lobortis posuere nulla. Nullam ut ipsum quis justo sagittis sollicitudin sed non lacus.
+
+                Quisque pretium quam non magna vestibulum, vel laoreet nibh tempor. Aenean scelerisque consequat ligula ac tempus. In at sem nec nisl fermentum faucibus ac a dolor. Pellentesque non accumsan magna. Quisque et semper dolor. Curabitur malesuada varius risus, ac elementum libero lobortis sed. Sed nisi tortor, venenatis et sagittis sed, sodales vitae urna. Etiam a molestie mi, ut blandit lectus.
+
+                Pellentesque tincidunt eu metus fringilla accumsan. Ut id laoreet libero. Sed mollis, augue eu scelerisque varius, nisi ex finibus lacus, eu suscipit neque lacus nec ligula. Curabitur sed sapien quis ipsum bibendum egestas. Praesent fringilla non mauris in pulvinar. Donec nec dolor id est interdum dapibus. Morbi sed ex mi. Sed dignissim dignissim eros vitae ullamcorper. Sed fringilla, diam a pretium consequat, ligula metus feugiat dui, sed dignissim enim turpis convallis ante.
+
+                Donec ac lorem id nulla tincidunt auctor. Curabitur in cursus libero. Aliquam et lorem viverra, mattis lorem vel, elementum orci. Mauris bibendum, sem quis ornare pharetra, arcu ipsum lacinia quam, ac faucibus sem nunc eu ipsum. Sed non venenatis justo. Sed id turpis posuere, condimentum massa a, faucibus sem. Vivamus sed diam vitae mauris rhoncus tempus. Morbi ac molestie odio. Donec laoreet dignissim metus bibendum vestibulum. Sed vel metus metus. Sed quis nulla efficitur, dictum velit eu, congue lacus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Sed velit mauris, posuere a finibus pellentesque, dapibus nec turpis. Ut at mauris a mauris lacinia congue sit amet sed lorem. Duis condimentum convallis erat mollis ultrices. Donec non nibh ut quam pharetra ultrices vel eu orci.
+            
+            </div>
+            
+            <div class="mt-4 px-3">
+              <div class="row">
+                <div class="col">
+                  <div class="text-value-lg" class="job-number">2</div>jobs 
+                </div>
+                <div class="col">
+                  <div class="text-value-lg" class="flowchart-number">2</div>flowcharts
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class = "col-xs-12 col-lg-6 col-xl-4">
+        <div class="card text-white bg-projects" style="min-height:300px;">
+          <div class="card-body pb-0">
+            <div class="text-value-lg"><a class='nav-link' href="projects" style="color:white" class="card-title">My Third Project</a></div>
+            <div class="card-description fade-text" style="height:100px; overflow:hidden">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec imperdiet a leo condimentum tempus. Phasellus justo nunc, posuere sit amet congue nec, pretium lacinia felis. Cras iaculis, est sit amet congue congue, ex ante aliquet nulla, sed bibendum sapien nunc quis odio. Phasellus in malesuada risus. Etiam vitae dolor quis quam consequat aliquet ac quis urna. Fusce blandit sed erat sit amet eleifend. Aenean sit amet erat ac enim maximus rhoncus vitae ac lorem. Aenean eget porttitor nisl, in rhoncus nibh. Nunc id diam tellus.
+
+                Aliquam et dignissim nulla. Ut hendrerit sed tellus sit amet feugiat. Aliquam dignissim gravida tortor at efficitur. Ut posuere, nunc in vulputate interdum, massa nisi mattis dolor, quis sodales ipsum risus in nulla. Duis congue diam tellus, vitae interdum lectus tempor sed. Donec posuere ligula eget neque lobortis, a efficitur purus euismod. In molestie, purus sit amet dapibus varius, dolor metus porta nibh, nec porttitor ex nunc quis ex. Integer varius eu risus sit amet viverra. In orci nisi, ullamcorper viverra lacus eget, lobortis posuere nulla. Nullam ut ipsum quis justo sagittis sollicitudin sed non lacus.
+
+                Quisque pretium quam non magna vestibulum, vel laoreet nibh tempor. Aenean scelerisque consequat ligula ac tempus. In at sem nec nisl fermentum faucibus ac a dolor. Pellentesque non accumsan magna. Quisque et semper dolor. Curabitur malesuada varius risus, ac elementum libero lobortis sed. Sed nisi tortor, venenatis et sagittis sed, sodales vitae urna. Etiam a molestie mi, ut blandit lectus.
+
+                Pellentesque tincidunt eu metus fringilla accumsan. Ut id laoreet libero. Sed mollis, augue eu scelerisque varius, nisi ex finibus lacus, eu suscipit neque lacus nec ligula. Curabitur sed sapien quis ipsum bibendum egestas. Praesent fringilla non mauris in pulvinar. Donec nec dolor id est interdum dapibus. Morbi sed ex mi. Sed dignissim dignissim eros vitae ullamcorper. Sed fringilla, diam a pretium consequat, ligula metus feugiat dui, sed dignissim enim turpis convallis ante.
+
+                Donec ac lorem id nulla tincidunt auctor. Curabitur in cursus libero. Aliquam et lorem viverra, mattis lorem vel, elementum orci. Mauris bibendum, sem quis ornare pharetra, arcu ipsum lacinia quam, ac faucibus sem nunc eu ipsum. Sed non venenatis justo. Sed id turpis posuere, condimentum massa a, faucibus sem. Vivamus sed diam vitae mauris rhoncus tempus. Morbi ac molestie odio. Donec laoreet dignissim metus bibendum vestibulum. Sed vel metus metus. Sed quis nulla efficitur, dictum velit eu, congue lacus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Sed velit mauris, posuere a finibus pellentesque, dapibus nec turpis. Ut at mauris a mauris lacinia congue sit amet sed lorem. Duis condimentum convallis erat mollis ultrices. Donec non nibh ut quam pharetra ultrices vel eu orci.
+            
+            </div>
+            
+            <div class="mt-4 px-3">
+              <div class="row">
+                <div class="col">
+                  <div class="text-value-lg" class="job-number">50</div>jobs 
+                </div>
+                <div class="col">
+                  <div class="text-value-lg" class="flowchart-number">5</div>flowcharts
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+    
+      </div>
+    
+    </div>
+</div>
