@@ -1,30 +1,10 @@
 <script src="{{ url_for('static', filename='js/project_list.js') }}"></script>
 
-<h1 class="mt-2 mb-5">Projects List</h1>
-<!-- Save for when we have 'list view' and 'card view'
-  <table id="projects" class="table table-responsive-sm table-bordered table-striped table-sm" style="width:100%">
-    <thead>
-      <tr>
-        <th>
-          Project Name
-        </th>
-        <th>
-          Project Description
-        </th>
-        <th>
-          Associated Jobs
-        </th>
-        <th>
-          Associated Flowcharts
-        </th>
-        <th>
-          Actions
-        </th>
-      </tr>
-    </thead>
-  </table>
-  -->
+<h1 class="mt-2 mb-3">Projects List</h1>
 
+<button id="toggle-card" type="button" class="btn btn-secondary mb-4 active" data-toggle="button" aria-pressed="true" autocomplete="off" onclick="ajaxProjects('card')">Card View</button>
+<button id="toggle-list" type="button" class="btn btn-secondary mb-4" data-toggle="button" aria-pressed="false" autocomplete="off" onclick="ajaxProjects('table')">List View</button>
+  <div id='table-holder'></div>
   <div id="project-holder">
     <div class="row w-100" id="project-cards">
     </div>
