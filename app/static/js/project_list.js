@@ -1,62 +1,102 @@
-function ajaxProjects(){
+function cardView(data){
+
+    $('#project-cards').html('')
+   $('#table-holder').html('<table id="projects" class="table table-responsive-sm table-bordered table-striped table-sm" style="width:100%"></table>')
+
+    let col_string = {
+        0 : 'col-xl-12',
+        1 : 'col-xl-12',
+        2 : 'col-xs-12 col-xl-6'
+    }
+    let num_projects = data.length
+
+    if (num_projects < 3) {
+        column_string = col_string[num_projects]
+    } else {
+        column_string =  "col-xs-12 col-lg-6 col-xl-4"
+    }
+
+    let card_string = ''
+    for (var i = 0, len = data.length; i < len; i++) {
+        card_string += `<div class=${column_string}>
+            <div class="card text-white bg-projects" style="min-height:300px;">
+            <div class="card-body pb-0">
+                <div class="text-value-lg"><a class='nav-link' href="projects" style="color:white" class="card-title">${data[i].name}</a></div>
+                <div class="card-description fade-text" style="height:100px; overflow:hidden">${data[i].description}</div>
+                <div class="mt-4 px-3">
+                <div class="row">
+                    <div class="col">
+                    <div class="text-value-lg" class="job-number">${data[i].jobs.length}</div> jobs 
+                    </div>
+                    <div class="col">
+                    <div class="text-value-lg" class="flowchart-number">${data[i].flowcharts.length}</div> flowcharts
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>`
+    }
+    $('#project-cards').html(card_string)
+}
+
+let load_data = {
+    'card' : cardView,
+    'table': inittable,
+}
+
+
+function ajaxProjects(viewType){
 var arrayReturn = [];
     $.ajax({
         url: "api/projects",
         async: false,
         dataType: 'json',
         success: function (data) {
-            let col_string = {
-                0 : 'col-xl-12',
-                1 : 'col-xl-12',
-                2 : 'col-xs-12 col-xl-6'
-            }
-            let num_projects = data.length
-
-            if (num_projects < 3) {
-                column_string = col_string[num_projects]
-            } else {
-                column_string =  "col-xs-12 col-lg-6 col-xl-4"
-            }
-
-            let card_string = ''
-            for (var i = 0, len = data.length; i < len; i++) {
-                card_string += `<div class=${column_string}>
-                    <div class="card text-white bg-projects" style="min-height:300px;">
-                    <div class="card-body pb-0">
-                        <div class="text-value-lg"><a class='nav-link' href="projects" style="color:white" class="card-title">${data[i].name}</a></div>
-                        <div class="card-description fade-text" style="height:100px; overflow:hidden">${data[i].description}</div>
-                        <div class="mt-4 px-3">
-                        <div class="row">
-                            <div class="col">
-                            <div class="text-value-lg" class="job-number">${data[i].jobs.length}</div> jobs 
-                            </div>
-                            <div class="col">
-                            <div class="text-value-lg" class="flowchart-number">${data[i].flowcharts.length}</div> flowcharts
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-                    </div>
-                </div>`
-            }
-        $('#project-cards').html(card_string)
-        inittable(arrayReturn);
+            load_data[viewType](data)
+            
         }
     });
 }
 
-
 function inittable(data) {	
+    let table_header = `
+    <thead>
+      <tr>
+        <th>
+          Project Name
+        </th>
+        <th>
+          Project Description
+        </th>
+        <th>
+          Number of Jobs
+        </th>
+        <th>
+          Number of Flowcharts
+        </th>
+    </thead>`
+  
+  $('#project-cards').html('')
+  $('#projects').html(table_header)
+
+  // Build data for table
+  let arrayReturn = []
+  for (var i = 0, len = data.length; i < len; i++) {
+      arrayReturn.push([data[i].name,
+        data[i].description,
+        data[i].jobs.length,
+        data[i].flowcharts.length, 
+    ])
+    }
+
     $('#projects').DataTable( {
-        "responsive": true,
-        "aaData": data,
-        "columnDefs": [
-            { className: "sidebar-nav", "targets": [0, 2, 3]}
-        ],
-        "autoWidth": true,
+        "responsive": false,
+        "aaData": arrayReturn,
+        "autoWidth": false,
     } );
 }
 
   $(document).ready(function(){
-    ajaxProjects()
+    ajaxProjects("card")
   })
