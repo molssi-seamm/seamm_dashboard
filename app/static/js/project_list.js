@@ -5,45 +5,46 @@ var arrayReturn = [];
         async: false,
         dataType: 'json',
         success: function (data) {
-            for (var i = 0, len = data.length; i < len; i++) {
-                var job_links = ''
-                for (var j = 0, jlen = data[i].jobs.length; j < jlen; j++) {
-                    let job_link = `<a class="nav-link p-0 my-1" href="/jobs/${data[i].jobs[j]}" title="View Details">${data[i].jobs[j]}</a>`
-                    job_links = job_links + job_link
-                }
-
-                var flowchart_links = ''
-                for (var j = 0, jlen = data[i].jobs.length; j < jlen; j++) {
-                    var retrieved_link = ajaxFlowcharts(data[i].flowcharts[j])
-                    flowchart_links = flowchart_links + retrieved_link
-                }
-
-                arrayReturn.push([data[i].name, 
-                data[i].description,
-                job_links,
-                flowchart_links,
-                `<a class="nav-link p-0 btn btn-primary my-1" href="/projects/${data[i].id}/edit">
-            <i class="fa fa-edit"></i><span class="d-none d-md-inline">&nbsp; Edit</span></a>
-            <a class="nav-link p-0 btn btn-danger" href="#">
-                <i class="fa fa-trash"></i><span class="d-none d-md-inline">&nbsp; Delete</span></a>` ]);
+            let col_string = {
+                0 : 'col-xl-12',
+                1 : 'col-xl-12',
+                2 : 'col-xs-12 col-xl-6'
             }
+            let num_projects = data.length
+
+            if (num_projects < 3) {
+                column_string = col_string[num_projects]
+            } else {
+                column_string =  "col-xs-12 col-lg-6 col-xl-4"
+            }
+
+            let card_string = ''
+            for (var i = 0, len = data.length; i < len; i++) {
+                card_string += `<div class=${column_string}>
+                    <div class="card text-white bg-projects" style="min-height:300px;">
+                    <div class="card-body pb-0">
+                        <div class="text-value-lg"><a class='nav-link' href="projects" style="color:white" class="card-title">${data[i].name}</a></div>
+                        <div class="card-description fade-text" style="height:100px; overflow:hidden">${data[i].description}</div>
+                        <div class="mt-4 px-3">
+                        <div class="row">
+                            <div class="col">
+                            <div class="text-value-lg" class="job-number">${data[i].jobs.length}</div> jobs 
+                            </div>
+                            <div class="col">
+                            <div class="text-value-lg" class="flowchart-number">${data[i].flowcharts.length}</div> flowcharts
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>`
+            }
+        $('#project-cards').html(card_string)
         inittable(arrayReturn);
         }
     });
 }
 
-function ajaxFlowcharts(flowchart_id) {
-    var flowchart_link = ''
-    $.ajax({
-        url: `api/flowcharts/${flowchart_id}`,
-        async: false,
-        dataType: 'json',
-        success: function(data){
-            
-        }
-    })
-    return flowchart_link;
-}
 
 function inittable(data) {	
     $('#projects').DataTable( {
