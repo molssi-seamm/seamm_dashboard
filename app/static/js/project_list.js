@@ -59,42 +59,45 @@ function ajaxProjects(viewType){
         });
 }
 
-function inittable(data) {	
-    let table_header = `
-    <thead>
-      <tr>
-        <th>
-          Project Name
-        </th>
-        <th>
-          Project Description
-        </th>
-        <th>
-          Number of Jobs
-        </th>
-        <th>
-          Number of Flowcharts
-        </th>
-    </thead>`
-  
-  $('#project-cards').html('')
-  $('#projects').html(table_header)
+function inittable(data) {
+    
+    if ( ! $.fn.DataTable.isDataTable( '#projects' ) ) {
+        let table_header = `
+        <thead>
+        <tr>
+            <th>
+            Project Name
+            </th>
+            <th>
+            Project Description
+            </th>
+            <th>
+            Number of Jobs
+            </th>
+            <th>
+            Number of Flowcharts
+            </th>
+        </thead>`
+    
+    $('#project-cards').html('')
+    $('#projects').html(table_header)
 
-  // Build data for table
-  let arrayReturn = []
-  for (var i = 0, len = data.length; i < len; i++) {
-      arrayReturn.push([data[i].name,
-        data[i].description,
-        data[i].jobs.length,
-        data[i].flowcharts.length, 
-    ])
+    // Build data for table
+    let arrayReturn = []
+    for (var i = 0, len = data.length; i < len; i++) {
+        arrayReturn.push([data[i].name,
+            data[i].description,
+            data[i].jobs.length,
+            data[i].flowcharts.length, 
+        ])
+        }
+
+        $('#projects').DataTable( {
+            "responsive": false,
+            "aaData": arrayReturn,
+            "autoWidth": false,
+        } );
     }
-
-    $('#projects').DataTable( {
-        "responsive": false,
-        "aaData": arrayReturn,
-        "autoWidth": false,
-    } );
 }
 
   $(document).ready(function(){
