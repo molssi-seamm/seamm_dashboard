@@ -9,6 +9,7 @@ function cardView(data){
         2 : 'col-xs-12 col-xl-6'
     }
     let num_projects = data.length
+    let column_string;
 
     if (num_projects < 3) {
         column_string = col_string[num_projects]
@@ -47,7 +48,6 @@ var load_data = {
 
 
 function ajaxProjects(viewType){
-    var arrayReturn = [];
         $.ajax({
             url: "api/projects",
             async: false,
