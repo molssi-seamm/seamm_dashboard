@@ -47,10 +47,15 @@ class TestLiveServer:
     @pytest.mark.parametrize("list_type, num_columns, num_rows", [
         ("jobs", 7, 3),
         ("flowcharts", 5, 2),
-        ("projects", 5, 2)
+        ("projects", 4, 2)
     ])
     def test_jobs_list(self, app, chrome_driver, list_type, num_columns, num_rows):
         chrome_driver.get(f"{self.base_url}#{list_type}")
+
+        if list_type == 'projects':
+            # Default view is card - switch to list.
+            button = chrome_driver.find_element_by_id('toggle-list')
+            button.click()
 
         # Get the jobs table. Will want to wait for this to be loaded,
         # of course.

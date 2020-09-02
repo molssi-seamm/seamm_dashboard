@@ -139,7 +139,5 @@ function inittable(data) {
     
     // Load initial data
     ajaxProjects("card")
-
-
     
   })
