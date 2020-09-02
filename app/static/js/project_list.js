@@ -60,9 +60,6 @@ function ajaxProjects(viewType){
 }
 
 function inittable(data) {	
-
-
-
     let table_header = `
     <thead>
       <tr>
@@ -107,15 +104,18 @@ function inittable(data) {
 
     cardButton.classList.add('active')
 
-    //- Add click events
+    //- Add click events - should probably move toggling into function sometime
     document.getElementById("toggle-card").addEventListener("click", function() { 
         ajaxProjects("card")
         if (!cardButton.classList.contains('active')) {
             cardButton.classList.add('active')
+            cardButton.setAttribute('aria-pressed', true)
         }
 
         if (listButton.classList.contains('active')) {
             listButton.classList.remove('active')
+            listButton.setAttribute('aria-pressed', false)
+
         }
     
     });
@@ -123,10 +123,13 @@ function inittable(data) {
         ajaxProjects("list")
         if (!listButton.classList.contains('active')) {
             listButton.classList.add('active')
+            listButton.setAttribute('aria-pressed', true)
         }
 
         if (cardButton.classList.contains('active')) {
             cardButton.classList.remove('active')
+            cardButton.setAttribute('aria-pressed', false)
+
         }
  
     });
