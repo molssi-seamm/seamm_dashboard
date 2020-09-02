@@ -1,7 +1,7 @@
 function cardView(data){
 
     $('#project-cards').html('')
-   $('#table-holder').html('<table id="projects" class="table table-responsive-sm table-bordered table-striped table-sm" style="width:100%"></table>')
+    $('#table-holder').html('<table id="projects" class="table table-responsive-sm table-bordered table-striped table-sm" style="width:100%"></table>')
 
     let col_string = {
         0 : 'col-xl-12',
@@ -40,26 +40,29 @@ function cardView(data){
     $('#project-cards').html(card_string)
 }
 
-let load_data = {
+var load_data = {
     'card' : cardView,
-    'table': inittable,
+    'list': inittable,
 }
 
 
 function ajaxProjects(viewType){
-var arrayReturn = [];
-    $.ajax({
-        url: "api/projects",
-        async: false,
-        dataType: 'json',
-        success: function (data) {
-            load_data[viewType](data)
-            
-        }
-    });
+    var arrayReturn = [];
+        $.ajax({
+            url: "api/projects",
+            async: false,
+            dataType: 'json',
+            success: function (data) {
+                load_data[viewType](data)
+                
+            }
+        });
 }
 
 function inittable(data) {	
+
+
+
     let table_header = `
     <thead>
       <tr>
@@ -98,5 +101,39 @@ function inittable(data) {
 }
 
   $(document).ready(function(){
+
+    let listButton = document.querySelector('#toggle-list')
+    let cardButton = document.querySelector('#toggle-card')
+
+    cardButton.classList.add('active')
+
+    //- Add click events
+    document.getElementById("toggle-card").addEventListener("click", function() { 
+        ajaxProjects("card")
+        if (!cardButton.classList.contains('active')) {
+            cardButton.classList.add('active')
+        }
+
+        if (listButton.classList.contains('active')) {
+            listButton.classList.remove('active')
+        }
+    
+    });
+    document.getElementById("toggle-list").addEventListener("click", function() { 
+        ajaxProjects("list")
+        if (!listButton.classList.contains('active')) {
+            listButton.classList.add('active')
+        }
+
+        if (cardButton.classList.contains('active')) {
+            cardButton.classList.remove('active')
+        }
+ 
+    });
+    
+    // Load initial data
     ajaxProjects("card")
+
+
+    
   })
