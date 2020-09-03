@@ -4,9 +4,9 @@ function cardView(data){
     $('#table-holder').html('<table id="projects" class="table table-responsive-sm table-bordered table-striped table-sm" style="width:100%"></table>')
 
     let col_string = {
-        0 : 'col-xl-12',
-        1 : 'col-xl-12',
-        2 : 'col-xs-12 col-xl-6'
+        0 : "col-xl-12",
+        1 : "col-xl-12",
+        2 : "col-xs-12 col-xl-6"
     }
     let num_projects = data.length
     let column_string;
@@ -17,9 +17,11 @@ function cardView(data){
         column_string =  "col-xs-12 col-lg-6 col-xl-4"
     }
 
+    console.log(column_string)
+
     let card_string = ''
     for (var i = 0, len = data.length; i < len; i++) {
-        card_string += `<div class=${column_string}>
+        card_string += `<div class="${column_string}">
             <div class="card text-white bg-projects" style="min-height:300px;">
             <div class="card-body pb-0">
                 <div class="text-value-lg"><a class='nav-link' href="projects" style="color:white" class="card-title">${data[i].name}</a></div>
