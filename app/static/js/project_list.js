@@ -85,7 +85,7 @@ function inittable(data) {
     // Build data for table
     let arrayReturn = []
     for (var i = 0, len = data.length; i < len; i++) {
-        arrayReturn.push([data[i].name,
+        arrayReturn.push([`<a class="nav-link p-0" href="projects/${data[i].id}/jobs">${data[i].name}</a>`,
             data[i].description,
             data[i].jobs.length,
             data[i].flowcharts.length, 
@@ -96,6 +96,10 @@ function inittable(data) {
             "responsive": false,
             "aaData": arrayReturn,
             "autoWidth": false,
+            "columnDefs": [
+                { "className": "sidebar-nav", 
+                "targets": [0]},
+            ],
         } );
     }
 }
