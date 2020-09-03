@@ -17,8 +17,6 @@ function cardView(data){
         column_string =  "col-xs-12 col-lg-6 col-xl-4"
     }
 
-    console.log(column_string)
-
     let card_string = ''
     for (var i = 0, len = data.length; i < len; i++) {
         card_string += `<div class="${column_string}">
