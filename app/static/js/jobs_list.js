@@ -169,10 +169,21 @@ function inittable(data) {
     .appendTo( '#jobs_wrapper .col-md-6:eq(1)' );
 }
 
+function ajaxProjectDescription(project_url){
+    $.ajax({
+        url: `api/${project_url}`,
+        async: false,
+        dataType: 'json',
+        success: function (data) {
+            descriptionDiv = document.getElementById('description')
+            descriptionDiv.innerHTML = `<h5>Project Description</h5> ${data.description}`
+        }
+    });
+}
+
 
 $(document).ready(function () {
     let api_url = location.href.split('#')[1];
-    console.log(api_url)
     var arrayReturn = [];
     $.ajax({
         url: `api/${api_url}`,
@@ -194,8 +205,26 @@ $(document).ready(function () {
         }
     });
 
-    var tableButtons = document.getElementsByClassName("dt-buttons")
+    let tableButtons = document.getElementsByClassName("dt-buttons")
     tableButtons[0].className = "row justify-content-end"
+
+    let titleObject = document.getElementById('page-title')
+    let titleSplit = api_url.toLowerCase().split('/')
+
+    let myTitle = titleSplit.map(function(word) {
+        return (word.charAt(0).toUpperCase() + word.slice(1));
+      }).join(' ');
+
+      myTitle = myTitle.replace('Projects', 'Project')
+
+      titleObject.innerHTML = myTitle;
+
+      if (titleSplit.includes('projects')){
+        titleSplit.pop()
+        my_url = titleSplit.join('/')
+        console.log(my_url)
+        ajaxProjectDescription(my_url)
+      }
     
 })
 
