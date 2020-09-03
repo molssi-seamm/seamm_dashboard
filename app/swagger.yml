@@ -350,7 +350,7 @@ paths:
       - developers
       summary: searches database by project id
       description: |
-        Get flowchart by ID.
+        Get project by ID.
       operationId: app.routes.api.get_project
       parameters:
       - name: id
@@ -370,6 +370,34 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Project'
+        "400":
+          description: bad input parameter
+  /api/projects/{id}/jobs:
+    get:
+      tags:
+      - developers
+      summary: retrieves jobs associated with a project
+      description: |
+        Get jobs associated with a project by project ID.
+      operationId: app.routes.api.get_project_jobs
+      parameters:
+      - name: id
+        in: path
+        description: retrieve project by id.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Job'
         "400":
           description: bad input parameter
   /api/status:
