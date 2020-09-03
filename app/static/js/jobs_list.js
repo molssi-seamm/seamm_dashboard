@@ -175,7 +175,7 @@ function ajaxProjectDescription(project_url){
         async: false,
         dataType: 'json',
         success: function (data) {
-            descriptionDiv = document.getElementById('description')
+            let descriptionDiv = document.getElementById('description')
             descriptionDiv.innerHTML = `<h5>Project Description</h5> ${data.description}`
         }
     });
@@ -217,11 +217,11 @@ $(document).ready(function () {
 
       myTitle = myTitle.replace('Projects', 'Project')
 
-      titleObject.innerHTML = myTitle;
+      titleObject.textContent = myTitle;
 
       if (titleSplit.includes('projects')){
         titleSplit.pop()
-        my_url = titleSplit.join('/')
+        let my_url = titleSplit.join('/')
         console.log(my_url)
         ajaxProjectDescription(my_url)
       }
