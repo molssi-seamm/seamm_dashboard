@@ -171,9 +171,11 @@ function inittable(data) {
 
 
 $(document).ready(function () {
+    let api_url = location.href.split('#')[1];
+    console.log(api_url)
     var arrayReturn = [];
     $.ajax({
-        url: "api/jobs",
+        url: `api/${api_url}`,
         async: false,
         dataType: 'json',
         success: function (data) {

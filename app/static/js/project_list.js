@@ -23,8 +23,8 @@ function cardView(data){
     for (var i = 0, len = data.length; i < len; i++) {
         card_string += `<div class="${column_string}">
             <div class="card text-white bg-projects" style="min-height:300px;">
-            <div class="card-body pb-0">
-                <div class="text-value-lg"><a class='nav-link' href="projects" style="color:white" class="card-title">${data[i].name}</a></div>
+            <div class="card-body pb-0 sidebar-nav">
+                <div class="text-value-lg"><a class="nav-link" href="/projects/${data[i].id}/jobs" style="color:white" class="card-title">${data[i].name}</a></div>
                 <div class="card-description fade-text" style="height:100px; overflow:hidden">${data[i].description}</div>
                 <div class="mt-4 px-3">
                 <div class="row">
