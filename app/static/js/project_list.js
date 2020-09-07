@@ -143,5 +143,8 @@ function inittable(data) {
     
     // Load initial data
     ajaxProjects("card")
+
+    document.getElementById("view").classList.toggle("hidden")
+
     
   })

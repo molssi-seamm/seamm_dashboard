@@ -227,6 +227,7 @@ $(document).ready(function () {
       }
 
       document.getElementById("view").classList.toggle("hidden")
+
     
 })
 
