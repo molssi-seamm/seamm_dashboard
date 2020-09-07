@@ -225,6 +225,8 @@ $(document).ready(function () {
         console.log(my_url)
         ajaxProjectDescription(my_url)
       }
+
+      document.getElementById("view").classList.toggle("hidden")
     
 })
 
