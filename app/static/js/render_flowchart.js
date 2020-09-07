@@ -35,7 +35,6 @@ $(document).ready(function(){
   var flowchart_description = getDescription()
 
   $('#description').html(flowchart_description)
-  console.log(flowchart_description)
 
   var cytoscape_elements = buildFlowchart(page_url)
 
@@ -102,7 +101,10 @@ $(document).ready(function(){
     
       }
     
-    });         
+    });  
+    
+    document.getElementById("view").classList.toggle("hidden")
+
 })
 
 

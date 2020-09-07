@@ -1,11 +1,13 @@
 <script src="{{ url_for('static', filename='js/project_list.js') }}"></script>
+<div class="animated fadeIn sidebar-nav hidden" id="view">
 
-<h1 class="mt-2 mb-3">Projects List</h1>
+  <h1 class="mt-2 mb-3">Projects List</h1>
 
-<button id="toggle-card" type="button" class="btn btn-secondary mb-4">Card View</button>
-<button id="toggle-list" type="button" class="btn btn-secondary mb-4">List View</button>
-  <div id='table-holder'></div>
-  <div id="project-holder">
-    <div class="row w-100" id="project-cards">
+  <button id="toggle-card" type="button" class="btn btn-secondary mb-4">Card View</button>
+  <button id="toggle-list" type="button" class="btn btn-secondary mb-4">List View</button>
+    <div id='table-holder'></div>
+    <div id="project-holder">
+      <div class="row w-100" id="project-cards">
+      </div>
     </div>
-</div>
+  </div>
