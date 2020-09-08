@@ -45,16 +45,12 @@ function load_file(file_url, data_type){
 
 
 function setFileDivSize() {
-    viewCardHeight = $(window).outerHeight()*0.85
-    $("#js-tree").height(viewCardHeight)
-    $(".active-div").height(viewCardHeight)
-}
+    let viewCardHeight = $(window).outerHeight()*0.85
+    let divs = Array.from(document.querySelectorAll(".load-content"))
 
-function flowResize(viewCardHeight) {
-    viewCardHeight = $(window).outerHeight()*0.90
-    $('#file-content').height("0px")
-    $('#structure').height("0px")
-    $('#cytoscape').height(viewCardHeight*0.9);
+    for (i=0; i<divs.length; i++) {
+        divs[i].style.height = `${viewCardHeight}px`;
+    }
 }
 
 function loadFlow(flowchartID) {
@@ -78,9 +74,6 @@ function loadFlow(flowchartID) {
 
 function loadGraph(nodeData) {
     let content_div = document.getElementById('file-content');
-    $('#cytoscape').height("0px")
-    $("#file-content").html("")
-
     var plotlyData = load_file(nodeData.a_attr.href, 'json')
     Plotly.newPlot(content_div, plotlyData.data, plotlyData.layout, 
         {'editable': true, 
@@ -99,9 +92,6 @@ function loadGraph(nodeData) {
 }
 
 function loadTable(href) {
-    $('#cytoscape').height("0px")
-    $('#file-content').height("0px")
-    $('#structure').height("0px")
     var csvData = load_file(href, 'text')
     var separated = $.csv.toArrays(csvData)
 
@@ -139,18 +129,6 @@ function loadOther(file) {
     $(".active-div").removeClass("active-div")
     $("#codeBlock").addClass("active-div") 
     $("#file-content").addClass("active-div") 
-}
-
-function resizeOther(viewCardHeight) {
-    $('#cytoscape').height("0px")
-    $('#structure').height("0px")
-    $('#file-content').height(viewCardHeight);
-}
-
-function resizeStructure(viewCardHeight) {
-    $('#cytoscape').height("0px")
-    $('#structure').height(viewCardHeight)
-    $('#file-content').height("0px");
 }
 
 function loadStructure(URL) {
@@ -300,32 +278,45 @@ function loadStructure(URL) {
     } );
 }
 
+function toggleDivs(divList, divToShow = null) {
+    for (i = 0; i < divList.length; i++) {
+        if (divList[i] == divToShow) {
+            document.getElementById(divList[i]).classList.remove("hidden")
+        }
+        else {
+            document.getElementById(divList[i]).classList.add("hidden")
+        }
+    }
+};
+
 var contentFunctions = {
     "flow" : {
         "load": [loadFlow, "jobData.flowchart_id"],
-        "resize": [flowResize, "viewCardHeight"],
+        "resize": "cytoscape",
     },
     "graph": {
         "load": [loadGraph, "data.node"],
-        "resize": null,
+        "resize": "file-content",
     },
     "csv": {
         "load" : [loadTable, "href"],
-        "resize": null,
+        "resize": "csv-data",
     },
     "mmcif": {
         "load" : [loadStructure, "href"],
-        "resize": [resizeStructure, "viewCardHeight"],
+        "resize": "structure",
     },
     "pdb": {
         "load" : [loadStructure, "href"],
-        "resize": [resizeStructure, "viewCardHeight"],
+        "resize": "structure",
     },
     "other": {
         "load": [loadOther, "href"],
-        "resize": [resizeOther, "viewCardHeight"]
+        "resize": "file-content",
     },
 }
+
+var contentDivs = ["file-content", "structure","cytoscape", "csv-data"]
 
 $(document).ready(function() {
     let url = location.href.split('/');
@@ -369,11 +360,6 @@ $(document).ready(function() {
     // Code to control loading content into div on button clicks
     $('#js-tree').bind("select_node.jstree", function (e, data) {
         if (data.node.a_attr.href != '#') {
-            // Clear div content before new content loading 
-            content_div.innerHTML = "";
-            ngl_div.innerHTML = "";
-            cytoscape_div.innerHTML = "";
-            
             try {
                 table.destroy();
                 $('#csv-data tr').remove();
@@ -394,12 +380,9 @@ $(document).ready(function() {
                 fileType = "other"
             }
 
-            //Resize function
-            if (contentFunctions[fileType]["resize"]) {
-                let resizeFunc = contentFunctions[fileType]["resize"][0]
-                let resizeArg = eval(contentFunctions[fileType]["resize"][1])
-                resizeFunc(resizeArg)
-            }
+            //Resize divs appropriately.
+            resizeDiv = contentFunctions[fileType]["resize"]
+            toggleDivs(contentDivs, resizeDiv)
 
             // Load function
             let func = contentFunctions[fileType]["load"][0]
@@ -409,9 +392,9 @@ $(document).ready(function() {
     });
 
     viewCardHeight = $(window).outerHeight()*0.85
-    $("#outer-card").height(viewCardHeight*1)
-    $("#js-tree").height(viewCardHeight*1)
-    $("#file-content").height(viewCardHeight*0.90)
+    setFileDivSize()
+
+    toggleDivs(contentDivs)
     
     // Show content
     document.getElementById("view").classList.toggle("hidden")
