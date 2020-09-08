@@ -372,7 +372,7 @@ $(document).ready(function() {
             }
 
             //Resize divs appropriately.
-            resizeDiv = contentFunctions[fileType]["resize"]
+            let resizeDiv = contentFunctions[fileType]["resize"]
             toggleDivs(contentDivs, resizeDiv)
 
             // Load function
