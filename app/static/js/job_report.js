@@ -45,11 +45,17 @@ function load_file(file_url, data_type){
 
 
 function setFileDivSize() {
-    let viewCardHeight = $(window).outerHeight()*0.85
+    let location = document.getElementById("file-name").getBoundingClientRect();
+    let headerLocation = document.querySelector(".app-header").getBoundingClientRect()
+    let viewCardHeight = $(window).innerHeight() - location.bottom - headerLocation.bottom
+    console.log(`file-name ${location.bottom}, header ${headerLocation.bottom}`)
+
     let divs = Array.from(document.querySelectorAll(".load-content"))
 
     for (i=0; i<divs.length; i++) {
-        divs[i].style.height = `${viewCardHeight}px`;
+        if (divs[i].tagName != "TABLE") {
+            divs[i].style.height = `${viewCardHeight}px`;
+        }
     }
 }
 
@@ -67,9 +73,6 @@ function loadFlow(flowchartID) {
     cy.nodes('[name = "Start"]').style( {
             'shape': 'ellipse',
         });
-
-    $(".active-div").removeClass("active-div")
-    $("#cytoscape").addClass("active-div")
 }
 
 function loadGraph(nodeData) {
@@ -85,9 +88,6 @@ function loadGraph(nodeData) {
         
         $('#view-card').height($('.plotly').height()+150);
         $('#file-content').height($('.plotly').height()+150)
-    
-        $(".active-div").removeClass("active-div")
-        $("#file-content").addClass("active-div")
 
 }
 
@@ -113,9 +113,6 @@ function loadTable(href) {
 
     $('#outer-card').height($("#csv-data_wrapper").height()*1.1)
 
-    $(".active-div").removeClass("active-div")
-    $("#csv-data").addClass("active-div")
-
 }
 
 function loadOther(file) {
@@ -126,9 +123,6 @@ function loadOther(file) {
             $("#pre-code").addClass('line-numbers')
             }
         Prism.highlightAll() });
-    $(".active-div").removeClass("active-div")
-    $("#codeBlock").addClass("active-div") 
-    $("#file-content").addClass("active-div") 
 }
 
 function loadStructure(URL) {
@@ -195,10 +189,6 @@ function loadStructure(URL) {
     // Initial stage load
     var myStage;
     myStage = loadStage(URL);
-
-    // Change active div
-    $(".active-div").removeClass("active-div")
-    $("#structure").addClass("active-div")
 
     // All the button behavior
     $(document).on("click", "#default-rep", {'URL': URL, 'rep': 'default'},
@@ -325,9 +315,6 @@ $(document).ready(function() {
     let content_div = document.getElementById('file-content');
     let cytoscape_div = document.getElementById('cytoscape');
     let ngl_div = document.getElementById('structure')
-    $("#file-content").addClass("active-div")
-    
-    let viewCardHeight;
 
     // Get info we need for page
     let jobData = getJobData(jobID);
@@ -360,6 +347,14 @@ $(document).ready(function() {
     // Code to control loading content into div on button clicks
     $('#js-tree').bind("select_node.jstree", function (e, data) {
         if (data.node.a_attr.href != '#') {
+
+             // Clear div content before new content loading
+             let divs = document.getElementsByClassName('load-content')
+             
+             for (i=0; i<divs.length; i++) {
+                 divs[i].innerHTML = "";
+             }
+
             try {
                 table.destroy();
                 $('#csv-data tr').remove();
@@ -391,13 +386,11 @@ $(document).ready(function() {
         }
     });
 
-    viewCardHeight = $(window).outerHeight()*0.85
-    setFileDivSize()
-
     toggleDivs(contentDivs)
-    
     // Show content
     document.getElementById("view").classList.toggle("hidden")
+    setFileDivSize()
+    
 
 })
 
