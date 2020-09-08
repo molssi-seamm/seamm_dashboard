@@ -201,6 +201,5 @@ class TestLiveServer:
         )
         flowchart_link.click()
 
-        # File content div should be 0 if another file type is selected.
-        assert chrome_driver.find_element_by_id('file-content'
-                                               ).size['height'] == 0
+        # File content div should not be displayed if another div is clicked on.
+        assert not chrome_driver.find_element_by_id('file-content').is_displayed()
