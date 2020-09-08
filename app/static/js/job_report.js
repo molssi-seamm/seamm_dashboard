@@ -52,7 +52,7 @@ function setFileDivSize() {
 
     let divs = Array.from(document.querySelectorAll(".load-content"))
 
-    for (i=0; i<divs.length; i++) {
+    for (var i=0; i<divs.length; i++) {
         if (divs[i].tagName != "TABLE") {
             divs[i].style.height = `${viewCardHeight}px`;
         }
@@ -269,7 +269,7 @@ function loadStructure(URL) {
 }
 
 function toggleDivs(divList, divToShow = null) {
-    for (i = 0; i < divList.length; i++) {
+    for (var i = 0; i < divList.length; i++) {
         if (divList[i] == divToShow) {
             document.getElementById(divList[i]).classList.remove("hidden")
         }
@@ -312,10 +312,6 @@ $(document).ready(function() {
     let url = location.href.split('/');
     const jobID = url.slice(-1)[0];
 
-    let content_div = document.getElementById('file-content');
-    let cytoscape_div = document.getElementById('cytoscape');
-    let ngl_div = document.getElementById('structure')
-
     // Get info we need for page
     let jobData = getJobData(jobID);
     let treeElements = buildTree(jobID);
@@ -351,7 +347,7 @@ $(document).ready(function() {
              // Clear div content before new content loading
              let divs = document.getElementsByClassName('load-content')
              
-             for (i=0; i<divs.length; i++) {
+             for (var i=0; i<divs.length; i++) {
                  divs[i].innerHTML = "";
              }
 
