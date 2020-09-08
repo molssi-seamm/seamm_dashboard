@@ -412,6 +412,9 @@ $(document).ready(function() {
     $("#outer-card").height(viewCardHeight*1)
     $("#js-tree").height(viewCardHeight*1)
     $("#file-content").height(viewCardHeight*0.90)
+    
+    // Show content
+    document.getElementById("view").classList.toggle("hidden")
 
 })
 
