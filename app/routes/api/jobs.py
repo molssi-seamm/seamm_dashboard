@@ -18,7 +18,7 @@ from marshmallow import ValidationError
 from sqlalchemy import and_
 from flask import send_from_directory, Response
 
-from app import db, datastore
+from app import db, datastore, authorize
 from app.models import User, Project, Job, JobSchema, Flowchart
 from app.models import FlowchartSchema
 
@@ -319,6 +319,7 @@ def update_job(id, body):
 
     return Response(status=201)
 
+@authorize.has_role('admin')
 def delete_job(id):
     """
     Function for delete method of api endpoint api/jobs/{id}
