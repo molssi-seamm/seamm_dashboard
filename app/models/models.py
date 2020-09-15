@@ -7,6 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_login import UserMixin, AnonymousUserMixin
+from flask_authorize import PermissionsMixin
 from flask import current_app
 
 from app import db, login_manager
@@ -21,16 +22,15 @@ from app import db, login_manager
 
 user_group = db.Table(
     'user_group',
-    db.Column('user', db.Integer, db.ForeignKey('user.id'), primary_key=True),
-    db.Column('group', db.Integer, db.ForeignKey('group.id'), primary_key=True)
+    db.Column('user', db.Integer, db.ForeignKey('users.id'), primary_key=True),
+    db.Column('group', db.Integer, db.ForeignKey('groups.id'), primary_key=True)
 )
 
 user_role = db.Table(
     'user_role',
-    db.Column('user', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+    db.Column('user', db.Integer, db.ForeignKey('users.id'), primary_key=True),
     db.Column('role', db.Integer, db.ForeignKey('role.id'), primary_key=True)
 )
-
 
 
 flowchart_project = db.Table(
@@ -56,7 +56,7 @@ job_project = db.Table(
 
 user_project = db.Table(
     'user_project',
-    db.Column('user', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+    db.Column('user', db.Integer, db.ForeignKey('users.id'), primary_key=True),
     db.Column(
         'project', db.Integer, db.ForeignKey('project.id'), primary_key=True
     )
@@ -64,7 +64,7 @@ user_project = db.Table(
 
 
 class User(db.Model, UserMixin):
-    __tablename__ = 'user'
+    __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
@@ -105,7 +105,7 @@ def load_user(user_id):
 
 
 class Group(db.Model):
-    __tablename__ = 'group'
+    __tablename__ = 'groups'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, unique=True, nullable=False)
@@ -130,21 +130,12 @@ class Flowchart(db.Model):
     id = db.Column(db.String(32), nullable=False, primary_key=True)
     title = db.Column(db.String(100), nullable=True)
     description = db.Column(db.Text, nullable=True)
-    owner = db.Column(db.Integer, db.ForeignKey('user.id'))
-    group = db.Column(db.Integer, db.ForeignKey('group.id'))
+    owner = db.Column(db.Integer, db.ForeignKey('users.id'))
+    group = db.Column(db.Integer, db.ForeignKey('groups.id'))
     path = db.Column(db.String, unique=True)
     text = db.Column(db.Text, nullable=False)
     json = db.Column(db.JSON, nullable=False)
     created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    owner_r = db.Column(db.Boolean, nullable=False, default=True)
-    owner_w = db.Column(db.Boolean, nullable=False, default=True)
-    owner_x = db.Column(db.Boolean, nullable=False, default=True)
-    group_r = db.Column(db.Boolean, nullable=False, default=True)
-    group_w = db.Column(db.Boolean, nullable=False, default=False)
-    group_x = db.Column(db.Boolean, nullable=False, default=True)
-    world_r = db.Column(db.Boolean, nullable=False, default=False)
-    world_w = db.Column(db.Boolean, nullable=False, default=False)
-    world_x = db.Column(db.Boolean, nullable=False, default=False)
 
     jobs = db.relationship('Job', back_populates='flowchart', lazy=True)
     projects = db.relationship(
@@ -155,29 +146,20 @@ class Flowchart(db.Model):
         return F'Flowchart(id={self.id}, description={self.description}, path={self.path})'  # noqa: E501
 
 
-class Job(db.Model):
+class Job(db.Model, PermissionsMixin):
     __tablename__ = 'job'
 
     id = db.Column(db.Integer, primary_key=True)
     flowchart_id = db.Column(db.String(32), db.ForeignKey('flowchart.id'))
     title = db.Column(db.String, nullable=True)
     description = db.Column(db.Text, nullable=True)
-    owner = db.Column(db.Integer, db.ForeignKey('user.id'))
-    group = db.Column(db.Integer, db.ForeignKey('group.id'))
+    owner = db.Column(db.Integer, db.ForeignKey('users.id'))
+    group = db.Column(db.Integer, db.ForeignKey('groups.id'))
     path = db.Column(db.String, unique=True)
     submitted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     started = db.Column(db.DateTime)
     finished = db.Column(db.DateTime, nullable=True)
     status = db.Column(db.String, nullable=False, default='imported')
-    owner_r = db.Column(db.Boolean, nullable=False, default=True)
-    owner_w = db.Column(db.Boolean, nullable=False, default=True)
-    owner_x = db.Column(db.Boolean, nullable=False, default=True)
-    group_r = db.Column(db.Boolean, nullable=False, default=True)
-    group_w = db.Column(db.Boolean, nullable=False, default=False)
-    group_x = db.Column(db.Boolean, nullable=False, default=True)
-    world_r = db.Column(db.Boolean, nullable=False, default=False)
-    world_w = db.Column(db.Boolean, nullable=False, default=False)
-    world_x = db.Column(db.Boolean, nullable=False, default=False)
 
     flowchart = db.relationship('Flowchart', back_populates='jobs')
     projects = db.relationship(
@@ -188,24 +170,15 @@ class Job(db.Model):
         return F'Job(path={self.path}, flowchart_id={self.flowchart}, submitted={self.submitted})'  # noqa: E501
 
 
-class Project(db.Model):
+class Project(db.Model, PermissionsMixin):
     __tablename__ = 'project'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False, unique=True)
     description = db.Column(db.String(1000), nullable=True)
     path = db.Column(db.String, unique=True)
-    owner = db.Column(db.Integer, db.ForeignKey('user.id'))
-    group = db.Column(db.Integer, db.ForeignKey('group.id'))
-    owner_r = db.Column(db.Boolean, nullable=False, default=True)
-    owner_w = db.Column(db.Boolean, nullable=False, default=True)
-    owner_x = db.Column(db.Boolean, nullable=False, default=True)
-    group_r = db.Column(db.Boolean, nullable=False, default=True)
-    group_w = db.Column(db.Boolean, nullable=False, default=False)
-    group_x = db.Column(db.Boolean, nullable=False, default=True)
-    world_r = db.Column(db.Boolean, nullable=False, default=False)
-    world_w = db.Column(db.Boolean, nullable=False, default=False)
-    world_x = db.Column(db.Boolean, nullable=False, default=False)
+    owner = db.Column(db.Integer, db.ForeignKey('users.id'))
+    group = db.Column(db.Integer, db.ForeignKey('groups.id'))
 
     flowcharts = db.relationship(
         'Flowchart', secondary=flowchart_project, back_populates='projects'

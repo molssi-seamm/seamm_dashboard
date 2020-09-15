@@ -14,6 +14,7 @@ from flask_mail import Mail
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
+from flask_authorize import Authorize
 
 from config import config
 from .template_filters import replace_empty
@@ -68,6 +69,7 @@ bootstrap = Bootstrap()
 
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'   # endpoint name for the login view
+authorize = Authorize()
 
 moment = Moment()
 toolbar = DebugToolbarExtension()
@@ -150,14 +152,12 @@ def create_app(config_name=None):
 
         app.register_error_handler(404, errors.not_found)
 
-        # from .api import api as api_blueprint
-        # app.register_blueprint(api_blueprint, url_prefix='/api/v1')
-
     # init
     mail.init_app(app)
     cors.init_app(app)
     bootstrap.init_app(app)
     login_manager.init_app(app)
+    authorize.init_app(app)
     # app_admin.init_app(app)
     moment.init_app(app)
     # toolbar.init_app(app)
