@@ -97,14 +97,24 @@ Do you wish to continue?
                             data: putData,
                         });
                     } else if (action === "delete") {
-                        console.log("Deleting")
                         $.ajax({
                             url: `api/jobs/${jobID}`,
                             type: 'DELETE',
+                            success: function(data) { location.reload() },
+                            complete: function(xhr, textStatus) { 
+                                if (xhr.status == 401) {
+                                    alert(`You do not have the necessary permission to ${action} job ${jobID}.`) 
+                                }
+                                else if (xhr.status == 200) {
+                                    alert(``)
+                                }
+                            }
                         })
                     };
-            } 
-            location.reload()
+            
+            //location.reload()   
+         } 
+            
          }
     }
 }
