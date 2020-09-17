@@ -135,7 +135,7 @@ def add_job(job_path, job_name, project):
 
         if found is None:
             user, group = file_owner(job_path)
-            job = Job(owner=user, group=group, **job_info)
+            job = Job(owner_id=user, group_id=group, **job_info)
             job.projects.append(project)
 
             add_flowchart(flowchart_path, project)
