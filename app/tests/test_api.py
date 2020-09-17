@@ -9,7 +9,9 @@ import json
 from datetime import date
 from dateutil import parser
 
+from app.routes.api.jobs import *
 
+@pytest.mark.usefixtures("authenticated_request")
 @pytest.mark.parametrize("createdSince, createdBefore, limit, expected_number", [
     ("01-01-2018", None, None, 1),
     (None, "01-01-2018", None, 2),
@@ -17,21 +19,13 @@ from dateutil import parser
     (None, None, 1, 1),
     (None, None, None, 3),
 ])
-def test_get_jobs(createdSince, createdBefore, limit, expected_number, client):
+def test_get_jobs(createdSince, createdBefore, limit, expected_number):
     """Tests get method for api/jobs with various query strings"""
-    query_string = "api/jobs"
-    
-    if createdSince is not None:
-        query_string += F"?createdSince={createdSince}"
-    if createdBefore is not None:
-        query_string += F"?createdBefore={createdBefore}"
-    if limit is not None:
-        query_string += F"?limit={limit}"
 
-    response = client.get(query_string)
-    jobs_received = response.json
+    jobs_received = get_jobs(createdBefore=createdBefore, createdSince=createdSince, limit=limit)[0]
+
     assert len(jobs_received) == expected_number
-    assert response.status_code == 200
+
 
 
 def test_get_job_by_id(client):
@@ -111,28 +105,24 @@ def test_update_job(client):
     new_info = client.get("api/jobs/1").json
     assert new_info["status"]  == "submitted"
 
+@pytest.mark.xfail
 def test_add_job(client):
     """Check post method of api/jobs/"""
     # Ask Paul
-    pass
+    assert False
 
-
-
-
-def test_delete_job(client, project_directory):
+@pytest.mark.usefixtures("admin_request")
+def test_delete_job(project_directory):
     """Check delete method of api/jobs/{jobID}"""
 
     expected_path = os.path.join(project_directory, "Job_000002")
 
     assert os.path.exists(expected_path)
 
-    response = client.delete("api/jobs/2")
-
+    response = delete_job(2)
+    
     assert response.status_code == 200
 
     assert not os.path.exists(expected_path)
-
-    # Check if the directory exists.
-   
 
 
