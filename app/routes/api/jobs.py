@@ -45,7 +45,7 @@ def get_jobs(createdSince=None, createdBefore=None, limit=None):
     ----------
     createdSince: str
         Return jobs created after this date. Must be in format M-D-YYYY where M all numbers are integers.
-    createdBefore: str
+    createdBefore:str
         Return jobs created before this date. Must be in format M-D-YYYY where M all numbers are integers.
     limit: int
         The maximum number of jobs to return.
@@ -68,7 +68,7 @@ def get_jobs(createdSince=None, createdBefore=None, limit=None):
     if limit is None:
         limit = Job.query.count()
     
-    jobs = Job.query.filter(and_(Job.submitted>createdSince, Job.submitted<createdBefore)).limit(limit)
+    jobs = Job.query.filter(and_(Job.submitted>createdSince, Job.submitted<createdBefore), Job.authorized('read') ).limit(limit)
 
     jobs_schema = JobSchema(many=True)
     

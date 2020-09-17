@@ -165,6 +165,13 @@ def create_app(config_name=None):
     # jinja template
     app.jinja_env.filters['empty'] = replace_empty
 
+    # Authorization configuration
+    app.config['AUTHORIZE_DEFAULT_PERMISSIONS'] = dict(
+    owner=['read', 'update', 'delete', 'create'],
+    group=['read', 'update'],
+    other=[]
+)
+
     # To avoid circular import
     # from app.admin import add_admin_views
     # add_admin_views()

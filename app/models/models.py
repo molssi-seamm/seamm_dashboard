@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_login import UserMixin, AnonymousUserMixin
-from flask_authorize import PermissionsMixin
+from flask_authorize import PermissionsMixin, AllowancesMixin, RestrictionsMixin
 from flask import current_app
 
 from app import db, login_manager
@@ -29,7 +29,7 @@ user_group = db.Table(
 user_role = db.Table(
     'user_role',
     db.Column('user', db.Integer, db.ForeignKey('users.id'), primary_key=True),
-    db.Column('role', db.Integer, db.ForeignKey('role.id'), primary_key=True)
+    db.Column('role', db.Integer, db.ForeignKey('roles.id'), primary_key=True)
 )
 
 
@@ -104,7 +104,7 @@ def load_user(user_id):
     return User.query.get(user_id)
 
 
-class Group(db.Model):
+class Group(db.Model, RestrictionsMixin):
     __tablename__ = 'groups'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -115,7 +115,7 @@ class Group(db.Model):
     )
 
 class Role(db.Model):
-    __tablename__ = 'role'
+    __tablename__ = 'roles'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, unique=True, nullable=False)
@@ -153,8 +153,8 @@ class Job(db.Model, PermissionsMixin):
     flowchart_id = db.Column(db.String(32), db.ForeignKey('flowchart.id'))
     title = db.Column(db.String, nullable=True)
     description = db.Column(db.Text, nullable=True)
-    owner = db.Column(db.Integer, db.ForeignKey('users.id'))
-    group = db.Column(db.Integer, db.ForeignKey('groups.id'))
+    #owner = db.Column(db.Integer, db.ForeignKey('users.id'))
+    #group = db.Column(db.Integer, db.ForeignKey('groups.id'))
     path = db.Column(db.String, unique=True)
     submitted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     started = db.Column(db.DateTime)
