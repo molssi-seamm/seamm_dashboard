@@ -5,6 +5,8 @@ API calls for projects
 from app.models import Project, ProjectSchema, Job, JobSchema
 from flask import Response
 
+from app import authorize
+
 __all__ = ['get_projects', 'get_project', 'list_projects', 'get_project_jobs']
 
 
@@ -15,16 +17,15 @@ def get_projects(description=None, limit=None):
         limit = Project.query.count()
     
     if description is not None:
-        projects = Project.query.filter(
+        projects = Project.query.filter( Project.authorized('read'),
             Project.description.contains(description)
         ).limit(limit)
     else:
-        projects = Project.query.limit(limit)
+        projects = Project.query.filter(Project.authorized('read')).limit(limit)
 
     projects_schema = ProjectSchema(many=True)
     
     return projects_schema.dump(projects), 200
-
 
 def get_project(id):
     """
@@ -38,6 +39,9 @@ def get_project(id):
 
     if project is None:
         return Response(status=404)
+    
+    if not authorize.read(project):
+        return Response('You are not authorized to access this content.', status=401)
 
     project_schema = ProjectSchema(many=False)
     return project_schema.dump(project), 200
@@ -56,6 +60,9 @@ def get_project_jobs(id):
 
     if project is None:
         return Response(status=404)
+
+    if not authorize.read(project):
+        return Response('You are not authorized to access this content.', status=401)
     
     jobs = []
     for job in project.jobs:
@@ -73,7 +80,8 @@ def list_projects():
 
     result = []
     for project in projects:
-        result.append(project.name)
+        if authorize.read(project):
+            result.append(project.name)
 
     return {'projects': sorted(result)}, 200
     
