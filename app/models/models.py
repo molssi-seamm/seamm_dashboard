@@ -124,14 +124,12 @@ class Role(db.Model):
         'User', secondary=user_role, back_populates='roles'
     )
 
-class Flowchart(db.Model):
+class Flowchart(db.Model, PermissionsMixin):
     __tablename__ = 'flowchart'
 
     id = db.Column(db.String(32), nullable=False, primary_key=True)
     title = db.Column(db.String(100), nullable=True)
     description = db.Column(db.Text, nullable=True)
-    owner = db.Column(db.Integer, db.ForeignKey('users.id'))
-    group = db.Column(db.Integer, db.ForeignKey('groups.id'))
     path = db.Column(db.String, unique=True)
     text = db.Column(db.Text, nullable=False)
     json = db.Column(db.JSON, nullable=False)
@@ -153,8 +151,6 @@ class Job(db.Model, PermissionsMixin):
     flowchart_id = db.Column(db.String(32), db.ForeignKey('flowchart.id'))
     title = db.Column(db.String, nullable=True)
     description = db.Column(db.Text, nullable=True)
-    #owner = db.Column(db.Integer, db.ForeignKey('users.id'))
-    #group = db.Column(db.Integer, db.ForeignKey('groups.id'))
     path = db.Column(db.String, unique=True)
     submitted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     started = db.Column(db.DateTime)
@@ -177,8 +173,6 @@ class Project(db.Model, PermissionsMixin):
     name = db.Column(db.String, nullable=False, unique=True)
     description = db.Column(db.String(1000), nullable=True)
     path = db.Column(db.String, unique=True)
-    owner = db.Column(db.Integer, db.ForeignKey('users.id'))
-    group = db.Column(db.Integer, db.ForeignKey('groups.id'))
 
     flowcharts = db.relationship(
         'Flowchart', secondary=flowchart_project, back_populates='projects'
