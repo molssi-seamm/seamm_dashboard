@@ -96,7 +96,7 @@ def add_flowchart(flowchart_path, project):
 
     if flowchart is None:
         user, group = file_owner(flowchart_path)
-        flowchart = Flowchart(owner=user, group=group, **flowchart_info)
+        flowchart = Flowchart(owner_id=user, group_id=group, **flowchart_info)
         flowchart.projects.append(project)
         db.session.add(flowchart)
         db.session.commit()
@@ -165,7 +165,7 @@ def add_project(project_path, project_name):
     if found is None:
         user, group = file_owner(project_path)
         project = Project(
-            path=project_path, name=project_name, owner=user, group=group
+            path=project_path, name=project_name, owner_id=user, group_id=group
         )
         db.session.add(project)
         db.session.commit()

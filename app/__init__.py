@@ -167,10 +167,10 @@ def create_app(config_name=None):
 
     # Authorization configuration
     app.config['AUTHORIZE_DEFAULT_PERMISSIONS'] = dict(
-    owner=['read', 'update', 'delete', 'create'],
-    group=['read', 'update'],
-    other=[]
-)
+                    owner=['read', 'update', 'delete', 'create'],
+                    group=['read', 'update'],
+                    other=[]
+            )
 
     # To avoid circular import
     # from app.admin import add_admin_views
