@@ -307,6 +307,9 @@ def update_job(id, body):
     if not job:
         return Response(status=404)
 
+    if not authorize.update(job):
+        return Response(status=401)
+
     for key, value in body.items():
         if key == 'submitted' or key == 'finished' or key == 'started':
             if value:
