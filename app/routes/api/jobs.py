@@ -284,6 +284,9 @@ def get_job(id):
     if job is None:
         return Response(status=404)
 
+    if not authorize.read(job):
+        return Response(F'{job.permissions}.', status=401)
+
     job_schema = JobSchema(many=False)
     return job_schema.dump(job), 200
 
