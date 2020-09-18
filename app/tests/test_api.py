@@ -27,7 +27,6 @@ def test_get_jobs(createdSince, createdBefore, limit, expected_number):
     assert len(jobs_received) == expected_number
 
 
-
 def test_get_job_by_id(client):
     """API endpoint api/jobs/{jobID}"""
 
@@ -45,9 +44,16 @@ def test_get_job_by_id(client):
     for k in expected_response.keys():
         if k == "submitted":
             received[k] = parser.parse(received[k])
-        assert received[k] == expected_response[k]
+          
+            assert received[k] == expected_response[k]  
 
     assert response.status_code == 200
+
+def test_get_protected_job(client):
+
+    response = client.get("api/jobs/2")
+
+    assert response.status_code == 401
 
 def test_get_job_missing(client):
     """
@@ -91,18 +97,18 @@ def test_get_cytoscape(client):
     assert len(received) == 5
     assert response.status_code == 200
 
-def test_update_job(client):
+@pytest.mark.usefixtures("authenticated_request")
+def test_update_job():
     """Check put method of api/jobs/{job_ID}"""
 
-    original_info = client.get("api/jobs/1").json
+    original_info = get_job(1)[0]
     assert original_info["status"].lower() == "imported"
     
-    response = client.put("api/jobs/1", data=json.dumps({"status": "submitted"}), 
-        headers={'Accept': 'application/json','Content-Type': 'application/json'})
+    response = update_job(1, {"status": "submitted"})
     
     assert response.status_code == 201
 
-    new_info = client.get("api/jobs/1").json
+    new_info = get_job(1)[0]
     assert new_info["status"]  == "submitted"
 
 @pytest.mark.xfail
