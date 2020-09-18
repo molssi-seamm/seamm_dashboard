@@ -5,6 +5,8 @@ API calls for flowcharts
 from app.models import Flowchart, FlowchartSchema
 from flask import Response
 
+from app import authorize
+
 __all__ = ['get_flowcharts', 'get_flowchart', 'get_cytoscape']
 
 def get_flowcharts(description=None, limit=None):
@@ -14,9 +16,9 @@ def get_flowcharts(description=None, limit=None):
         limit = Flowchart.query.count()
     
     if description is not None:
-        flowcharts = Flowchart.query.filter(Flowchart.description.contains(description)).limit(limit)
+        flowcharts = Flowchart.query.filter(Flowchart.description.contains(description), Flowchart.authorized('read')).limit(limit)
     else:
-        flowcharts = Flowchart.query.limit(limit)
+        flowcharts = Flowchart.query.filter(Flowchart.authorized('read')).limit(limit)
 
     flowcharts_schema = FlowchartSchema(many=True)
     
@@ -34,6 +36,9 @@ def get_flowchart(id):
 
     if flowchart is None:
         return Response(status=404)
+    
+    if not authorize.read(flowchart):
+        return Response(status=401)
 
     flowchart_schema = FlowchartSchema(many=False)
     return flowchart_schema.dump(flowchart), 200
