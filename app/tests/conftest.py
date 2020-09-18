@@ -90,7 +90,12 @@ def app(project_directory):
     # Save the fake data to the db
     job1 = Job(**job1_data)
     job2 = Job(**job2_data)
+
+    # Add job3 and readable for world.
     job3 = Job(**job3_data)
+
+    job3.permissions = {"other": ["read"]}
+
     flowchart = Flowchart(**flowchart_data)
     db.session.add(test_user)
     db.session.add(admin_role)
@@ -101,7 +106,6 @@ def app(project_directory):
     db.session.add(job3)
     db.session.add(flowchart)
     db.session.commit()
-
     yield flask_app
 
     # clean up
@@ -126,7 +130,7 @@ def admin_request(app):
     user = User.query.get(2)
     with app.test_request_context():
         yield login_user(user)
-        
+
 @pytest.fixture
 def chrome_driver():
     chrome_options = webdriver.ChromeOptions()
