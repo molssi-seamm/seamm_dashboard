@@ -86,6 +86,7 @@ def app(project_directory):
 
     # Make the ID easier
     flowchart_data['id'] = 'ABCD'
+    flowchart_data['owner_id'] = 1
 
     # Save the fake data to the db
     job1 = Job(**job1_data)
