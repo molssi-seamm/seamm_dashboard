@@ -111,6 +111,14 @@ def test_update_job():
     new_info = get_job(1)[0]
     assert new_info["status"]  == "submitted"
 
+def test_update_job_not_authenticated(client):
+    """Check put method of api/jobs/{job_ID}"""
+    
+    response = client.put("api/jobs/3", data=json.dumps({"status": "submitted"}), 
+        headers={'Accept': 'application/json','Content-Type': 'application/json'})
+    
+    assert response.status_code == 401
+
 @pytest.mark.xfail
 def test_add_job(client):
     """Check post method of api/jobs/"""
