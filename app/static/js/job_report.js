@@ -85,9 +85,6 @@ function loadGraph(nodeData) {
         filename: nodeData.text,
         scale: 10 // Multiply title/legend/axis/canvas sizes by this factor
         }});
-        
-        $('#view-card').height($('.plotly').height()+150);
-        $('#file-content').height($('.plotly').height()+150)
 
 }
 
