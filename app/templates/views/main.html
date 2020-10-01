@@ -1,6 +1,6 @@
 <!-- Plugins and scripts required by this view-->
 <!-- <script src="static/js/main.js"></script>-->
-
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
 <div class="animated fadeIn sidebar-nav">
   <div class="row">
     <div class="col-sm-12 col-lg-4">
@@ -19,11 +19,9 @@
           <div class="text-value-lg"><a class='nav-link' href="jobs" style="color:white">My Jobs</a></div>
         </div>
         <div class="chart-wrapper mt-3 px-3" style="height:175px;">
-          <div class="text-value">0</div>running
-          <div class="text-value">{{ jobs|length }}</div>completed
-          <div class="text-value">0</div>in queue<br><br>
-
-            
+          <div class="text-value" id='num-jobs-running'></div>running
+          <div class="text-value" id='num-jobs-finished'></div>completed
+          <div class="text-value" id='num-jobs-queued'></div>in queue<br><br>
         </div>
       </div>
     </div>
@@ -44,7 +42,7 @@
           <div class="text-value-lg"><a class='nav-link' href="flowcharts" style="color:white">My Flowcharts</a></div>
         </div>
         <div class="chart-wrapper mt-3 px-3" style="height:175px;">
-          <div class="text-value">{{ flowcharts|length }}</div>flowcharts in library
+          <div class="text-value" id='num-flowcharts'></div>flowcharts in library
         </div>
       </div>
     </div>
@@ -64,7 +62,7 @@
           <div class="text-value-lg"><a class='nav-link' href="projects" style="color:white">My Projects</a></div>
         </div>
         <div class="chart-wrapper mt-3 px-3" style="height:175px;">
-            <div class="text-value">{{ projects|length }}</div>projects
+            <div class="text-value" id='num-projects'></div>projects
         </div>
       </div>
     </div>
