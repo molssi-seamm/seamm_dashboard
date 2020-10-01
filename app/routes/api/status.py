@@ -3,10 +3,11 @@ API calls for the status
 """
 import logging
 
-from app.models import User, UserSchema
+from app.models import User, UserSchema, Project, ProjectSchema, Job, JobSchema, Flowchart, FlowchartSchema
 
 from flask_login import current_user
 from flask import session
+from sqlalchemy import and_
 
 from app import authorize
 
@@ -22,11 +23,9 @@ def status():
     values may be added.
     
     """
-    users = User.query.all()
-
-    user_schema = UserSchema(many=True)
-
-    users = user_schema.dump(users)
+    #users = User.query.all()
+    #user_schema = UserSchema(many=True)
+    #users = user_schema.dump(users)
 
     try:
         username =  current_user.username
@@ -37,13 +36,27 @@ def status():
         roles = current_user.roles
     else:
         roles = None
+    
+    # Get information about jobs, projects, flowcharts
+    num_jobs_running = Job.query.filter(and_(Job.status == 'running', Job.authorized('read'))).count()
+    num_jobs_finished = Job.query.filter(and_(Job.status == 'finished', Job.authorized('read'))).count()
+    num_jobs_queued = Job.query.filter(and_(Job.status == 'running', Job.authorized('submitted'))).count()
+    num_flowcharts = Flowchart.query.filter(Flowchart.authorized('read')).count()
+    num_projects = Project.query.filter(Project.authorized('read')).count()
 
+    # Build return json
     status = {
         'status' : 'running',
         'user id': current_user.get_id(),
         'username': username,
         'roles': roles,
-        'users': users,
+        'jobs': {
+            'running': num_jobs_running,
+            'finished': num_jobs_finished,
+            'queued': num_jobs_queued,
+            },
+        'flowcharts': num_flowcharts,
+        'projects': num_projects
         
     }
 
