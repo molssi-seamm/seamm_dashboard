@@ -39,6 +39,7 @@ def app(project_directory):
     test_project = {
     'name': 'MyProject',
     'path': test_project_path,
+    'owner_id': 1
     }
     
     project = Project(**test_project)
@@ -47,7 +48,7 @@ def app(project_directory):
     admin_role = Role(name="admin")
 
     # Create a sample user.
-    test_user = User(username='sample_user')
+    test_user = User(username='sample_user', password='sample_password')
     test_admin = User(username='admin_user', roles=[admin_role])
 
     # Fill in some data
@@ -58,6 +59,7 @@ def app(project_directory):
         "submitted": parser.parse("2016-08-29T09:12:33.001000+00:00"),
         "projects": [project],
         "owner_id": 1,
+        "status": "finished"
         }
 
     # Fill in some data
@@ -68,6 +70,7 @@ def app(project_directory):
         "submitted": parser.parse("2017-08-29T09:12:33.001000+00:00"),
         "projects": [project], 
         "owner_id": 1,
+        "status": "finished"
         }
 
     # More data - this job path (probably) doesn't actually exist
@@ -78,7 +81,7 @@ def app(project_directory):
         "submitted": parser.parse("2019-08-29T09:12:33.001000+00:00"),
         "projects": [project], 
         "owner_id": 1,
-        }
+        "status" : "finished",        }
 
     # Load a simple flowchart
     current_location = os.path.dirname(os.path.realpath(__file__))
