@@ -24,8 +24,6 @@
     document.getElementById('num-projects').textContent = dashboardStatus.projects
     document.getElementById('num-flowcharts').textContent = dashboardStatus.flowcharts
 
-
-
-
+    document.getElementById("view").classList.toggle("hidden")
  })
 
