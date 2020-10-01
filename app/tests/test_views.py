@@ -34,11 +34,51 @@ class TestLiveServer:
     def base_url(self):
         return url_for('main.index', _external=True)
 
-    def test_main_view(self, app, chrome_driver):
+    def log_in(self, chrome_driver):
+        """
+        Function to log sample user in for testing.
+        """
+
+
+        login_url = F'{self.base_url}auth/login'
+        chrome_driver.get(login_url)
+
+        username_field = chrome_driver.find_element_by_id('username')
+        username_field.send_keys('sample_user')
+
+        username_field = chrome_driver.find_element_by_id('password')
+        username_field.send_keys('sample_password')
+
+        button = chrome_driver.find_element_by_id('submit')
+        button.click()
+    
+    def log_out(self, chrome_driver):
+        """
+        Function to make sure we are logged out
+        """
+
+        logout_url = F'{self.base_url}auth/logout'
+
+        chrome_driver.get(logout_url)
+
+    @pytest.mark.parametrize("logged_in", [True, False])
+    def test_main_view(self, app, chrome_driver, logged_in):
+
+        if logged_in:
+            self.log_in(chrome_driver)
+            # Should have three finished jobs, 1 flowchart, and 1 project when logged in.
+            expected_values = "0 3 0 1 1".split() 
+
+        else:
+            # Make sure we are logged out
+            self.log_out(chrome_driver)
+            # Should have one public job and nothing else.
+            expected_values = "0 1 0 0 0".split()
+        
         chrome_driver.get(self.base_url)
         ui_view = chrome_driver.find_element_by_id("ui-view")
         displayed_values = ui_view.find_elements_by_class_name("text-value")
-        expected_values = "0 2 0 1 1".split()
+        
         displayed_values = [x for x in displayed_values if x != '']
 
         for i, value in enumerate(displayed_values):

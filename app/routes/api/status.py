@@ -6,7 +6,6 @@ import logging
 from app.models import User, UserSchema, Project, Job, Flowchart
 
 from flask_login import current_user
-from flask import session
 from sqlalchemy import and_
 
 from app import authorize
