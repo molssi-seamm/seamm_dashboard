@@ -38,8 +38,6 @@ class TestLiveServer:
         """
         Function to log sample user in for testing.
         """
-
-
         login_url = F'{self.base_url}auth/login'
         chrome_driver.get(login_url)
 
@@ -51,6 +49,10 @@ class TestLiveServer:
 
         button = chrome_driver.find_element_by_id('submit')
         button.click()
+
+        # For some reason we need to navigate away from the main page
+        # before loading the page of interest or we time out
+        chrome_driver.get(f"{self.base_url}api/status")
     
     def log_out(self, chrome_driver):
         """
@@ -84,13 +86,25 @@ class TestLiveServer:
         for i, value in enumerate(displayed_values):
             assert expected_values[i] == value.get_attribute('innerHTML')
 
-    @pytest.mark.parametrize("list_type, num_columns, num_rows", [
-        ("jobs", 7, 3),
-        ("flowcharts", 5, 2),
-        ("projects", 4, 2)
+    @pytest.mark.parametrize("list_type, num_columns, num_rows, logged_in", [
+        ("jobs", 7,4 , True),
+        ("jobs", 7, 2, False),
+        ("flowcharts", 5, 2, True),
+        ("flowcharts", 5, 2, False),
+        ("projects", 4, 2, True),
+        ("projects", 4, 2, False),
     ])
-    def test_jobs_list(self, app, chrome_driver, list_type, num_columns, num_rows):
-        chrome_driver.get(f"{self.base_url}#{list_type}")
+    def test_list_views(self, app, chrome_driver, list_type, num_columns, num_rows, logged_in):
+        
+        # log in or log out
+        if logged_in:
+            self.log_in(chrome_driver)
+        else:
+            self.log_out(chrome_driver)
+
+        get_url = f"{self.base_url}#{list_type}"
+
+        chrome_driver.get(get_url)
 
         if list_type == 'projects':
             # Default view is card - switch to list.
@@ -106,6 +120,9 @@ class TestLiveServer:
         # Check table dimensions.
         table_headings = jobs_table.find_elements_by_tag_name("th")
         table_rows = jobs_table.find_elements_by_tag_name("tr")
+
+        #chrome_driver.get_screenshot_as_file(f'{list_type}_{logged_in}.png')
+
         assert len(table_headings) == num_columns
         assert len(table_rows) == num_rows
 
@@ -118,6 +135,13 @@ class TestLiveServer:
             actual_url = f'{self.base_url}/#{important_url}'
             response = requests.get(actual_url)
             assert response.status_code == 200
+        
+        # If we're not logged in we shouldn't see links (except for the public job)
+        if not logged_in:
+            if list_type == 'jobs':
+                assert len(table_links) == 1
+            else:
+                assert len(table_links) == 0 
 
         #chrome_driver.get_screenshot_as_file(F'{list_type}_screenshot.png')
 
@@ -125,6 +149,9 @@ class TestLiveServer:
         """
         Test to make sure file tree loads with correct number of elements.
         """
+        # Have to log in for this test
+        self.log_in(chrome_driver)
+
         # Get page with chromedriver.
         chrome_driver.get(f"{self.base_url}#jobs/1")
 
@@ -170,6 +197,8 @@ class TestLiveServer:
         """
         Test to click file and make sure it is loaded into div.
         """
+        # Have to log in for this
+        self.log_in(chrome_driver)
 
         # Set up sample file for comparison.
         test_file = os.path.realpath(
@@ -277,6 +306,9 @@ class TestLiveServer:
         Test to make sure file content element resizes when next element is
         clicked.
         """
+
+        #Make sure we're logged in
+        self.log_in(chrome_driver)
 
         first_file = os.path.realpath(
             os.path.join(
