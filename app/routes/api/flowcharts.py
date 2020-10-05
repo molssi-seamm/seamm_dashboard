@@ -49,6 +49,12 @@ def get_cytoscape(id, flowchartKeys=None):
     """
 
     flowchart = Flowchart.query.get(id)
+ 
+    if flowchart is None:
+        return Response(status=404)
+    
+    if not authorize.read(flowchart):
+        return Response(status=401)
 
     important_stuff = {}
     important_stuff = flowchart.json
@@ -87,5 +93,5 @@ def get_cytoscape(id, flowchartKeys=None):
         }
 
         elements.append(edge_data)
-    return elements
+    return elements, 201
 

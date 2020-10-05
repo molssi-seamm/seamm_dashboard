@@ -103,16 +103,24 @@ def test_get_flowchart_logged_in():
 
     assert response[1] == 200
 
-@pytest.mark.xfail
 def test_get_cytoscape(client):
     """
-    API endpoint for api/flowcharts/{flowchart_ID}/cytoscape
+    API endpoint for api/flowcharts/{flowchart_ID}/cytoscape when not logged in.
 
     Get cytoscape representation of flowchart graph.
     """
 
     response = client.get("api/flowcharts/ABCD/cytoscape")
     assert response.status_code == 401
+
+@pytest.mark.usefixtures("authenticated_request")
+def test_get_cytoscape_logged_in():
+    """
+    Test for api/flowcharts/{flowchart_ID}/cytoscape
+    """
+
+    response = get_cytoscape("ABCD")
+    assert response[1] == 201
 
 @pytest.mark.usefixtures("authenticated_request")
 def test_update_job():
