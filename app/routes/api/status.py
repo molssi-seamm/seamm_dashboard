@@ -3,7 +3,7 @@ API calls for the status
 """
 import logging
 
-from app.models import User, UserSchema, Project, Job, Flowchart
+from app.models import Project, Job, Flowchart
 
 from flask_login import current_user
 from sqlalchemy import and_

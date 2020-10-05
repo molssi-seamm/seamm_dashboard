@@ -2,8 +2,6 @@ from flask import render_template, send_from_directory
 
 from . import main
 
-from app.models import Job, Flowchart, Project
-
 
 @main.route('/')
 def index():

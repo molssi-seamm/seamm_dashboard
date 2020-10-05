@@ -6,7 +6,7 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from flask_login import UserMixin
-from flask_authorize import PermissionsMixin, AllowancesMixin, RestrictionsMixin
+from flask_authorize import PermissionsMixin, RestrictionsMixin
 
 from app import db, login_manager
 
