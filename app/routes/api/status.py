@@ -3,7 +3,7 @@ API calls for the status
 """
 import logging
 
-from app.models import Project, Job, Flowchart
+from app.models import Project, Job, Flowchart, RoleSchema
 
 from flask_login import current_user
 from sqlalchemy import and_
@@ -33,8 +33,14 @@ def status():
 
     if current_user.get_id():
         roles = current_user.roles
+        role_schema = RoleSchema(many=True)
+        roles = role_schema.dump(roles)
+
+        user_roles = []
+        for role in roles:
+            user_roles.append(role["name"])
     else:
-        roles = None
+        user_roles = []
     
     # Get information about jobs, projects, flowcharts
     num_jobs_running = Job.query.filter(and_(Job.status == 'running', Job.authorized('read'))).count()
@@ -48,7 +54,7 @@ def status():
         'status' : 'running',
         'user id': current_user.get_id(),
         'username': username,
-        'roles': roles,
+        'roles': user_roles,
         'jobs': {
             'running': num_jobs_running,
             'finished': num_jobs_finished,

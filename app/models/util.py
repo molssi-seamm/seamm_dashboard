@@ -12,7 +12,7 @@ import logging
 from pathlib import Path
 import os
 
-from . import User, Group
+from . import User, Group, Role
 from app import db
 
 logger = logging.getLogger(__name__)
@@ -160,7 +160,8 @@ def file_owner(path):
         name = item.owner()
         user = db.session.query(User).filter_by(username=name).one_or_none()
         if user is None:
-            user = User(username=name, password="default")
+            admin_role = Role(name="admin")
+            user = User(username=name, password="default", roles=[admin_role])
             user.groups.append(group)
             db.session.add(user)
             db.session.commit()

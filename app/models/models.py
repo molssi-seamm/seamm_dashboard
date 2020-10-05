@@ -237,3 +237,10 @@ class GroupSchema(SQLAlchemyAutoSchema):
         include_fk = True
         include_relationships = True
         model = Group
+
+class RoleSchema(SQLAlchemyAutoSchema):
+
+    class Meta:
+        include_fk = True
+        include_relationships = True
+        model = Role
