@@ -26,7 +26,7 @@ def project_directory(tmpdir_factory):
     
     return return_path
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def app(project_directory):
 
     test_project_path = project_directory
