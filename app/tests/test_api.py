@@ -119,7 +119,7 @@ def test_update_job():
     """Check put method of api/jobs/{job_ID}"""
 
     original_info = get_job(1)[0]
-    assert original_info["status"].lower() == "imported"
+    assert original_info["status"].lower() == "finished"
     
     response = update_job(1, {"status": "submitted"})
     
