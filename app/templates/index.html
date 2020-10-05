@@ -52,9 +52,6 @@
           </div>
         </li>
       </ul>
-      <button class="navbar-toggler aside-menu-toggler d-lg-none" type="button" data-toggle="aside-menu-show">
-        <span class="navbar-toggler-icon"></span>
-      </button>
     </header>
     <div class="app-body">
       <div class="sidebar">
@@ -106,6 +103,16 @@
         <button class="sidebar-minimizer brand-minimizer" type="button"></button>
       </div>
       <main class="main">
+        <ol class="breadcrumb">
+          <!-- Breadcrumb Menu-->
+          <li class="breadcrumb-menu d-md-down">
+            <div class="btn-group" role="group" aria-label="Button group">
+              <a class="btn" id="login-info-1"></a>
+              <a class="btn" id="login-info-2"></a>
+            </div>
+            <a class="btn" id="login-info-3"></a>
+          </li>
+        </ol>
         <div class="container-fluid vh-100 mt-3">
           <div id="ui-view"></div>
         </div>
@@ -148,6 +155,29 @@
       $.ajaxSetup ({
         cache: false
         });
+
+        // Get username and stuff
+        $.ajax({
+        url: `api/status`,
+        dataType: 'json',
+        async: false,
+        success: function (data) {
+            if (data.username == "Anonymous User") {
+              document.getElementById("login-info-1").innerHTML = `Not Logged In`
+              document.getElementById("login-info-2").innerHTML = '<a href="auth/login">Log In</a>'
+            }
+
+            else {
+              document.getElementById("login-info-1").innerHTML = `Logged in as ${data.username}`
+              document.getElementById("login-info-2").innerHTML = '<a href="auth/logout">Log Out</a>'
+
+              if (data.roles.includes("admin")) {
+                document.getElementById("login-info-3").innerHTML = '<a href="auth/manage_users">Manage Users</a>'
+              }
+            }
+           
+            },
+          })
     </script>
   </body>
 </html>
