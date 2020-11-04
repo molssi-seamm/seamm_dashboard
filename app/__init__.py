@@ -178,6 +178,13 @@ def create_app(config_name=None):
                     other=[]
             )
 
+    # Set application to store JWTs in cookies.
+    app.config['JWT_TOKEN_LOCATION'] = ['cookies']
+
+    # Set the cookie paths
+    #app.config['JWT_ACCESS_COOKIE_PATH'] = '/api/'
+    #app.config['JWT_REFRESH_COOKIE_PATH'] = '/api/auth/token/refresh'
+
     # To avoid circular import
     # from app.admin import add_admin_views
     # add_admin_views()

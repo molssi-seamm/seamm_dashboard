@@ -16,7 +16,8 @@ import urllib.parse
 
 from marshmallow import ValidationError
 from sqlalchemy import and_
-from flask import send_from_directory, Response
+from flask import send_from_directory, Response, jsonify
+from flask_jwt_extended import jwt_optional
 
 from app import db, datastore, authorize
 from app.models import User, Project, Job, JobSchema, Flowchart
@@ -37,6 +38,7 @@ file_icons = {
     
 }
 
+@jwt_optional
 def get_jobs(createdSince=None, createdBefore=None, limit=None):
     """
     Function for API endpoint /api/jobs
@@ -51,6 +53,7 @@ def get_jobs(createdSince=None, createdBefore=None, limit=None):
         The maximum number of jobs to return.
         
     """
+
     # Handle dates
     if createdSince is not None:
         createdSince = datetime.strptime(createdSince, '%m-%d-%Y')
