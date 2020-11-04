@@ -8,7 +8,7 @@ from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from flask_login import UserMixin
 from flask_authorize import PermissionsMixin, RestrictionsMixin
 
-from app import db, login_manager
+from app import db, jwt
 
 #############################
 #
@@ -95,12 +95,18 @@ class User(db.Model, UserMixin):
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-@login_manager.user_loader
-def load_user(user_id):
-    """User loader func is needed by flask-login to load users
-       which DB engine dependent"""
-    return User.query.get(user_id)
+@jwt.user_loader_callback_loader    
+def user_loader_callback(identity):
+    """Function for app, to return user object"""
 
+    if identity:
+        username = identity['username']
+        user = User.query.filter_by(username=username).one_or_none()
+
+        return user
+    else:
+        # return None / null
+        return current_user
 
 class Group(db.Model, RestrictionsMixin):
     __tablename__ = 'groups'
