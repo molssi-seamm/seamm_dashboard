@@ -186,6 +186,16 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    '--jwt-secret-key',
+    default=configargparse.SUPPRESS,
+    help=(
+        """
+        A secret key for the JWT token.
+        """
+    )
+)
+
+parser.add_argument(
     '--session-cookie-name',
     default=configargparse.SUPPRESS,
     help=(
