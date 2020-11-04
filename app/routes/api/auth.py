@@ -3,7 +3,7 @@ Routes for REST authentication
 """
 
 from flask import jsonify, request
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, create_refresh_token, set_access_cookies
 
 from app.models import User, UserSchema
 
@@ -27,7 +27,11 @@ def get_auth_token():
     if user.verify_password(password):
         user_schema = UserSchema(many=False)
         access_token = create_access_token(identity=user_schema.dump(user))
-        return jsonify(access_token=access_token), 200
+
+        resp = jsonify({'login': True})
+
+        set_access_cookies(resp, access_token)
+        return resp, 200
     else:
         return jsonify({"msg": "Incorrect password."}), 400
 
