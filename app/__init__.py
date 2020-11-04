@@ -17,14 +17,13 @@ from flask_marshmallow import Marshmallow
 from flask_authorize import Authorize
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
-    get_jwt_identity
+    get_current_user
 )
 
 from config import config
 from .template_filters import replace_empty
 from .setup_logging import setup_logging
 from .setup_argparsing import options
-
 
 # Setup the logging, now that we know where the datastore is
 datastore = options.datastore
@@ -73,8 +72,9 @@ bootstrap = Bootstrap()
 
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'   # endpoint name for the login view
-authorize = Authorize(current_user=get_jwt_identity)
 jwt = JWTManager()
+authorize = Authorize(current_user=get_current_user)
+
 
 moment = Moment()
 toolbar = DebugToolbarExtension()
