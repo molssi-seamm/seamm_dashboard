@@ -396,10 +396,60 @@ paths:
             application/json:
               schema:
                 type: array
-                items:
-                  $ref: '#/components/schemas/Job'
         "400":
           description: bad input parameter
+  /api/users:
+    get:
+      tags:
+      - admin
+      summary: retrieves users of dashboard
+      description: |
+        Get jobs associated with a project by project ID.
+      operationId: app.routes.api.get_users
+      responses:
+        "200":
+          description: users listed
+        "403":
+          description: permission denied 
+    post:
+      tags:
+      - admins
+      summary: create a user
+      description: |
+        Adds a new user to the dashboard
+      operationId: app.routes.api.add_user
+      requestBody:
+        description: The username and password of the new user.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "201":
+          description: id of created user
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: integer
+                    example: 53
+        "400":
+          description: bad input parameter
+        "403":
+          description: user not registered
+        "422":
+          description: error validating job data
+
   /api/status:
     get:
       summary: return the status of the dashboard
@@ -414,6 +464,36 @@ paths:
             text/plain:
               schema:
                 type: string
+  /api/auth/token:
+    post:
+      summary: post username and password and get a token for the current user
+      description: |
+        Return a token to be used for authentication
+      operationId: app.routes.api.get_auth_token
+      requestBody:
+        description: The username and password of the new user.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Login successful.
+          content:
+            text/plain:
+              schema:
+                type: json
+        "400":
+          description: Bad credentials
 components:
   schemas:
     Flowchart:
