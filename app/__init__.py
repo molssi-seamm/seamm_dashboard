@@ -15,6 +15,10 @@ from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from flask_authorize import Authorize
+from flask_jwt_extended import (
+    JWTManager, jwt_required, create_access_token,
+    get_jwt_identity
+)
 
 from config import config
 from .template_filters import replace_empty
@@ -69,7 +73,8 @@ bootstrap = Bootstrap()
 
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'   # endpoint name for the login view
-authorize = Authorize()
+authorize = Authorize(current_user=get_jwt_identity)
+jwt = JWTManager()
 
 moment = Moment()
 toolbar = DebugToolbarExtension()
@@ -158,6 +163,7 @@ def create_app(config_name=None):
     bootstrap.init_app(app)
     login_manager.init_app(app)
     authorize.init_app(app)
+    jwt.init_app(app)
     # app_admin.init_app(app)
     moment.init_app(app)
     # toolbar.init_app(app)
