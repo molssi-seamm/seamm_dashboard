@@ -5,16 +5,19 @@ import logging
 
 from app.models import Project, Job, Flowchart, RoleSchema
 
-from flask_login import current_user
+from flask_jwt_extended import jwt_optional
+
+# from flask_login import current_user
 from sqlalchemy import and_
 
-from app import authorize
+from app import authorize, auth
 
 
 logger = logging.getLogger('__file__')
 
 __all__ = ['status']
 
+@jwt_optional
 def status():
     """The status of the dashboard.
 
@@ -26,12 +29,16 @@ def status():
     #user_schema = UserSchema(many=True)
     #users = user_schema.dump(users)
 
+    current_user = auth.current_user()
+
     try:
         username =  current_user.username
+        user_id = current_user.id
     except AttributeError:
         username =  'Anonymous User'
+        user_id = None
 
-    if current_user.get_id():
+    if current_user is not None:
         roles = current_user.roles
         role_schema = RoleSchema(many=True)
         roles = role_schema.dump(roles)
@@ -52,7 +59,7 @@ def status():
     # Build return json
     status = {
         'status' : 'running',
-        'user id': current_user.get_id(),
+        'user id': user_id,
         'username': username,
         'roles': user_roles,
         'jobs': {
