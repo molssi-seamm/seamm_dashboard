@@ -1,6 +1,9 @@
-from flask import render_template, redirect, request, url_for, flash
+from flask import render_template, redirect, request, url_for, flash, jsonify
 from flask_login import login_user, logout_user, login_required, \
     current_user
+
+from flask_jwt_extended import (get_jwt_identity, jwt_optional, 
+                                create_access_token, set_access_cookies)
 from . import auth
 from app import db
 from app.models import User
@@ -31,11 +34,12 @@ def unconfirmed():
     return render_template('auth/unconfirmed.html')
 
 
+@jwt_optional
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
 
     # If current user is logged in, redirect them to the main page.
-    if current_user.is_authenticated:
+    if get_jwt_identity():
         return redirect(url_for('main.index'))
 
     form = LoginForm()
@@ -44,7 +48,10 @@ def login():
 
         if user is not None and user.verify_password(form.password.data):
             logging.debug('User found in DB: %s', user.username)
-            login_user(user, form.remember_me.data)
+            #login_user(user, form.remember_me.data)
+            access_token = create_access_token(identity=user.username)
+            resp = jsonify({'login': True})
+            set_access_cookies(resp, access_token)
             next_page = request.args.get('next')
 
             if next_page is None or not next_page.startswith('/'):
