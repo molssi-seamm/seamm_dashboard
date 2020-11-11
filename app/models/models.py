@@ -8,7 +8,7 @@ from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from flask_login import UserMixin
 from flask_authorize import PermissionsMixin, RestrictionsMixin
 
-from app import db, jwt, login_manager
+from app import db, jwt
 
 #############################
 #
@@ -107,12 +107,6 @@ def user_loader_callback(identity):
     else:
         # return None / null
         return current_user
-
-@login_manager.user_loader
-def load_user(user_id):
-    """User loader func is needed by flask-login to load users
-       which DB engine dependent"""
-    return User.query.get(user_id)
 
 class Group(db.Model, RestrictionsMixin):
     __tablename__ = 'groups'
