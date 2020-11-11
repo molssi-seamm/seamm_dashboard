@@ -1,31 +1,24 @@
-from flask import render_template, redirect, request, url_for, flash, jsonify
-from flask_login import login_user, logout_user, login_required, \
-    current_user
 
-from flask_jwt_extended import (get_jwt_identity, jwt_optional, 
-                                create_access_token, set_access_cookies)
-from . import auth
-from app import db
-from app.models import User
+import logging
+
+from flask import render_template, redirect, request, url_for, flash, jsonify
+
+# Still importing for un-rewritten routes (leaving for reference)
+from flask_login import login_required, current_user
+
+from flask_jwt_extended import (get_jwt_identity, jwt_optional, get_current_user)
 from ..email import send_email
 from .forms import LoginForm, CreateUserForm, ChangePasswordForm,\
     PasswordResetRequestForm, PasswordResetForm, ChangeEmailForm
-import logging
+
+from . import auth
+
+from app import db
+from app.models import User
+from app.routes.api import get_auth_token
 
 
 logger = logging.getLogger(__name__)
-
-
-#@auth.before_app_request
-#def before_request():
-#    logger.debug('current_user is: %s', current_user)
-#    if current_user.is_authenticated:
-#        if not current_user.confirmed and current_app.config['EMAIL_CONFIRMATION_ENABLED'] \
-#                and request.endpoint \
-#                and request.blueprint != 'auth' \
-#                and request.endpoint != 'static':
-#            return redirect(url_for('auth.unconfirmed'))
-
 
 @auth.route('/unconfirmed')
 def unconfirmed():
@@ -39,7 +32,7 @@ def unconfirmed():
 def login():
 
     # If current user is logged in, redirect them to the main page.
-    if get_jwt_identity():
+    if get_current_user():
         return redirect(url_for('main.index'))
 
     form = LoginForm()
@@ -49,22 +42,19 @@ def login():
         if user is not None and user.verify_password(form.password.data):
             logging.debug('User found in DB: %s', user.username)
             #login_user(user, form.remember_me.data)
-            access_token = create_access_token(identity=user.username)
-            resp = jsonify({'login': True})
-            set_access_cookies(resp, access_token)
+            access_token = get_auth_token({"username": user.username, "password":form.password.data})
             next_page = request.args.get('next')
 
             if next_page is None or not next_page.startswith('/'):
                 next_page = url_for('main.index')
             return redirect(next_page)
         flash('Invalid email or password.')
-    return render_template('auth/login.html', form=form)
+    return render_template('auth/login.html', form=form, current_user=get_current_user)
 
-
+# Login required.
 @auth.route('/logout')
-@login_required
 def logout():
-    logout_user()
+    # Logout using token TODO
     flash('You have been logged out.')
     return redirect(url_for('main.index'))
 
@@ -84,31 +74,6 @@ def create_user():
         flash(F'The user {user.username} has been created')
         return redirect(url_for('auth.login'))
     return render_template('auth/register.html', form=form)
-
-
-# Not being used currently - still uses MongoDB if ever needs to be used.
-@auth.route('/confirm/<token>')
-@login_required
-def confirm(token):
-    if current_user.confirmed:
-        return redirect(url_for('main.index'))
-    if current_user.confirm(token):
-        current_user.save()
-        flash('You have confirmed your account. Thanks!')
-    else:
-        flash('The confirmation link is invalid or has expired.')
-    return redirect(url_for('main.index'))
-
-
-# Not being used currently - still uses MongoDB if ever needs to be used.
-@auth.route('/confirm')
-@login_required
-def resend_confirmation():
-    token = current_user.generate_confirmation_token()
-    send_email(current_user.email, 'Confirm Your Account',
-               'auth/email/confirm', user=current_user, token=token)
-    flash('A new confirmation email has been sent to you by email.')
-    return redirect(url_for('main.index'))
 
 # Hasn't been rewritten
 @auth.route('/change-password', methods=['GET', 'POST'])

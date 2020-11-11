@@ -9,7 +9,6 @@ import configargparse
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_bootstrap import Bootstrap
 from flask_cors import CORS
-from flask_login import LoginManager
 from flask_mail import Mail
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
@@ -70,11 +69,8 @@ bootstrap = Bootstrap()
 #     base_template='admin/custom_base.html'
 # )
 
-login_manager = LoginManager()
-login_manager.login_view = 'auth.login'   # endpoint name for the login view
 jwt = JWTManager()
 authorize = Authorize(current_user=get_current_user)
-
 
 moment = Moment()
 toolbar = DebugToolbarExtension()
@@ -161,7 +157,6 @@ def create_app(config_name=None):
     mail.init_app(app)
     cors.init_app(app)
     bootstrap.init_app(app)
-    login_manager.init_app(app)
     authorize.init_app(app)
     jwt.init_app(app)
     # app_admin.init_app(app)

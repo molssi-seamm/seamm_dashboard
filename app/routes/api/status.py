@@ -10,7 +10,9 @@ from flask_jwt_extended import jwt_optional
 # from flask_login import current_user
 from sqlalchemy import and_
 
-from app import authorize, auth
+from app import authorize
+
+from flask_jwt_extended import get_current_user
 
 
 logger = logging.getLogger('__file__')
@@ -29,7 +31,7 @@ def status():
     #user_schema = UserSchema(many=True)
     #users = user_schema.dump(users)
 
-    current_user = auth.current_user()
+    current_user = get_current_user()
 
     try:
         username =  current_user.username
