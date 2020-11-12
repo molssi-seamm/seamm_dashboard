@@ -494,6 +494,21 @@ paths:
                 type: json
         "400":
           description: Bad credentials
+  /api/auth/token/refresh:
+    post:
+      summary: Refresh the access token
+      description: |
+        Return a token to be used for authentication. An old token will be
+      operationId: app.routes.api.refresh_auth_token
+      responses:
+        "200":
+          description: Token refreshed.
+          content:
+            text/plain:
+              schema:
+                type: json
+        "400":
+          description: Bad credentials
 components:
   schemas:
     Flowchart:
