@@ -2,14 +2,15 @@
 API calls for projects
 """
 
-from app.models import Project, ProjectSchema, Job, JobSchema
 from flask import Response
+from flask_jwt_extended import jwt_optional
 
+from app.models import Project, ProjectSchema, Job, JobSchema
 from app import authorize
 
 __all__ = ['get_projects', 'get_project', 'list_projects', 'get_project_jobs']
 
-
+@jwt_optional
 def get_projects(description=None, limit=None):
     
     # If limit is not set, set limit to all jobs in DB.
@@ -27,6 +28,7 @@ def get_projects(description=None, limit=None):
     
     return projects_schema.dump(projects), 200
 
+@jwt_optional
 def get_project(id):
     """
     Function for api endpoint api/projects/{id}
@@ -46,10 +48,10 @@ def get_project(id):
     project_schema = ProjectSchema(many=False)
     return project_schema.dump(project), 200
 
+@jwt_optional
 def get_project_jobs(id):
     """
     Function for api endpoint api/projects/{id}/jobs. Get jobs associated with a project.
-
 
     Parameters
     ----------
@@ -72,7 +74,7 @@ def get_project_jobs(id):
 
     return jobs_schema.dump(jobs), 200
 
-
+@jwt_optional
 def list_projects():
     """List the projects in the datastore.
     """
