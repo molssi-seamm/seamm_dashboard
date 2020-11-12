@@ -270,7 +270,7 @@ def add_job(body):
     
     return {'id': job.id}, 201, {'location': format('/jobs/{}'.format(job.id))}
 
-
+@jwt_optional
 def get_job(id):
     """
     Function for api endpoint api/jobs/{id}

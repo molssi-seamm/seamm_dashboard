@@ -5,14 +5,14 @@ import logging
 
 from app.models import Project, Job, Flowchart, RoleSchema
 
-from flask_jwt_extended import jwt_optional
+from flask import jsonify
 
 # from flask_login import current_user
 from sqlalchemy import and_
 
 from app import authorize
 
-from flask_jwt_extended import get_current_user
+from flask_jwt_extended import get_current_user, get_jwt_identity, jwt_optional, jwt_required
 
 
 logger = logging.getLogger('__file__')
@@ -31,25 +31,19 @@ def status():
     #user_schema = UserSchema(many=True)
     #users = user_schema.dump(users)
 
-    current_user = get_current_user()
-
+    current_user = get_jwt_identity()
+    
     try:
-        username =  current_user.username
-        user_id = current_user.id
-    except AttributeError:
+        username =  current_user['username']
+        user_id = current_user['id']
+    except TypeError:
         username =  'Anonymous User'
         user_id = None
 
     if current_user is not None:
-        roles = current_user.roles
-        role_schema = RoleSchema(many=True)
-        roles = role_schema.dump(roles)
-
-        user_roles = []
-        for role in roles:
-            user_roles.append(role["name"])
+        roles = current_user['roles']
     else:
-        user_roles = []
+        roles = []
     
     # Get information about jobs, projects, flowcharts
     num_jobs_running = Job.query.filter(and_(Job.status == 'running', Job.authorized('read'))).count()
@@ -63,7 +57,7 @@ def status():
         'status' : 'running',
         'user id': user_id,
         'username': username,
-        'roles': user_roles,
+        'roles': roles,
         'jobs': {
             'running': num_jobs_running,
             'finished': num_jobs_finished,
