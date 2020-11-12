@@ -6,7 +6,8 @@ from flask import render_template, redirect, request, url_for, flash, jsonify
 # Still importing for un-rewritten routes (leaving for reference)
 from flask_login import login_required, current_user
 
-from flask_jwt_extended import (get_jwt_identity, jwt_optional, get_current_user)
+from flask_jwt_extended import (get_jwt_identity, jwt_optional, get_current_user,
+                                set_access_cookies, set_refresh_cookies)
 from ..email import send_email
 from .forms import LoginForm, CreateUserForm, ChangePasswordForm,\
     PasswordResetRequestForm, PasswordResetForm, ChangeEmailForm
@@ -15,7 +16,7 @@ from . import auth
 
 from app import db
 from app.models import User
-from app.routes.api import get_auth_token
+from app.routes.api.auth import create_tokens
 
 
 logger = logging.getLogger(__name__)
@@ -40,15 +41,20 @@ def login():
         user = User.query.filter_by(username=form.username.data).one_or_none()
 
         if user is not None and user.verify_password(form.password.data):
-            logging.debug('User found in DB: %s', user.username)
-            #login_user(user, form.remember_me.data)
-            access_token = get_auth_token({"username": user.username, "password":form.password.data})
             next_page = request.args.get('next')
 
             if next_page is None or not next_page.startswith('/'):
                 next_page = url_for('main.index')
-            return redirect(next_page)
+                response = redirect(next_page)
+
+            # Add cookies to response
+            access_token, refresh_token = create_tokens(user)
+            set_access_cookies(response, access_token)
+            set_refresh_cookies(response, refresh_token)
+           
+            return response
         flash('Invalid email or password.')
+
     return render_template('auth/login.html', form=form, current_user=get_current_user)
 
 # Login required.
