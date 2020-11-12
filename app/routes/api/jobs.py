@@ -140,7 +140,7 @@ def get_job_id(filename):
 
     return job_id
 
-
+@jwt_optional
 def add_job(body):
     """Add a new job to the queue.
 
@@ -293,6 +293,7 @@ def get_job(id):
     job_schema = JobSchema(many=False)
     return job_schema.dump(job), 200
 
+@jwt_optional
 def update_job(id, body):
     """
     Function to update jobs - endpoint api/jobs/{id}
@@ -328,6 +329,7 @@ def update_job(id, body):
 
     return Response(status=201)
 
+@jwt_optional
 @authorize.has_role('admin')
 def delete_job(id):
     """
@@ -364,6 +366,7 @@ def delete_job(id):
         
         return Response(status=200)
 
+@jwt_optional
 def get_job_files(id, file_path=None):
     """
     Function for get method of api endpoint api/jobs/{id}/files. If the file_path parameter is used, this endpoint will send the file which is indicated by the path.
