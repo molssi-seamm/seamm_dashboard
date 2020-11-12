@@ -7,7 +7,7 @@ from flask import render_template, redirect, request, url_for, flash, jsonify
 from flask_login import login_required, current_user
 
 from flask_jwt_extended import (get_jwt_identity, jwt_optional, get_current_user,
-                                set_access_cookies, set_refresh_cookies)
+                                set_access_cookies, set_refresh_cookies, unset_jwt_cookies)
 from ..email import send_email
 from .forms import LoginForm, CreateUserForm, ChangePasswordForm,\
     PasswordResetRequestForm, PasswordResetForm, ChangeEmailForm
@@ -60,9 +60,11 @@ def login():
 # Login required.
 @auth.route('/logout')
 def logout():
-    # Logout using token TODO
+    next_page = url_for('main.index')
+    response = redirect(next_page)
+    unset_jwt_cookies(response)
     flash('You have been logged out.')
-    return redirect(url_for('main.index'))
+    return response
 
 
 @auth.route('/create_user', methods=['GET', 'POST'])
