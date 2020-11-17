@@ -162,6 +162,7 @@
         dataType: 'json',
         async: false,
         success: function (data) {
+            //console.log(data)
             if (data.username == "Anonymous User") {
               document.getElementById("login-info-1").innerHTML = `Not Logged In`
               document.getElementById("login-info-2").innerHTML = '<a href="auth/login">Log In</a>'
@@ -177,6 +178,15 @@
             }
            
             },
+          error: function (data) {
+            // This will make it so that the expired cookie will be removed
+            $.ajax({
+              url: `auth/logout`,
+              dataType: 'json',
+              async: false,
+              success: location.reload()
+              })
+          }
           })
     </script>
   </body>

@@ -106,7 +106,7 @@ def user_loader_callback(identity):
         return user
     else:
         # return None / null
-        return current_user
+        return None
 
 class Group(db.Model, RestrictionsMixin):
     __tablename__ = 'groups'

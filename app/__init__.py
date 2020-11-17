@@ -182,7 +182,7 @@ def create_app(config_name=None):
 
     # Cookie security
     app.config['JWT_COOKIE_SECURE'] = False
-    app.config['JWT_COOKIE_CSRF_PROTECT'] = True
+    app.config['JWT_COOKIE_CSRF_PROTECT'] = False
 
     # To avoid circular import
     # from app.admin import add_admin_views
