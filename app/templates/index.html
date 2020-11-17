@@ -179,13 +179,24 @@
            
             },
           error: function (data) {
-            // This will make it so that the expired cookie will be removed
+            // Try getting a new token using token refresh
             $.ajax({
-              url: `auth/logout`,
-              dataType: 'json',
-              async: false,
-              success: location.reload()
-              })
+              url: `/api/auth/token/refresh`,
+              type: "POST",
+              success: function () {
+                // If this succeeds the token is refreshed and we should reload
+                location.reload()
+              },
+              error: function () {
+                // if this fails, the refresh token is expired and we remove the tokens.
+                $.ajax({
+                  url: `auth/logout`,
+                  complete: location.reload(),
+                })
+              },
+              
+              }
+              )
           }
           })
     </script>
