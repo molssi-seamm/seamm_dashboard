@@ -1,7 +1,7 @@
 
 import logging
 
-from flask import render_template, redirect, request, url_for, flash, jsonify
+from flask import render_template, redirect, request, url_for, flash, jsonify, make_response
 
 # Still importing for un-rewritten routes (leaving for reference)
 from flask_login import login_required, current_user
@@ -53,17 +53,18 @@ def login():
             set_refresh_cookies(response, refresh_token)
            
             return response
-        flash('Invalid email or password.')
+        flash('Invalid username or password.')
 
     return render_template('auth/login.html', form=form, current_user=get_current_user)
 
 # Login required.
 @auth.route('/logout')
 def logout():
-    next_page = url_for('main.index')
-    response = redirect(next_page)
+    """
+    Direct to blank page which sets local storage to log out all other tabs and redirects to main
+    """
+    response = make_response(render_template('logout.html'))
     unset_jwt_cookies(response)
-    flash('You have been logged out.')
     return response
 
 
