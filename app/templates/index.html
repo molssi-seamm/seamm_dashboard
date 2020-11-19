@@ -193,6 +193,9 @@
           })
 
           window.addEventListener('storage', function(event){
+            if (event.key == 'login-event') { 
+              location.reload()
+            }
             if (event.key == 'logout-event') { 
               $.ajax({
                 url: `auth/logout`,
@@ -201,13 +204,9 @@
                 }
               })
             }
+
           })
 
-          window.addEventListener('storage', function(event){
-            if (event.key == 'login-event') { 
-              location.reload()
-            }
-          });
     </script>
   </body>
 </html>
