@@ -41,11 +41,9 @@ def login():
         user = User.query.filter_by(username=form.username.data).one_or_none()
 
         if user is not None and user.verify_password(form.password.data):
-            next_page = request.args.get('next')
-
-            if next_page is None or not next_page.startswith('/'):
-                next_page = url_for('main.index')
-                response = redirect(next_page)
+            # redirect to blank login page which will set local storage to
+            # reload all tabs (as logged in user)
+            response = make_response(render_template('login.html'))
 
             # Add cookies to response
             access_token, refresh_token = create_tokens(user)
