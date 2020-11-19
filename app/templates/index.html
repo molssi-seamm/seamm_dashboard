@@ -197,12 +197,17 @@
               $.ajax({
                 url: `auth/logout`,
                 complete: function() {
-                  alert("You have been logged out.")
                   location.reload()
                 }
               })
             }
-        });
+          })
+
+          window.addEventListener('storage', function(event){
+            if (event.key == 'login-event') { 
+              location.reload()
+            }
+          });
     </script>
   </body>
 </html>
