@@ -14,7 +14,6 @@ from app import authorize
 
 from flask_jwt_extended import get_current_user, get_jwt_identity, jwt_optional, jwt_required
 
-
 logger = logging.getLogger('__file__')
 
 __all__ = ['status']
@@ -31,19 +30,25 @@ def status():
     #user_schema = UserSchema(many=True)
     #users = user_schema.dump(users)
 
-    current_user = get_jwt_identity()
+    current_user = get_current_user()
     
     try:
-        username =  current_user['username']
-        user_id = current_user['id']
-    except TypeError:
+        username =  current_user.username
+    except AttributeError:
         username =  'Anonymous User'
-        user_id = None
 
-    if current_user is not None:
-        roles = current_user['roles']
+    if username != 'Anonymous User':
+        user_id = current_user.get_id()
+        roles = current_user.roles
+        role_schema = RoleSchema(many=True)
+        roles = role_schema.dump(roles)
+
+        user_roles = []
+        for role in roles:
+            user_roles.append(role["name"])
     else:
-        roles = []
+        user_roles = []
+        user_id = None
     
     # Get information about jobs, projects, flowcharts
     num_jobs_running = Job.query.filter(and_(Job.status == 'running', Job.authorized('read'))).count()
@@ -57,7 +62,7 @@ def status():
         'status' : 'running',
         'user id': user_id,
         'username': username,
-        'roles': roles,
+        'roles': user_roles,
         'jobs': {
             'running': num_jobs_running,
             'finished': num_jobs_finished,
@@ -69,4 +74,3 @@ def status():
     }
 
     return status, 200
-    
