@@ -11,7 +11,10 @@ from app.models.import_jobs import add_project
 from selenium import webdriver
 import chromedriver_binary  # Adds chromedriver binary to path
 
-from flask_login import login_user
+from flask import make_response
+from flask_jwt_extended import set_access_cookies, set_refresh_cookies, unset_jwt_cookies
+
+from app.routes.api.auth import create_tokens
 
 @pytest.fixture(scope="session")
 def project_directory(tmpdir_factory):
@@ -49,7 +52,7 @@ def app(project_directory):
 
     # Create a sample user.
     test_user = User(username='sample_user', password='sample_password')
-    test_admin = User(username='admin_user', roles=[admin_role])
+    test_admin = User(username='admin_user', password='iamadmin', roles=[admin_role])
 
     # Fill in some data
     job1_data = {
@@ -119,21 +122,33 @@ def app(project_directory):
 @pytest.fixture(scope='function')
 def client(app):
 
-    my_client = app.test_client()
-        
-    return my_client
+    my_client = app.test_client()        
+    yield my_client
 
 @pytest.fixture(scope="function")
-def authenticated_request(app):
-    user = User.query.get(1)
-    with app.test_request_context():
-        yield login_user(user)
+def auth_client(client):
+    auth_client = client
+    auth_client.post("api/auth/token", json=dict(
+        username="sample_user",
+        password="sample_password",
+    ), follow_redirects=True)
+
+    yield auth_client
+
+    response = auth_client.get("api/auth/token/remove", follow_redirects=True)
+
     
 @pytest.fixture(scope="function")
-def admin_request(app):
-    user = User.query.get(2)
-    with app.test_request_context():
-        yield login_user(user)
+def admin_client(app):
+    client = app.test_client()
+    client.post("api/auth/token", json=dict(
+        username="admin_user",
+        password="iamadmin",
+    ), follow_redirects=True)
+
+    yield client
+
+    client.get("api/auth/token/remove", follow_redirects=True)
 
 @pytest.fixture
 def chrome_driver():
