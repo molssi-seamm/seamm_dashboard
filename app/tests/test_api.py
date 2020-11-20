@@ -9,10 +9,11 @@ import json
 from datetime import date
 from dateutil import parser
 
+from flask import jsonify
+
 from app.routes.api.jobs import *
 from app.routes.api.flowcharts import *
 
-@pytest.mark.usefixtures("authenticated_request")
 @pytest.mark.parametrize("createdSince, createdBefore, limit, expected_number", [
     ("01-01-2018", None, None, 1),
     (None, "01-01-2018", None, 2),
@@ -20,13 +21,22 @@ from app.routes.api.flowcharts import *
     (None, None, 1, 1),
     (None, None, None, 3),
 ])
-def test_get_jobs(createdSince, createdBefore, limit, expected_number):
+def test_get_jobs(createdSince, createdBefore, limit, expected_number, auth_client):
     """Tests get method for api/jobs with various query strings"""
 
-    jobs_received = get_jobs(createdBefore=createdBefore, createdSince=createdSince, limit=limit)[0]
+    query_string = "api/jobs"
+    
+    if createdSince is not None:
+        query_string += F"?createdSince={createdSince}"
+    if createdBefore is not None:
+        query_string += F"?createdBefore={createdBefore}"
+    if limit is not None:
+        query_string += F"?limit={limit}"
+
+    response = auth_client.get(query_string)
+    jobs_received = response.json
 
     assert len(jobs_received) == expected_number
-
 
 def test_get_job_by_id(client):
     """API endpoint api/jobs/{jobID}"""
@@ -40,7 +50,9 @@ def test_get_job_by_id(client):
         "submitted": parser.parse("2019-08-29T09:12:33.001000+00:00").replace(tzinfo=None)
         }
 
-    received = response.json
+    received = response.data
+
+    assert False, response.data
 
     for k in expected_response.keys():
         if k == "submitted":
@@ -52,9 +64,11 @@ def test_get_job_by_id(client):
 
 def test_get_protected_job(client):
 
+    resp = client.get("api/auth/token/remove")
     response = client.get("api/jobs/2")
+    dbstatus = client.get("api/status")
 
-    assert response.status_code == 401
+    assert response.status_code == 401, dbstatus.json['username']
 
 def test_get_job_missing(client):
     """
@@ -75,10 +89,9 @@ def test_flowcharts_logged_out(client):
     assert len(response.json) == 0
     assert response.status_code == 200
 
-@pytest.mark.usefixtures("authenticated_request")
-def test_flowcharts_logged_in():
+def test_flowcharts_logged_in(auth_client):
 
-    response = get_flowcharts()
+    response = auth_client.get('api/flowcharts')
 
     assert len(response[0]) == 1,'The response is'+ str(response)
     assert response[1] == 200

@@ -15,14 +15,25 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from flask_authorize import Authorize
 from flask_jwt_extended import (
-    JWTManager, jwt_required, create_access_token,
-    get_current_user
+    JWTManager, create_access_token,
+    get_current_user, get_jwt_identity
 )
 
 from config import config
 from .template_filters import replace_empty
 from .setup_logging import setup_logging
 from .setup_argparsing import options
+
+# function to get current or anonymou user
+def flask_jwt_user():
+    identity = get_jwt_identity()
+
+    if identity:
+        current_user = get_current_user()
+    else:
+        from flask_login import AnonymousUserMixin
+        current_user = AnonymousUserMixin()
+    return current_user
 
 # Setup the logging, now that we know where the datastore is
 datastore = options.datastore
@@ -70,7 +81,7 @@ bootstrap = Bootstrap()
 # )
 
 jwt = JWTManager()
-authorize = Authorize(current_user=get_current_user)
+authorize = Authorize(current_user=flask_jwt_user)
 
 moment = Moment()
 toolbar = DebugToolbarExtension()
@@ -170,7 +181,7 @@ def create_app(config_name=None):
     app.config['AUTHORIZE_DEFAULT_PERMISSIONS'] = dict(
                     owner=['read', 'update', 'delete', 'create'],
                     group=['read', 'update'],
-                    other=[]
+                    other=['read']
             )
 
     # Set application to store JWTs in cookies.
