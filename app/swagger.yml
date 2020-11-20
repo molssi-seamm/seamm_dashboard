@@ -464,6 +464,17 @@ paths:
             text/plain:
               schema:
                 type: string
+  /api/auth/token/remove:
+    get:
+      summary: remove auth token.
+      operationId: app.routes.api.remove_auth_token
+      responses:
+        "200":
+          description: successfully logged out
+          content:
+            text/plain:
+              schema:
+                type: string
   /api/auth/token:
     post:
       summary: post username and password and get a token for the current user
