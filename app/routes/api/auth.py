@@ -4,16 +4,17 @@ Routes for REST authentication
 
 from datetime import timedelta
 
-from flask import jsonify, request, Response
+from flask import jsonify, request, Response, make_response
 from flask_jwt_extended import (create_access_token, create_refresh_token, 
                                 set_access_cookies, set_refresh_cookies,
-                                jwt_refresh_token_required, get_jwt_identity)
+                                jwt_refresh_token_required, get_jwt_identity, unset_jwt_cookies,
+                                unset_access_cookies, unset_refresh_cookies)
 
 from app.models import User, UserSchema
 
 from app import jwt
 
-__all__ = ['get_auth_token', 'refresh_auth_token']
+__all__ = ['get_auth_token', 'refresh_auth_token', 'remove_auth_token']
 
 def create_tokens(user):
     """
@@ -34,7 +35,7 @@ def create_tokens(user):
 
 def get_auth_token(body):
     """
-    Write docstring TODO
+    Endpoint for api/auth/token
     """
 
     username = body.pop('username')
@@ -55,6 +56,13 @@ def get_auth_token(body):
         return resp, 200
     else:
         return jsonify({"msg": "Incorrect password."}), 400
+
+def remove_auth_token():
+    resp = make_response({'logout' : True})
+    unset_jwt_cookies(resp)
+    unset_access_cookies(resp)
+    unset_refresh_cookies(resp)
+    return resp, 200
 
 
 @jwt_refresh_token_required
