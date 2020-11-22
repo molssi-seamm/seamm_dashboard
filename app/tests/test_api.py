@@ -11,11 +11,9 @@ import pytest
 
 def test_get_protected_job(client):
 
-    resp = client.get("api/auth/token/remove")
     response = client.get("api/jobs/2")
-    dbstatus = client.get("api/status")
 
-    assert response.status_code == 401, dbstatus.data
+    assert response.status_code == 401
 
 def test_get_job_missing(client):
     """
@@ -70,4 +68,10 @@ def test_add_job(client):
     # Ask Paul
     assert False
 
+def test_delete_job(auth_client, project_directory):
+    """Check delete method of api/jobs/{jobID}"""
+
+    response = auth_client.delete("api/jobs/2")
+
+    assert response.status_code == 401
 
