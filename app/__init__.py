@@ -24,6 +24,8 @@ from .template_filters import replace_empty
 from .setup_logging import setup_logging
 from .setup_argparsing import options
 
+from .authorize_patch import Authorizer
+
 # Setup the logging, now that we know where the datastore is
 datastore = options.datastore
 setup_logging(datastore, options)
@@ -170,9 +172,9 @@ def create_app(config_name=None):
     app.config['AUTHORIZE_DEFAULT_PERMISSIONS'] = dict(
                     owner=['read', 'update', 'delete', 'create'],
                     group=['read', 'update'],
-                    other=[]
+                    other=['']
             )
-    app.config['AUTHORIZE_ALLOW_ANONYMOUS_ACTIONS'] = True,
+    app.config['AUTHORIZE_ALLOW_ANONYMOUS_ACTIONS'] = True
 
     # Set application to store JWTs in cookies.
     app.config['JWT_TOKEN_LOCATION'] = ['cookies']
