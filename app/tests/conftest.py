@@ -119,16 +119,16 @@ def app(project_directory):
     app_context.pop()
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope='module')
 def client(app):
 
     my_client = app.test_client()        
     yield my_client
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="module")
 def auth_client(client):
     auth_client = client
-    auth_client.post("api/auth/token", json=dict(
+    response = auth_client.post("api/auth/token", json=dict(
         username="sample_user",
         password="sample_password",
     ), follow_redirects=True)
@@ -138,7 +138,7 @@ def auth_client(client):
     response = auth_client.get("api/auth/token/remove", follow_redirects=True)
 
     
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="module")
 def admin_client(app):
     client = app.test_client()
     client.post("api/auth/token", json=dict(
