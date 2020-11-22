@@ -104,12 +104,17 @@ class TestLiveServer:
 
         get_url = f"{self.base_url}#{list_type}"
 
+        # Get twice just to make sure this request goes through.
+        chrome_driver.get(get_url)
         chrome_driver.get(get_url)
 
         if list_type == 'projects':
             # Default view is card - switch to list.
             button = chrome_driver.find_element_by_id('toggle-list')
             button.click()
+        
+        #chrome_driver.get_screenshot_as_file(f'{list_type}_{logged_in}.png')
+
 
         # Get the jobs table. Will want to wait for this to be loaded,
         # of course.
@@ -120,8 +125,6 @@ class TestLiveServer:
         # Check table dimensions.
         table_headings = jobs_table.find_elements_by_tag_name("th")
         table_rows = jobs_table.find_elements_by_tag_name("tr")
-
-        #chrome_driver.get_screenshot_as_file(f'{list_type}_{logged_in}.png')
 
         assert len(table_headings) == num_columns
         assert len(table_rows) == num_rows
@@ -180,7 +183,7 @@ class TestLiveServer:
 
         test_file_id = urllib.parse.quote(test_file, safe='') + '_anchor'
 
-        #chrome_driver.save_screenshot("screenshot.png")
+        chrome_driver.save_screenshot("screenshot.png")
         
         WebDriverWait(chrome_driver, 20).until(
             EC.presence_of_element_located((By.ID, test_file_id))
