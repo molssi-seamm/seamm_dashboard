@@ -168,6 +168,66 @@ class TestLiveServer:
         assert initial_displayed_text == ''
         assert ' '.join(displayed_text_list) == ' '.join(file_contents_split)
 
+    def test_job_report_file_content_refresh(self, app, chrome_driver, project_directory):
+        """
+        Test to click file and make sure it is loaded into div.
+        """
+
+        # Set up sample file for comparison.
+        test_file = os.path.realpath(
+            os.path.join(
+                project_directory,
+                "Job_000001", "job.out"
+            )
+        )
+
+        with open(test_file) as f:
+            file_contents = f.read()
+            file_contents_split = file_contents.split()
+
+        test_file_id = urllib.parse.quote(test_file, safe='') + '_anchor'
+
+        chrome_driver.get(f"{self.base_url}#jobs/1")
+
+        # Initially, there should be nothing in the text box.
+        initial_displayed_text = chrome_driver.find_element_by_id(
+            'file-content'
+        ).text
+
+        # Get a link for a file and click on it.
+        job_link = WebDriverWait(chrome_driver, 20).until(
+            EC.presence_of_element_located((By.ID, test_file_id))
+        )
+        job_link.click()
+
+        # When clicked, file text should be displayed in the div.
+        displayed_text = chrome_driver.find_element_by_id('file-content').text
+
+        displayed_text_list = displayed_text.split()
+
+        # Splitting on whitespace and rejoining let's us compare the file
+        # contents without worrying about how whitespace is handled.
+        assert initial_displayed_text == ''
+        assert ' '.join(displayed_text_list) == ' '.join(file_contents_split)
+
+        ## Update file on disk
+        with open(test_file, "a+") as f:
+            f.write("Appending this line")
+        
+        ## Update expected text
+        file_contents_split += "Appending this line".split()
+
+        ## Click refresh button
+        refresh_button = chrome_driver.find_element_by_id('refresh')
+        refresh_button.click()
+
+        # Check the new displayed text
+        new_displayed_text = chrome_driver.find_element_by_id('file-content').text
+        new_displayed_list = new_displayed_text.split()
+
+        assert ' '.join(new_displayed_list) == ' '.join(file_contents_split)
+
+
     def test_job_report_file_content_resize(self, app, chrome_driver, project_directory):
         """
         Test to make sure file content element resizes when next element is
