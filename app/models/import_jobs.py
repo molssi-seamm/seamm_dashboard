@@ -41,7 +41,7 @@ def import_jobs(location):
         if os.path.isdir(potential_project):
             n_projects += 1
             project_name = os.path.basename(potential_project)
-            logger.debug('Adding project {}'.format(project_name))
+            logger.debug("Adding project {}".format(project_name))
             project, added = add_project(potential_project, project_name)
             if added:
                 n_added_projects += 1
@@ -52,20 +52,18 @@ def import_jobs(location):
 
                 if os.path.isdir(potential_job):
                     job_name = os.path.basename(potential_job)
-                    logger.debug('       job {}'.format(job_name))
+                    logger.debug("       job {}".format(job_name))
                     try:
                         job, added = add_job(potential_job, job_name, project)
                     except sqlite3.IntegrityError as e:
-                        logger.warning(
-                            'Adding job {} failed: {}'.format(job_name, e)
-                        )
+                        logger.warning("Adding job {} failed: {}".format(job_name, e))
                     if job is None:
-                        logger.debug('         was not a job!')
+                        logger.debug("         was not a job!")
                     else:
                         n_jobs += 1
                         if added:
                             n_added_jobs += 1
-                        
+
     return (n_projects, n_added_projects, n_jobs, n_added_jobs)
 
 
@@ -90,9 +88,9 @@ def add_flowchart(flowchart_path, project):
     # Analyze the flowchart given the path
     flowchart_info = process_flowchart(flowchart_path)
 
-    flowchart = db.session.query(Flowchart).filter_by(
-        id=flowchart_info['id']
-    ).one_or_none()
+    flowchart = (
+        db.session.query(Flowchart).filter_by(id=flowchart_info["id"]).one_or_none()
+    )
 
     if flowchart is None:
         user, group = file_owner(flowchart_path)
@@ -109,7 +107,7 @@ def add_flowchart(flowchart_path, project):
 
 def add_job(job_path, job_name, project):
     """Add a job to the datastore. A unique job is based on directory location.
-    
+
     If job_path does not have a .flow file, it is skipped and not added to the
     datastore.
 
@@ -126,12 +124,10 @@ def add_job(job_path, job_name, project):
     job_info = process_job(job_path)
 
     if job_info:
-        flowchart_path = job_info.pop('flowchart_path')
+        flowchart_path = job_info.pop("flowchart_path")
 
         # Check if job is in DB
-        found = db.session.query(Job).filter_by(
-            path=job_info['path']
-        ).one_or_none()
+        found = db.session.query(Job).filter_by(path=job_info["path"]).one_or_none()
 
         if found is None:
             user, group = file_owner(job_path)
@@ -147,8 +143,8 @@ def add_job(job_path, job_name, project):
             return found, False
     else:
         print(
-            "No job found in directory {}. No job added to data store".format(
-                job_path))
+            "No job found in directory {}. No job added to data store".format(job_path)
+        )
         return None, False
 
 
@@ -158,9 +154,11 @@ def add_project(project_path, project_name):
     """
 
     # Check if in DB
-    found = db.session.query(Project).filter_by(
-        name=project_name, path=project_path
-    ).one_or_none()
+    found = (
+        db.session.query(Project)
+        .filter_by(name=project_name, path=project_path)
+        .one_or_none()
+    )
 
     if found is None:
         user, group = file_owner(project_path)
@@ -172,4 +170,3 @@ def add_project(project_path, project_name):
         return project, True
     else:
         return found, False
-

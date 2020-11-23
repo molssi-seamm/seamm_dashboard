@@ -9,6 +9,6 @@ def replace_empty(s):
     """Replace empty strings"""
 
     if not s:
-        return current_app.config['REPLACE_NONE']
+        return current_app.config["REPLACE_NONE"]
 
     return s
