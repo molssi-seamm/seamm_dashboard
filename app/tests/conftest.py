@@ -12,47 +12,53 @@ from selenium import webdriver
 import chromedriver_binary  # Adds chromedriver binary to path
 
 from flask import make_response
-from flask_jwt_extended import set_access_cookies, set_refresh_cookies, unset_jwt_cookies
+from flask_jwt_extended import (
+    set_access_cookies,
+    set_refresh_cookies,
+    unset_jwt_cookies,
+)
 
 from app.routes.api.auth import create_tokens
+
 
 @pytest.fixture(scope="session")
 def project_directory(tmpdir_factory):
 
     # Copy our project files to a tmpdir
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    real_project_path = os.path.realpath(os.path.join(dir_path, "..", "..", "data", "projects", "MyProject"))
+    real_project_path = os.path.realpath(
+        os.path.join(dir_path, "..", "..", "data", "projects", "MyProject")
+    )
 
-    temp_project_path = str(tmpdir_factory.mktemp('fake_project'))
-    
-    return_path = shutil.copytree(real_project_path, temp_project_path, dirs_exist_ok=True)    
-    
+    temp_project_path = str(tmpdir_factory.mktemp("fake_project"))
+
+    return_path = shutil.copytree(
+        real_project_path, temp_project_path, dirs_exist_ok=True
+    )
+
     return return_path
+
 
 @pytest.fixture(scope="module")
 def app(project_directory):
 
     test_project_path = project_directory
 
-    flask_app = create_app('testing')
+    flask_app = create_app("testing")
     app_context = flask_app.app_context()
     app_context.push()
 
     # Create a sample project
-    test_project = {
-    'name': 'MyProject',
-    'path': test_project_path,
-    'owner_id': 1
-    }
-    
+    test_project = {"name": "MyProject", "path": test_project_path, "owner_id": 1}
+
     project = Project(**test_project)
 
     # Create a sample role
     admin_role = Role(name="admin")
 
     # Create a sample user.
-    test_user = User(username='sample_user', password='sample_password')
-    test_admin = User(username='admin_user', password='iamadmin', roles=[admin_role])
+    test_user = User(username="sample_user", password="sample_password")
+    test_admin = User(username="admin_user", password="iamadmin", roles=[admin_role])
 
     # Fill in some data
     job1_data = {
@@ -62,8 +68,8 @@ def app(project_directory):
         "submitted": parser.parse("2016-08-29T09:12:33.001000+00:00"),
         "projects": [project],
         "owner_id": 1,
-        "status": "finished"
-        }
+        "status": "finished",
+    }
 
     # Fill in some data
     job2_data = {
@@ -71,10 +77,10 @@ def app(project_directory):
         "id": 2,
         "path": os.path.realpath(os.path.join(test_project_path, "Job_000002")),
         "submitted": parser.parse("2017-08-29T09:12:33.001000+00:00"),
-        "projects": [project], 
+        "projects": [project],
         "owner_id": 1,
-        "status": "finished"
-        }
+        "status": "finished",
+    }
 
     # More data - this job path (probably) doesn't actually exist
     job3_data = {
@@ -82,17 +88,20 @@ def app(project_directory):
         "id": 3,
         "path": "/Users/username/seamm/projects",
         "submitted": parser.parse("2019-08-29T09:12:33.001000+00:00"),
-        "projects": [project], 
+        "projects": [project],
         "owner_id": 1,
-        "status" : "finished",        }
+        "status": "finished",
+    }
 
     # Load a simple flowchart
     current_location = os.path.dirname(os.path.realpath(__file__))
-    flowchart_data = process_flowchart(os.path.join(current_location, "..", "..", "data", "sample.flow"))
+    flowchart_data = process_flowchart(
+        os.path.join(current_location, "..", "..", "data", "sample.flow")
+    )
 
     # Make the ID easier
-    flowchart_data['id'] = 'ABCD'
-    flowchart_data['owner_id'] = 1
+    flowchart_data["id"] = "ABCD"
+    flowchart_data["owner_id"] = 1
 
     # Save the fake data to the db
     job1 = Job(**job1_data)
@@ -119,36 +128,46 @@ def app(project_directory):
     app_context.pop()
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def client(app):
 
-    my_client = app.test_client()        
+    my_client = app.test_client()
     yield my_client
+
 
 @pytest.fixture(scope="module")
 def auth_client(client):
     auth_client = client
-    response = auth_client.post("api/auth/token", json=dict(
-        username="sample_user",
-        password="sample_password",
-    ), follow_redirects=True)
+    response = auth_client.post(
+        "api/auth/token",
+        json=dict(
+            username="sample_user",
+            password="sample_password",
+        ),
+        follow_redirects=True,
+    )
 
     yield auth_client
 
     response = auth_client.get("api/auth/token/remove", follow_redirects=True)
 
-    
+
 @pytest.fixture(scope="module")
 def admin_client(app):
     client = app.test_client()
-    client.post("api/auth/token", json=dict(
-        username="admin_user",
-        password="iamadmin",
-    ), follow_redirects=True)
+    client.post(
+        "api/auth/token",
+        json=dict(
+            username="admin_user",
+            password="iamadmin",
+        ),
+        follow_redirects=True,
+    )
 
     yield client
 
     client.get("api/auth/token/remove", follow_redirects=True)
+
 
 @pytest.fixture
 def chrome_driver():
@@ -156,10 +175,7 @@ def chrome_driver():
     chrome_options.add_argument("--headless")
     # executable_path = os.getenv('EXECUTABLE_PATH')
     driver = webdriver.Chrome(options=chrome_options)
-    
+
     yield driver
 
     driver.close()
-
-
-

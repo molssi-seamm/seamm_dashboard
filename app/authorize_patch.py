@@ -12,7 +12,7 @@ from flask_authorize.plugin import *
 def allowed(self, *args, **kwargs):
 
     # look to flask-login for current user
-    user = kwargs.get('user')
+    user = kwargs.get("user")
     if user is None:
         # Had to change this
         user = get_current_user()
@@ -27,12 +27,12 @@ def allowed(self, *args, **kwargs):
     ## We should check the permissions for "OTHER" if we do allow
     ## anonymous actions.
     if user is None:
-        if not current_app.config['AUTHORIZE_ALLOW_ANONYMOUS_ACTIONS']:
+        if not current_app.config["AUTHORIZE_ALLOW_ANONYMOUS_ACTIONS"]:
             return False
     ###########################################################
     #  END PATCH
     ###########################################################
-            
+
     # authorize if user has relevant role
     if len(self.has_role):
         if user_has_role(user, self.has_role):
@@ -50,8 +50,9 @@ def allowed(self, *args, **kwargs):
     # authorize create privileges based on access
     if len(self.create):
         for model in self.create:
-            if user_is_restricted(user, ['create'], model) or \
-                not user_is_allowed(user, ['create'], model):
+            if user_is_restricted(user, ["create"], model) or not user_is_allowed(
+                user, ["create"], model
+            ):
                 return False
 
     # return if no additional permission check needed
@@ -74,27 +75,27 @@ def allowed(self, *args, **kwargs):
             return False
 
         # only check permissions for items that have set permissions
-        check = current_app.config['AUTHORIZE_IGNORE_PROPERTY']
+        check = current_app.config["AUTHORIZE_IGNORE_PROPERTY"]
         if hasattr(arg, check) and not getattr(arg, check):
             continue
-        if not hasattr(arg, 'permissions'):
+        if not hasattr(arg, "permissions"):
             continue
 
         # check other permissions
-        check = arg.permissions.get('other', [])
+        check = arg.permissions.get("other", [])
         permitted = has_permission(operation, check)
 
         # check user permissions
-        if hasattr(arg, 'owner'):
+        if hasattr(arg, "owner"):
             if arg.owner == user:
-                check = arg.permissions.get('owner', [])
+                check = arg.permissions.get("owner", [])
                 permitted |= has_permission(operation, check)
 
         # check group permissions
-        if hasattr(arg, 'group'):
-            if hasattr(user, 'groups'):
+        if hasattr(arg, "group"):
+            if hasattr(user, "groups"):
                 if arg.group in user.groups:
-                    check = arg.permissions.get('group', [])
+                    check = arg.permissions.get("group", [])
                     permitted |= has_permission(operation, check)
 
         if not permitted:
@@ -104,5 +105,6 @@ def allowed(self, *args, **kwargs):
     # If we make it through the loop without permissions denied, we
     # return True
     return True
+
 
 Authorizer.allowed = allowed

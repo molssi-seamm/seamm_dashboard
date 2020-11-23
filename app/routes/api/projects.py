@@ -8,25 +8,27 @@ from flask_jwt_extended import jwt_optional
 from app.models import Project, ProjectSchema, Job, JobSchema
 from app import authorize
 
-__all__ = ['get_projects', 'get_project', 'list_projects', 'get_project_jobs']
+__all__ = ["get_projects", "get_project", "list_projects", "get_project_jobs"]
+
 
 @jwt_optional
 def get_projects(description=None, limit=None):
-    
+
     # If limit is not set, set limit to all jobs in DB.
     if limit is None:
         limit = Project.query.count()
-    
+
     if description is not None:
-        projects = Project.query.filter( Project.authorized('read'),
-            Project.description.contains(description)
+        projects = Project.query.filter(
+            Project.authorized("read"), Project.description.contains(description)
         ).limit(limit)
     else:
-        projects = Project.query.filter(Project.authorized('read')).limit(limit)
+        projects = Project.query.filter(Project.authorized("read")).limit(limit)
 
     projects_schema = ProjectSchema(many=True)
-    
+
     return projects_schema.dump(projects), 200
+
 
 @jwt_optional
 def get_project(id):
@@ -41,12 +43,13 @@ def get_project(id):
 
     if project is None:
         return Response(status=404)
-    
+
     if not authorize.read(project):
-        return Response('You are not authorized to access this content.', status=401)
+        return Response("You are not authorized to access this content.", status=401)
 
     project_schema = ProjectSchema(many=False)
     return project_schema.dump(project), 200
+
 
 @jwt_optional
 def get_project_jobs(id):
@@ -64,20 +67,20 @@ def get_project_jobs(id):
         return Response(status=404)
 
     if not authorize.read(project):
-        return Response('You are not authorized to access this content.', status=401)
-    
+        return Response("You are not authorized to access this content.", status=401)
+
     jobs = []
     for job in project.jobs:
         jobs.append(Job.query.get(job.id))
-    
+
     jobs_schema = JobSchema(many=True)
 
     return jobs_schema.dump(jobs), 200
 
+
 @jwt_optional
 def list_projects():
-    """List the projects in the datastore.
-    """
+    """List the projects in the datastore."""
     projects = Project.query.all()
 
     result = []
@@ -85,5 +88,4 @@ def list_projects():
         if authorize.read(project):
             result.append(project.name)
 
-    return {'projects': sorted(result)}, 200
-    
+    return {"projects": sorted(result)}, 200
