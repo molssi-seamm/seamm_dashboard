@@ -144,6 +144,10 @@
 
     <script>
       $('#ui-view').ajaxLoad();
+      // Prevent caching on ajax calls.
+      $.ajaxSetup ({
+        cache: false
+        });
     </script>
   </body>
 </html>
