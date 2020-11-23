@@ -109,11 +109,30 @@ Do you wish to continue?
     }
 }
 
-function inittable(data) {	
+function inittable(api_url) {	
 
     var table = $('#jobs').DataTable( {
         "responsive": true,
-        "aaData": data,
+        "ajax": {
+            url: `api/${api_url}`,
+            async: false,
+            dataType: 'json',
+            dataSrc: function (data) {
+                let arrayReturn = [];
+                for (var i = 0, len = data.length; i < len; i++) {
+                    arrayReturn.push(
+                        ['', `<a class="nav-link p-0" href="/jobs/${data[i].id}" title="View Details">`+data[i].id+'</a>', 
+                        data[i].title, 
+                        data[i].status,
+                        data[i].submitted,
+                        data[i].started,
+                        data[i].finished
+                        ]
+                    )
+                }
+                return arrayReturn
+            }
+        },
         "select": {
             "style": "multi"
         },
@@ -167,6 +186,8 @@ function inittable(data) {
 
     table.buttons().container()
     .appendTo( '#jobs_wrapper .col-md-6:eq(1)' );
+
+    return table
 }
 
 function ajaxProjectDescription(project_url){
@@ -184,26 +205,11 @@ function ajaxProjectDescription(project_url){
 
 $(document).ready(function () {
     let api_url = location.href.split('#')[1];
-    var arrayReturn = [];
-    $.ajax({
-        url: `api/${api_url}`,
-        async: false,
-        dataType: 'json',
-        success: function (data) {
-            for (var i = 0, len = data.length; i < len; i++) {
-                arrayReturn.push(
-		    ['', `<a class="nav-link p-0" href="/jobs/${data[i].id}" title="View Details">`+data[i].id+'</a>', 
-		     data[i].title, 
-		     data[i].status,
-		     data[i].submitted,
-		     data[i].started,
-		     data[i].finished
-		    ]
-		)
-            }
-        inittable(arrayReturn);
-        }
-    });
+    let my_table = inittable(api_url);
+
+    // Add action to refresh button
+    $("#refresh").click(my_table.ajax.reload)
+
 
     let tableButtons = document.getElementsByClassName("dt-buttons")
     tableButtons[0].className = "row justify-content-end"
@@ -222,7 +228,6 @@ $(document).ready(function () {
       if (titleSplit.includes('projects')){
         titleSplit.pop()
         let my_url = titleSplit.join('/')
-        console.log(my_url)
         ajaxProjectDescription(my_url)
       }
 
