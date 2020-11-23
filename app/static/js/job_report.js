@@ -369,13 +369,24 @@ $(document).ready(function() {
             let arg = eval(contentFunctions[fileType]["load"][1])
             func(arg)
             
-            // Make refresh button work.
+            // Make file refresh button work.
             $("#refresh").click(
                 function() {
                 func(arg)
             })
         }
     });
+
+    // Make file list refresh button work.
+    $("#refresh-file-list").click(
+        function() {
+            document.getElementById("js-tree").classList.toggle("hidden")
+            newData = buildTree(jobID)
+            $('#js-tree').jstree(true).settings.core.data = newData;
+            $('#js-tree').jstree("refresh")
+            document.getElementById("js-tree").classList.toggle("hidden")
+        }
+    )
 
     toggleDivs(contentDivs)
     // Show content
