@@ -1,21 +1,4 @@
 // You must include util.js on any page that uses this javascript file
-function inittable(data, div_id) {	
-    var my_table = $(`#${div_id}`).DataTable( {
-        "responsive": false,
-        "info": false,
-        "searching": false,
-        "lengthChange": false,
-        "orderable": false,
-        "paginate": false,
-        "aaData": data,
-        "columnDefs": [
-            { className: "sidebar-nav", "targets": [0, 1, 2, 3 ]}
-        ],
-        "autoWidth": false,
-    } );
-
-    return my_table
-}
 
 function buildTree(jobID) {
     var elements = [];
@@ -89,6 +72,15 @@ function loadGraph(nodeData) {
 }
 
 function loadTable(href) {
+    try {
+        table.destroy();
+        $('#csv-data tr').remove();
+        $('#csv-data thead').remove();
+        $('#csv-data tbody').remove();
+    } catch {
+        // Do nothing.
+    }
+
     var csvData = load_file(href, 'text')
     var separated = $.csv.toArrays(csvData)
 
