@@ -10,14 +10,14 @@
       <div class="col-sm-3">
         <div class="h4 mt-3" id="job-title"></div>
         <div>Status: <span id="job-status"></span></div>
-        <div class='h5 mt-3'>Browse files for job</div>
+        <div class='h5 mt-3'>Browse files for job<span><button type="button" id="refresh-file-list" class="btn btn btn-outline-primary float-right mb-3" title="Refresh File List" data-toggle="tooltip" data-placement="top"><i class="fas fa-sync"></i></button></span></div>
         <div class="input-group">
           <input type="text" class="form-control" placeholder="Search Files" id="search">
           <span class="input-group-btn">
             <button class="btn btn-primary" type="button" id="btn-search">Search</button>
           </span>
         </div>
-        <div style="margin:15px; white-space:pre-wrap; overflow-y: auto; overflow-x: auto;" id='js-tree' class="mh-100"></div>
+        <div style="margin:15px; white-space:pre-wrap; overflow-y: auto; overflow-x: auto;" id='js-tree' class="mh-100 animated fadeIn"></div>
       </div>
       <div class="col-sm-9 mt-3 mh-100 my-2" id="view-card">
         <div class= "card h-100 mb-0 border-0" id="outer-card">
