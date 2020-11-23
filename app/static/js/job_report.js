@@ -376,6 +376,12 @@ $(document).ready(function() {
             let func = contentFunctions[fileType]["load"][0]
             let arg = eval(contentFunctions[fileType]["load"][1])
             func(arg)
+            
+            // Make refresh button work.
+            $("#refresh").click(
+                function() {
+                func(arg)
+            })
         }
     });
 
