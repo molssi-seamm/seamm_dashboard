@@ -5,7 +5,6 @@ Table models for SEAMM datastore SQLAlchemy database.
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
-from flask_login import UserMixin
 from flask_authorize import PermissionsMixin, RestrictionsMixin
 
 from app import db, jwt
@@ -52,7 +51,7 @@ user_project = db.Table(
 )
 
 
-class User(db.Model, UserMixin):
+class User(db.Model):
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -81,8 +80,7 @@ class User(db.Model, UserMixin):
 
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
-
-
+    
 @jwt.user_loader_callback_loader
 def user_loader_callback(identity):
     """Function for app, to return user object"""

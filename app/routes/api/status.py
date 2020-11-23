@@ -7,7 +7,6 @@ from app.models import Project, Job, Flowchart, RoleSchema
 
 from flask import jsonify
 
-# from flask_login import current_user
 from sqlalchemy import and_
 
 from app import authorize
@@ -44,7 +43,7 @@ def status():
         username = "Anonymous User"
 
     if username != "Anonymous User":
-        user_id = current_user.get_id()
+        user_id = current_user.id
         roles = current_user.roles
         role_schema = RoleSchema(many=True)
         roles = role_schema.dump(roles)

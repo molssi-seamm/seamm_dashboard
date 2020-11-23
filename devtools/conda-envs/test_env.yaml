@@ -8,7 +8,6 @@ dependencies:
   - pip
   - pip:
     - flask-authorize
-    - flask-login
     - flask-jwt-extended
     - email_validator
     - configargparse
@@ -18,7 +17,6 @@ dependencies:
     - flask_bootstrap
     - flask_cors
     - flask_debugtoolbar
-    - flask_login
     - flask_mail
     - flask_marshmallow
     - flask_moment
