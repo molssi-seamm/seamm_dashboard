@@ -106,7 +106,7 @@ function loadTable(href) {
 
 function loadOther(file) {
     var fileType = file.split(".").slice(-1);
-    $("#file-content").html(`<pre style="white-space:pre-wrap;" id="pre-code"><code id="codeBlock" class="language-${fileType}"></code>`)
+    $("#file-content").html(`<pre style="white-space:pre-wrap;" id="pre-code"><code id="codeBlock" class="language-${fileType} animated fadeIn"></code>`)
     $("#codeBlock").load(file, function(data){ 
         if (data.length < 75000) {
             $("#pre-code").addClass('line-numbers')
