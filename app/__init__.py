@@ -141,7 +141,7 @@ def create_app(config_name=None):
 
         from .auth import auth as auth_blueprint
 
-        app.register_blueprint(auth_blueprint, url_prefix="/auth")
+        app.register_blueprint(auth_blueprint)
 
         from .routes.main import main as main_blueprint
         from .routes.jobs import jobs as jobs_blueprint
@@ -182,7 +182,7 @@ def create_app(config_name=None):
     app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
 
     # Set the cookie paths
-    app.config["JWT_ACCESS_COOKIE_PATH"] = "/api/"
+    app.config["JWT_ACCESS_COOKIE_PATH"] = "/api"
     app.config["JWT_REFRESH_COOKIE_PATH"] = "/api/auth/token/refresh"
 
     # Cookie security
