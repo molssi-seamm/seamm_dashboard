@@ -15,6 +15,7 @@ from flask import (
 from flask_jwt_extended import (
     get_jwt_identity,
     jwt_optional,
+    jwt_required,
     get_current_user,
     set_access_cookies,
     set_refresh_cookies,
@@ -33,8 +34,9 @@ from .forms import (
 from . import auth
 
 from app import db
-from app.models import User
+from app.models import User, UserSchema
 from app.routes.api.auth import create_tokens
+from app.routes.api.status import status
 
 
 logger = logging.getLogger(__name__)
@@ -47,13 +49,9 @@ def unconfirmed():
     return render_template("auth/unconfirmed.html")
 
 
-@jwt_optional
+
 @auth.route("/login", methods=["GET", "POST"])
 def login():
-
-    # If current user is logged in, redirect them to the main page.
-    if get_current_user():
-        return redirect(url_for("main.index"))
 
     form = LoginForm()
     if form.validate_on_submit():
@@ -72,7 +70,7 @@ def login():
             return response
         flash("Invalid username or password.")
 
-    return render_template("auth/login.html", form=form, current_user=get_current_user)
+    return render_template("auth/login.html", form=form)
 
 
 # Login required.
@@ -81,6 +79,7 @@ def logout():
     """
     Direct to blank page which sets local storage to log out all other tabs and redirects to main
     """
+    flash('You have been logged out.')
     response = make_response(render_template("logout.html"))
     unset_jwt_cookies(response)
     return response

@@ -27,31 +27,16 @@
 
   <body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">
     <header class="app-header navbar">
-      <button class="navbar-toggler sidebar-toggler d-lg-none mr-auto" type="button" data-toggle="sidebar-show">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+      
       <a class="navbar-brand" href="#">
         <img class="navbar-brand-full" src="{{ url_for('static', filename='images/MolSSI-Logo-xl.jpg') }}"  height="50" alt="MolSSI">
-        <img class="navbar-brand-minimized" src="{{ url_for('static', filename='images/molssi-favicon.jpg') }}" width="30" height="30" alt="CoreUI Logo">
+        <img class="navbar-brand-minimized" src="{{ url_for('static', filename='images/molssi-favicon.jpg') }}" width="30" height="30" alt="MolSSI Logo">
       </a>
-      <button class="navbar-toggler sidebar-toggler d-md-down-none" type="button" data-toggle="sidebar-lg-show">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <ul class="nav navbar-nav d-md-down-none">
-        <li class="nav-item px-3">
-          <a class="nav-link" href="#">Dashboard</a>
+      <ul class="navbar-nav">
+        <li class="nav-item">
         </li>
-        <li class="nav-item px-3">
-          <a class="nav-link" href="#">Users</a>
-        </li>
-        <li class="nav-item px-3">
-          <a class="nav-link" href="#">Settings</a>
-        </li>
-      </ul>
-      <ul class="nav navbar-nav ml-auto">
-          <div class="dropdown-menu dropdown-menu-right">
-          </div>
-        </li>
+    </ul>
+      <ul class="navbar-nav" id="login-info">
       </ul>
     </header>
     <div class="app-body">
@@ -104,17 +89,14 @@
         <button class="sidebar-minimizer brand-minimizer" type="button"></button>
       </div>
       <main class="main">
-        <ol class="breadcrumb">
-          <!-- Breadcrumb Menu-->
-          <li class="breadcrumb-menu d-md-down">
-            <div class="btn-group" role="group" aria-label="Button group">
-              <a class="btn" id="login-info-1"></a>
-              <a class="btn" id="login-info-2"></a>
-            </div>
-            <a class="btn" id="login-info-3"></a>
-          </li>
-        </ol>
         <div class="container-fluid vh-100 mt-3">
+          <div class="container">
+            {% for message in get_flashed_messages() %}
+            <div class="alert alert-warning">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                {{ message }}
+            </div>
+            {% endfor %}
           <div id="ui-view"></div>
         </div>
       </main>
@@ -148,65 +130,11 @@
     <script src="{{ url_for('static', filename='node_modules/datatables.net-select/js/dataTables.select.min.js') }}"></script>
     <script src="{{ url_for('static', filename='node_modules/datatables.net-buttons/js/dataTables.buttons.min.js') }}"></script>
 
+    <!--Page monitor and status-->
+    <script src="{{ url_for('static', filename='js/setup.js') }}"></script>
 
     <script>
       $('#ui-view').ajaxLoad();
-      // Prevent caching on ajax calls.
-      $.ajaxSetup ({
-        cache: false
-        });
-
-        // Get username and stuff
-        $.ajax({
-        url: `api/status`,
-        dataType: 'json',
-        async: false,
-        success: function (data) {
-            //console.log(data)
-            if (data.username == "Anonymous User") {
-              document.getElementById("login-info-1").innerHTML = `Not Logged In`
-              document.getElementById("login-info-2").innerHTML = '<a href="auth/login">Log In</a>'
-            }
-
-            else {
-              document.getElementById("login-info-1").innerHTML = `Logged in as ${data.username}`
-              document.getElementById("login-info-2").innerHTML = '<a href="auth/logout">Log Out</a>'
-
-              if (data.roles.includes("admin")) {
-                document.getElementById("login-info-3").innerHTML = '<a href="auth/manage_users">Manage Users</a>'
-              }
-            }
-
-            if (data.username != "Anonymous User") {
-              idleTimer()
-            }
-           
-            },
-            // error occurs because of expired access token. Remove cookie and reload page
-            error: function () {
-              $.ajax({
-                url: `auth/logout`,
-                complete: location.reload()
-              })
-              
-            },
-          })
-
-          window.addEventListener('storage', function(event){
-            if (event.key == 'login-event') { 
-              location.reload()
-            }
-            if (event.key == 'logout-event') { 
-              $.ajax({
-                url: `auth/logout`,
-                complete: function() {
-                  location.reload()
-                }
-              })
-            }
-
-          })
-
     </script>
   </body>
 </html>
