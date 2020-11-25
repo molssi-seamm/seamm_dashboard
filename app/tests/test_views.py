@@ -9,6 +9,7 @@ import requests
 import os
 import platform
 import sys
+import time
 
 import urllib.parse
 
@@ -39,7 +40,7 @@ class TestLiveServer:
         """
         Function to log sample user in for testing.
         """
-        login_url = f"{self.base_url}auth/login"
+        login_url = f"{self.base_url}/login"
         chrome_driver.get(login_url)
 
         username_field = chrome_driver.find_element_by_id("username")
@@ -60,7 +61,7 @@ class TestLiveServer:
         Function to make sure we are logged out
         """
 
-        logout_url = f"{self.base_url}auth/logout"
+        logout_url = f"{self.base_url}/logout"
 
         chrome_driver.get(logout_url)
 
@@ -180,8 +181,6 @@ class TestLiveServer:
 
         test_file_id = urllib.parse.quote(test_file, safe="") + "_anchor"
 
-        chrome_driver.save_screenshot("screenshot.png")
-
         WebDriverWait(chrome_driver, 20).until(
             EC.presence_of_element_located((By.ID, test_file_id))
         )
@@ -222,6 +221,8 @@ class TestLiveServer:
         )
         job_link.click()
 
+        time.sleep(0.25)
+
         # When clicked, file text should be displayed in the div.
         displayed_text = chrome_driver.find_element_by_id("file-content").text
 
@@ -229,16 +230,18 @@ class TestLiveServer:
 
         # Splitting on whitespace and rejoining let's us compare the file
         # contents without worrying about how whitespace is handled.
-        if displayed_text_list:
+        #if displayed_text_list:
             # using if statement because this doesn't load a lot of times on travis
             # if we get nothing, it's usually just a time out
-            assert initial_displayed_text == ''
-            assert ' '.join(displayed_text_list) == ' '.join(file_contents_split)
+        assert initial_displayed_text == ''
+        assert ' '.join(displayed_text_list) == ' '.join(file_contents_split)
 
     def test_job_report_file_content_refresh(self, app, chrome_driver, project_directory):
         """
         Test to click file and make sure it is loaded into div.
         """
+        # Have to log in for this
+        self.log_in(chrome_driver)
 
         # Set up sample file for comparison.
         test_file = os.path.realpath(
@@ -257,8 +260,7 @@ class TestLiveServer:
         chrome_driver.get(f"{self.base_url}#jobs/1")
 
         # Initially, there should be nothing in the text box.
-        initial_displayed_text = chrome_driver.find_element_by_id(
-            'file-content'
+        initial_displayed_text = chrome_driver.find_element_by_id('file-content'
         ).text
 
         # Get a link for a file and click on it.
@@ -267,15 +269,17 @@ class TestLiveServer:
         )
         job_link.click()
 
+        time.sleep(.25)
+
         # When clicked, file text should be displayed in the div.
         displayed_text = chrome_driver.find_element_by_id('file-content').text
 
         displayed_text_list = displayed_text.split()
-
+        
         # Splitting on whitespace and rejoining let's us compare the file
         # contents without worrying about how whitespace is handled.
         assert initial_displayed_text == ''
-        assert ' '.join(displayed_text_list) == ' '.join(file_contents_split)
+        assert ' '.join(displayed_text_list) == ' '.join(file_contents_split), "initial load failed."
 
         ## Update file on disk
         with open(test_file, "a+") as f:
@@ -287,13 +291,13 @@ class TestLiveServer:
         ## Click refresh button
         refresh_button = chrome_driver.find_element_by_id('refresh')
         refresh_button.click()
+        time.sleep(.25)
 
         # Check the new displayed text
         new_displayed_text = chrome_driver.find_element_by_id('file-content').text
         new_displayed_list = new_displayed_text.split()
 
-        if new_displayed_list:
-            assert ' '.join(new_displayed_list) == ' '.join(file_contents_split)
+        assert ' '.join(new_displayed_list) == ' '.join(file_contents_split)
 
     def test_job_report_file_content_resize(
         self, app, chrome_driver, project_directory
