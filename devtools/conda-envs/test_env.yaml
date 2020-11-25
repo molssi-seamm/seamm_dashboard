@@ -14,7 +14,7 @@ dependencies:
     - connexion[swagger-ui]
     - fasteners
     - flask
-    - flask_bootstrap
+    - flask-bootstrap4
     - flask_cors
     - flask_debugtoolbar
     - flask_mail
