@@ -9,9 +9,7 @@ $.ajaxSetup ({
     dataType: 'json',
     async: false,
     success: function (data) {
-        //console.log(data)
         let loginString;
-
         if (data.username == "Anonymous User") {
           
           loginString = `
@@ -37,10 +35,8 @@ $.ajaxSetup ({
                     <a class="dropdown-item" href="logout">Logout</a>
           `
           if (data.roles.includes("admin")) {
-              console.log("admin")
             loginString = loginString.concat(`<h6 class="dropdown-header">Admin Actions</h6>
             <a class="dropdown-item" href="#">Manage Users</a>`)
-            console.log(loginString)
           }
           
           loginString = loginString.concat(`</div>
@@ -65,13 +61,14 @@ $.ajaxSetup ({
       })
 
       window.addEventListener('storage', function(event){
-        if (event.key == 'login-event') { 
+        if (event.key == 'seammLogin') { 
           location.reload()
         }
-        if (event.key == 'logout-event') { 
+        if (event.key == 'seammLogout') { 
           $.ajax({
-            url: `auth/logout`,
+            url: `logout`,
             complete: function() {
+              localStorage.removeItem('seammLogout')
               location.reload()
             }
           })

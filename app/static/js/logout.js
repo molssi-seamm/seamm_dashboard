@@ -1,3 +1,6 @@
-localStorage.setItem('logout-event', 'logout' + Math.random());
-console.log('Set local storage')
+// Make sure local storage is clear
+localStorage.removeItem('timeOfActivity')
+localStorage.removeItem('seammLogin')
+
+localStorage.setItem('seammLogout', 'logout' + Math.random());
 window.location.href = '/'

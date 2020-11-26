@@ -70,8 +70,6 @@ def get_auth_token(body):
 def remove_auth_token():
     resp = make_response({"logout": True})
     unset_jwt_cookies(resp)
-    unset_access_cookies(resp)
-    unset_refresh_cookies(resp)
     return resp, 200
 
 

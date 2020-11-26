@@ -31,7 +31,6 @@ function setFileDivSize() {
     let location = document.getElementById("file-name").getBoundingClientRect();
     let headerLocation = document.querySelector(".app-header").getBoundingClientRect()
     let viewCardHeight = $(window).innerHeight() - location.bottom - headerLocation.bottom
-    console.log(`file-name ${location.bottom}, header ${headerLocation.bottom}`)
 
     let divs = Array.from(document.querySelectorAll(".load-content"))
 
