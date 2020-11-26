@@ -18,3 +18,12 @@ def test_delete_job(admin_client, project_directory):
     assert response.status_code == 200
 
     assert not os.path.exists(expected_path)
+
+def test_get_users(admin_client):
+    """Check get method of api/users on admin client"""
+
+    response = admin_client.get("api/users")
+
+    assert response.status_code == 200
+
+    assert len(response.json) == 2
