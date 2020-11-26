@@ -1,0 +1,46 @@
+{% extends "auth/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Manage Dashboard Users</h1>
+</div>
+<table id="jobs" class="table table-responsive-sm table-bordered table-striped table-sm" style="width:100%">
+    <thead>
+      <tr>
+        <th>
+          User ID
+        </th>
+        <th>
+          Username
+        </th>
+        <th>
+            First Name
+          </th>
+          <th>
+            Last Name
+          </th>
+        <th>
+          User Roles
+        </th>
+        <th>
+          User Groups
+        </th>
+        <th>
+          Manage User
+        </th>
+      </tr>
+    </thead>
+  </table>
+  
+    <script src="{{ url_for('static', filename='node_modules/jquery/dist/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='node_modules/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='node_modules/datatables.net-dt/js/dataTables.dataTables.min.js') }}"></script> 
+    <script src="{{ url_for('static', filename='node_modules/datatables.net-bs4/js/dataTables.bootstrap4.min.js') }}"></script> 
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='node_modules/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='node_modules/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css') }}"/>
+
+    <script src="{{ url_for('static', filename='js/manage_users.js') }}"></script>
+
+{% endblock %}

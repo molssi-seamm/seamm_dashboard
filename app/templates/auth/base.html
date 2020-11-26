@@ -49,6 +49,9 @@
 <script src="{{ url_for('static', filename='node_modules/jquery/dist/jquery.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/timer.js') }}"></script>
 <script src="{{ url_for('static', filename='js/setup.js') }}"></script>
+<script>
+    $("body").addClass('bg-white')
+</script>
 {{ super() }}
 {{ moment.include_moment() }}
 {% endblock %}

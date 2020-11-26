@@ -84,6 +84,10 @@ def logout():
     unset_jwt_cookies(response)
     return response
 
+@auth.route("/manage_users")
+def manage_users():
+    return render_template("auth/manage_users.html")
+
 
 @auth.route("/create_user", methods=["GET", "POST"])
 def create_user():
