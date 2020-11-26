@@ -60,7 +60,7 @@ def login():
         if user is not None and user.verify_password(form.password.data):
             # redirect to blank login page which will set local storage to
             # reload all tabs (as logged in user)
-            response = make_response(render_template("login.html"))
+            response = make_response(render_template("login_script.html"))
 
             # Add cookies to response
             access_token, refresh_token = create_tokens(user)

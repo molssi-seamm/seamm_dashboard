@@ -12,7 +12,7 @@ function idleTimer() {
     }
 
 
-    window.onload = refresh_token;
+    //window.onload = refresh_token;
     window.onmousemove = resetTimer; // catches mouse movements
     window.onmousedown = resetTimer; // catches mouse movements
     window.onclick = resetTimer;     // catches mouse clicks
@@ -26,7 +26,7 @@ function idleTimer() {
         let currentTime = nowTime.getTime()
         let elapsedTime = currentTime - localStorage.getItem('timeOfActivity')
         if (( elapsedTime >= timeOutTime)) {
-            window.location.href = '/auth/logout';  // Logout user
+            window.location.href = '/logout';  // Logout user
         }
     }
 
