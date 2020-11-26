@@ -4,8 +4,9 @@ API calls for users (creating, logging in, logging out)
 """
 
 from flask import Response
+from flask_jwt_extended import jwt_optional
 
-from app import db
+from app import db, authorize
 from app.models import User, UserSchema
 
 __all__ = ["add_user", "get_users"]
@@ -30,7 +31,8 @@ def add_user(body):
 
     return user.id, 201
 
-
+@jwt_optional
+@authorize.has_role("admin")
 def get_users():
     users = User.query.all()
     users = UserSchema(many=True).dump(users)

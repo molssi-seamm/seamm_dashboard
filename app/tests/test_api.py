@@ -77,9 +77,16 @@ def test_add_job(client):
     assert False
 
 
-def test_delete_job(auth_client, project_directory):
+def test_delete_job(client):
     """Check delete method of api/jobs/{jobID}"""
 
-    response = auth_client.delete("api/jobs/2")
+    response = client.delete("api/jobs/2")
+
+    assert response.status_code == 401
+
+def test_get_users(client):
+    """Check get method of api/users on unauthenticated client"""
+
+    response = client.get("api/users")
 
     assert response.status_code == 401

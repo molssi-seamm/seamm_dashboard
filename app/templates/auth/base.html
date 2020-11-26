@@ -47,6 +47,7 @@
 
 {% block scripts %}
 <script src="{{ url_for('static', filename='node_modules/jquery/dist/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/timer.js') }}"></script>
 <script src="{{ url_for('static', filename='js/setup.js') }}"></script>
 {{ super() }}
 {{ moment.include_moment() }}
