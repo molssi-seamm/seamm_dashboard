@@ -1,9 +1,4 @@
-{% extends "bootstrap/base.html" %}
-
-{% block title %}SEAMM Dashboard{% endblock %}
-
 {% block head %}
-{{ super() }}
 <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
@@ -47,11 +42,19 @@
 
 {% block scripts %}
 <script src="{{ url_for('static', filename='node_modules/jquery/dist/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='node_modules/popper.js/dist/umd/popper.min.js') }}"></script>
+<script src="{{ url_for('static', filename='node_modules/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+<script src="{{ url_for('static', filename='node_modules/perfect-scrollbar/dist/perfect-scrollbar.min.js') }}"></script>
+<script src="{{ url_for('static', filename='node_modules/@fortawesome/fontawesome-free/js/all.min.js')}}"></script>
+<script src="{{ url_for('static', filename='node_modules/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+<script src="{{ url_for('static', filename='node_modules/datatables.net-dt/js/dataTables.dataTables.min.js') }}"></script> 
+<script src="{{ url_for('static', filename='node_modules/datatables.net-bs4/js/dataTables.bootstrap4.min.js') }}"></script> 
+<script src="{{ url_for('static', filename='node_modules/datatables.net-select/js/dataTables.select.min.js') }}"></script>
+<script src="{{ url_for('static', filename='node_modules/datatables.net-buttons/js/dataTables.buttons.min.js') }}"></script>
+
 <script src="{{ url_for('static', filename='js/timer.js') }}"></script>
 <script src="{{ url_for('static', filename='js/setup.js') }}"></script>
 <script>
     $("body").addClass('bg-white')
 </script>
-{{ super() }}
-{{ moment.include_moment() }}
 {% endblock %}
