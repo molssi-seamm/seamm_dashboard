@@ -7,7 +7,7 @@ from flask import Response
 from flask_jwt_extended import jwt_optional
 
 from app import db, authorize
-from app.models import User, UserSchema
+from app.models import User, UserSchema, Role, RoleSchema, Group, GroupSchema
 
 __all__ = ["add_user", "get_users"]
 
@@ -35,6 +35,30 @@ def add_user(body):
 @authorize.has_role("admin")
 def get_users():
     users = User.query.all()
-    users = UserSchema(many=True).dump(users)
 
-    return users
+    user_list = []
+    for current_user in users:
+        roles = current_user.roles
+        role_schema = RoleSchema(many=True)
+        roles = role_schema.dump(roles)
+
+        user_roles = []
+        for role in roles:
+            user_roles.append(role["name"])
+
+        groups = current_user.groups
+        group_schema = GroupSchema(many=True)
+        groups = group_schema.dump(groups)
+
+        user_groups = []
+        for group in groups:
+            user_groups.append(group["name"])
+
+        user_info = UserSchema(many=False).dump(current_user)
+        user_info['roles'] = user_roles
+        user_info['groups'] = user_groups
+    
+        user_list.append(user_info)
+        
+
+    return user_list, 200
