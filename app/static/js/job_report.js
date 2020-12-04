@@ -39,6 +39,14 @@ function setFileDivSize() {
             divs[i].style.height = `${viewCardHeight}px`;
         }
     }
+
+    let jsTree= document.getElementById("js-tree");
+    let searchLocation = document.getElementById('search').getBoundingClientRect()
+    let jsHeight = viewCardHeight - (searchLocation.bottom - location.bottom)
+    jsTree.style.height = `${jsHeight}px`;
+
+    console.log(jsHeight)
+
 }
 
 function loadFlow(flowchartID) {

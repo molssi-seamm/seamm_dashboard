@@ -5,7 +5,7 @@
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/custom_flowchart.css') }}">
 
 
-<div class="animated fadeIn vh-100 hidden" id="view">
+<div class="animated fadeIn vh-100 mh-100 hidden" id="view">
     <div class="row">
       <div class="col-sm-3">
         <div class="h4 mt-3" id="job-title"></div>
@@ -17,7 +17,7 @@
             <button class="btn btn-primary" type="button" id="btn-search">Search</button>
           </span>
         </div>
-        <div style="margin:15px; white-space:pre-wrap; overflow-y: auto; overflow-x: auto;" id='js-tree' class="mh-100 animated fadeIn"></div>
+        <div id='js-tree' class="animated fadeIn m-3 mh-100" style="overflow:auto"></div>
       </div>
       <div class="col-sm-9 mt-3 mh-100 my-2" id="view-card">
         <div class= "card h-100 mb-0 border-0" id="outer-card">

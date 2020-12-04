@@ -90,15 +90,13 @@
       </div>
       <main class="main">
         <div class="container-fluid vh-100 mt-3">
-          <div class="container">
             {% for message in get_flashed_messages() %}
             <div class="alert alert-warning">
                 <button type="button" class="close" data-dismiss="alert">&times;</button>
                 {{ message }}
             </div>
             {% endfor %}
-          <div id="ui-view"></div>
-        </div>
+          <div id="ui-view" class="vw-100"></div>
       </main>
     </div>
     <footer class="app-footer">
