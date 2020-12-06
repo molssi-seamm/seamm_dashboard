@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
-from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectMultipleField
+from wtforms.fields.html5 import EmailField
+from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo, Email
 from wtforms import ValidationError
 from app.models import User
 
@@ -10,7 +11,7 @@ from app import db
 class LoginForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired(), Length(3, 64)])
     password = PasswordField("Password", validators=[DataRequired()])
-    remember_me = BooleanField("Keep me logged in")
+    #remember_me = BooleanField("Keep me logged in")
     submit = SubmitField("Log In")
 
 
@@ -27,7 +28,40 @@ class CreateUserForm(FlaskForm):
             ),
         ],
     )
-    email = StringField("Email", validators=[DataRequired(), Length(3, 64), Email()])
+
+    first_name = StringField(
+        "First Name",
+        validators=[
+            Length(3,64)
+        ]
+    )
+
+    last_name = StringField(
+        "Last Name",
+        validators=[
+            Length(3,64)
+        ]
+    )
+
+    email_address = EmailField(
+        "Email Address",
+        validators=[
+            DataRequired(),
+            Email(),
+        ]
+
+    )
+
+    user_roles = SelectMultipleField(
+        "User Roles",
+        choices = [('1', 'Choice1'), ('2', 'Choice2'), ('3', 'Choice3')]
+    )
+
+    user_groups = SelectMultipleField(
+        "User Groups",
+        choices = [('1', 'Choice1'), ('2', 'Choice2'), ('3', 'Choice3')]
+    )
+
     password = PasswordField(
         "Password",
         validators=[
@@ -37,7 +71,7 @@ class CreateUserForm(FlaskForm):
         ],
     )
     password2 = PasswordField("Confirm password", validators=[DataRequired()])
-    submit = SubmitField("Register")
+    submit = SubmitField("Create New User")
 
     def validate_email(self, field):
         print(User.query.filter(User.email == field.data).first())
