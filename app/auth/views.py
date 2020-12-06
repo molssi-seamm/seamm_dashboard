@@ -102,5 +102,5 @@ def create_user():
         #           'auth/email/confirm', user=user, token=token)
         flash(f"The user {user.username} has been created")
         return redirect(url_for("auth.login"))
-    return render_template("auth/register.html", form=form)
+    return render_template("auth/create_user.html", form=form)
 
