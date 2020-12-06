@@ -12,7 +12,7 @@ function idleTimer() {
     }
 
 
-    //window.onload = refresh_token;
+    window.onload = refresh_token;
     window.onmousemove = resetTimer; // catches mouse movements
     window.onmousedown = resetTimer; // catches mouse movements
     window.onclick = resetTimer;     // catches mouse clicks
