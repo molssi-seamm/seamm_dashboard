@@ -1,0 +1,82 @@
+{% extends "auth/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Create New User</h1>
+</div>
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header">
+          User Account Information
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">Username and Password</h5>
+          <p class="card-text font-weight-light font-italic">Enter the username and a temporary password for the user. The user should change this on their first log in.</p>
+          <div class="row">
+            <div class="form-group col-sm-12">
+                {{ wtf.form_field(form.username, class='form-control', 
+                    placeholder='Username') }}
+            </div>
+            <div class="form-group col-sm-12 col-md-6">
+                {{ wtf.form_field(form.password, class='form-control', 
+                    placeholder='Password') }}
+            </div>
+            <div class="form-group col-sm-12 col-md-6">
+                {{ wtf.form_field(form.password2, class='form-control', 
+                    placeholder='Confirm Password') }}
+            </div>
+          </div>
+        </div>
+    </div>
+
+
+    <div class="card">
+        <div class="card-header">
+          User Permissions
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">User Groups and Roles</h5>
+          <p class="card-text font-weight-light font-italic">Put the user into groups and add roles.</p>
+          <div class="row">
+            <div class="form-group col-sm-12">
+                {{ wtf.form_field(form.user_roles, class='form-control', 
+                    placeholder='Choose User Roles') }}
+            </div>
+            <div class="form-group col-sm-12">
+                {{ wtf.form_field(form.user_groups, class='form-control', 
+                    placeholder='Choose User Groups') }}
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+          User Informatiom
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">Contact Information for the User</h5>
+          <p class="card-text font-weight-light font-italic">This contact information is not used by the SEAMM dashboard, but should be used by admin in order to contact users.</p>
+          <div class="row">
+            <div class="form-group col-sm-12 col-md-6">
+                {{ wtf.form_field(form.first_name, class='form-control', 
+                    placeholder='First Name') }}
+            </div>
+            <div class="form-group col-sm-12 col-md-6">
+                {{ wtf.form_field(form.last_name, class='form-control', 
+                    placeholder='Last Name') }}
+            </div>
+            <div class="form-group col-sm-12">
+                {{ wtf.form_field(form.email_address, class='form-control', 
+                    placeholder='Email Address') }}
+            </div>
+          </div>
+        </div>
+    </div>
+     <div class="mb-5"> 
+        {{ wtf.form_field(form.submit, class="btn btn-primary form-control") }}
+    </div>
+</div>
+{% endblock %}
