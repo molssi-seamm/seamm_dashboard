@@ -1,5 +1,11 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectMultipleField
+from wtforms import (
+    StringField,
+    PasswordField,
+    BooleanField,
+    SubmitField,
+    SelectMultipleField,
+)
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo, Email
 from wtforms import ValidationError
@@ -11,14 +17,25 @@ from app import db
 class LoginForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired(), Length(3, 64)])
     password = PasswordField("Password", validators=[DataRequired()])
-    #remember_me = BooleanField("Keep me logged in")
+    # remember_me = BooleanField("Keep me logged in")
     submit = SubmitField("Log In")
 
 
 class CreateUserForm(FlaskForm):
+    def validate_email(self, field):
+        if User.query.filter(User.email == field.data).first():
+            raise ValidationError(f"Email ({field.data}) already registered. ")
+
+    def validate_username(self, field):
+        if User.query.filter(User.username == field.data).first():
+            raise ValidationError(
+                f"Username {field.data} already in use. Please pick a different username"
+            )
+
     username = StringField(
         "Username",
         validators=[
+            validate_username,
             DataRequired(),
             Length(3, 64),
             Regexp(
@@ -29,38 +46,21 @@ class CreateUserForm(FlaskForm):
         ],
     )
 
-    first_name = StringField(
-        "First Name",
-        validators=[
-            Length(3,64)
-        ]
-    )
+    first_name = StringField("First Name", validators=[Length(3, 64)])
 
-    last_name = StringField(
-        "Last Name",
-        validators=[
-            Length(3,64)
-        ]
-    )
+    last_name = StringField("Last Name", validators=[Length(3, 64)])
 
     email_address = EmailField(
         "Email Address",
         validators=[
             DataRequired(),
             Email(),
-        ]
-
+        ],
     )
 
-    user_roles = SelectMultipleField(
-        "User Roles",
-        choices = [('1', 'Choice1'), ('2', 'Choice2'), ('3', 'Choice3')]
-    )
+    user_roles = SelectMultipleField("User Roles", choices=[])
 
-    user_groups = SelectMultipleField(
-        "User Groups",
-        choices = [('1', 'Choice1'), ('2', 'Choice2'), ('3', 'Choice3')]
-    )
+    user_groups = SelectMultipleField("User Groups", choices=[])
 
     password = PasswordField(
         "Password",
@@ -72,15 +72,6 @@ class CreateUserForm(FlaskForm):
     )
     password2 = PasswordField("Confirm password", validators=[DataRequired()])
     submit = SubmitField("Create New User")
-
-    def validate_email(self, field):
-        print(User.query.filter(User.email == field.data).first())
-        if User.query.filter(User.email == field.data).first():
-            raise ValidationError(f"Email ({field.data}) already registered. ")
-
-    def validate_username(self, field):
-        if User.query.filter(User.username == field.data).first():
-            raise ValidationError("Username already in use.")
 
 
 class ChangePasswordForm(FlaskForm):

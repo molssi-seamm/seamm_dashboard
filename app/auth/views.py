@@ -34,7 +34,7 @@ from .forms import (
 from . import auth
 
 from app import db
-from app.models import User, UserSchema
+from app.models import User, UserSchema, Role, Group
 from app.routes.api.auth import create_tokens
 from app.routes.api.status import status
 
@@ -47,7 +47,6 @@ def unconfirmed():
     if current_user.is_anonymous or current_user.confirmed:
         return redirect(url_for("main.index"))
     return render_template("auth/unconfirmed.html")
-
 
 
 @auth.route("/login", methods=["GET", "POST"])
@@ -79,10 +78,11 @@ def logout():
     """
     Direct to blank page which sets local storage to log out all other tabs and redirects to main
     """
-    flash('You have been logged out.')
+    flash("You have been logged out.")
     response = make_response(render_template("logout.html"))
     unset_jwt_cookies(response)
     return response
+
 
 @auth.route("/manage_users")
 def manage_users():
@@ -91,7 +91,11 @@ def manage_users():
 
 @auth.route("/create_user", methods=["GET", "POST"])
 def create_user():
+
     form = CreateUserForm()
+    form.user_groups.choices = [(i, g.name) for i, g in enumerate(Group.query.all())]
+    form.user_roles.choices = [(i, r.name) for i, r in enumerate(Role.query.all())]
+
     if form.validate_on_submit():
         user = User(email=form.email.data, username=form.username.data)
         user.password = form.password.data
@@ -103,4 +107,3 @@ def create_user():
         flash(f"The user {user.username} has been created")
         return redirect(url_for("auth.login"))
     return render_template("auth/create_user.html", form=form)
-

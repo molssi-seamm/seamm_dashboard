@@ -162,6 +162,8 @@ def file_owner(path):
             user = User(username=name, password="default", roles=[admin_role])
             user.groups.append(group)
             db.session.add(user)
+            db.session.add(admin_role)
+            db.session.add(group)
             db.session.commit()
         return user.id, group.id
     else:
