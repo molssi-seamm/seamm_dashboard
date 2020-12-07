@@ -59,7 +59,6 @@ class User(db.Model):
     first_name = db.Column(db.String)
     last_name = db.Column(db.String)
     email = db.Column(db.String, unique=True)
-    # confirmed = db.Column(db.Boolean, default=False)
     password_hash = db.Column(db.String)
     added = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     status = db.Column(db.String, default="active")
@@ -80,7 +79,8 @@ class User(db.Model):
 
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
-    
+
+
 @jwt.user_loader_callback_loader
 def user_loader_callback(identity):
     """Function for app, to return user object"""
@@ -169,13 +169,6 @@ class Project(db.Model, PermissionsMixin):
 
     def __repr__(self):
         return f"Project(name={self.name}, path={self.path}, description={self.description})"  # noqa: E501
-
-
-#############################
-#
-# Login Manager
-#
-#############################
 
 
 #############################
