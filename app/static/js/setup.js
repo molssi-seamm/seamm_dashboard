@@ -5,7 +5,7 @@ $.ajaxSetup ({
 
     // Get username and stuff
     $.ajax({
-    url: `${location.protocol}/api/status`,
+    url: `${location.origin}/api/status`,
     dataType: 'json',
     async: false,
     success: function (data) {
@@ -53,7 +53,7 @@ $.ajaxSetup ({
         // error occurs because of expired access token. Remove cookie and reload page
         error: function () {
           $.ajax({
-            url: `logout`,
+            url: `${location.origin}/logout`,
             complete: location.reload()
           })
           
@@ -66,7 +66,7 @@ $.ajaxSetup ({
         }
         if (event.key == 'seammLogout') { 
           $.ajax({
-            url: `logout`,
+            url: `${location.origin}/logout`,
             complete: function() {
               localStorage.removeItem('seammLogout')
               location.reload()
