@@ -5,6 +5,8 @@ Tests for the API (admin user)
 
 import os
 
+import json
+
 
 def test_delete_job(admin_client, project_directory):
     """Check delete method of api/jobs/{jobID}"""
@@ -19,6 +21,7 @@ def test_delete_job(admin_client, project_directory):
 
     assert not os.path.exists(expected_path)
 
+
 def test_get_users(admin_client):
     """Check get method of api/users on admin client"""
 
@@ -27,3 +30,19 @@ def test_get_users(admin_client):
     assert response.status_code == 200
 
     assert len(response.json) == 2
+
+
+def test_add_user(admin_client):
+    """Check post method of api/users on admin client."""
+
+    new_user = {
+        "username": "waffles",
+        "password": "waffles!",
+        "roles": ["manager"],
+    }
+
+    response = admin_client.post(
+        "api/users", data=json.dumps(new_user), content_type="application/json"
+    )
+
+    assert response.status_code == 201
