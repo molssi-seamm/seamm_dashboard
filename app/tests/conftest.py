@@ -53,8 +53,9 @@ def app(project_directory):
 
     project = Project(**test_project)
 
-    # Create a sample role
+    # Create some sample role
     admin_role = Role(name="admin")
+    manager_role = Role(name="manager")
 
     # Create a sample user.
     test_user = User(username="sample_user", password="sample_password")
@@ -115,6 +116,7 @@ def app(project_directory):
     flowchart = Flowchart(**flowchart_data)
     db.session.add(test_user)
     db.session.add(admin_role)
+    db.session.add(manager_role)
     db.session.add(test_admin)
     db.session.add(project)
     db.session.add(job1)

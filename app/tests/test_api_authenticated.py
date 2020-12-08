@@ -106,6 +106,7 @@ def test_update_job(auth_client):
     new_info = auth_client.get("api/jobs/1").json
     assert new_info["status"] == "submitted"
 
+
 def test_get_users(auth_client):
     """Check get method of api/users on authenticated client"""
 

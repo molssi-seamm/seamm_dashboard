@@ -6,14 +6,7 @@ import logging
 
 import json
 
-from flask import (
-    render_template,
-    redirect,
-    url_for,
-    flash,
-    make_response,
-    Response
-)
+from flask import render_template, redirect, url_for, flash, make_response, Response
 
 from .forms import (
     CreateUserForm,
@@ -42,9 +35,11 @@ def create_user():
         processed_form = _process_user_body(form.data)
 
         if isinstance(processed_form, Response):
-            flash(f"Creating the user failed because of problems with the input data. Please check the inputs and try again.")
+            flash(
+                f"Creating the user failed because of problems with the input data. Please check the inputs and try again."
+            )
             return redirect(url_for("admin.create_user"))
-        
+
         else:
             db.session.add(processed_form)
             db.session.commit()

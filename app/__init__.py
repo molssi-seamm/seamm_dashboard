@@ -213,6 +213,6 @@ def create_app(config_name=None):
                 "  added {} jobs and {} projects".format(n_added_jobs, n_added_projects)
             )
 
-    logger.info(f'{app.url_map}')
+    logger.info(f"{app.url_map}")
 
     return app

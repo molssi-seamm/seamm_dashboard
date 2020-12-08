@@ -32,7 +32,7 @@ $.ajaxSetup ({
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                     <a class="dropdown-item" href="#">Manage Account</a>
-                    <a class="dropdown-item" href="logout">Logout</a>
+                    <a class="dropdown-item" href="${location.origin}/logout">Logout</a>
           `
           if (data.roles.includes("admin")) {
             loginString = loginString.concat(`<h6 class="dropdown-header">Admin Actions</h6>

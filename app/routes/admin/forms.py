@@ -13,6 +13,7 @@ from app.models import User
 
 from app import db
 
+
 class CreateUserForm(FlaskForm):
     def validate_email(self, field):
         if User.query.filter(User.email == field.data).first():
