@@ -50,7 +50,7 @@ class CreateUserForm(FlaskForm):
 
     last_name = StringField("Last Name", validators=[Length(3, 64)])
 
-    email_address = EmailField(
+    email = EmailField(
         "Email Address",
         validators=[
             DataRequired(),

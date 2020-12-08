@@ -43,15 +43,6 @@ $(document).ready( function() {
     "select": {
         "style": "multi"
     },
-    "columnDefs": [
-        { "className": "sidebar-nav", 
-        "targets": [1]},
-        {
-            orderable: false,
-            className: 'select-checkbox p-2',
-            targets:   0
-        },
-    ],
     "autoWidth": true,
     "order": [[ 1, "desc"]]
 } )

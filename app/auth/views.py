@@ -1,5 +1,7 @@
 import logging
 
+import json
+
 from flask import (
     render_template,
     redirect,
@@ -8,6 +10,7 @@ from flask import (
     flash,
     jsonify,
     make_response,
+    Response
 )
 
 # Still importing for un-rewritten routes (leaving for reference)
@@ -37,6 +40,7 @@ from app import db
 from app.models import User, UserSchema, Role, Group
 from app.routes.api.auth import create_tokens
 from app.routes.api.status import status
+from app.routes.api.users import _process_user_body
 
 
 logger = logging.getLogger(__name__)
@@ -93,17 +97,21 @@ def manage_users():
 def create_user():
 
     form = CreateUserForm()
-    form.user_groups.choices = [(i, g.name) for i, g in enumerate(Group.query.all())]
-    form.user_roles.choices = [(i, r.name) for i, r in enumerate(Role.query.all())]
+    form.user_groups.choices = [(g.name, g.name) for g in Group.query.all()]
+    form.user_roles.choices = [(r.name, r.name) for r in Role.query.all()]
 
     if form.validate_on_submit():
-        user = User(email=form.email.data, username=form.username.data)
-        user.password = form.password.data
-        db.session.add(user)
-        db.session.commit()
-        # token = user.generate_confirmation_token()
-        # send_email(user.email, 'SEAMM Dashboard - Confirm Your Account',
-        #           'auth/email/confirm', user=user, token=token)
-        flash(f"The user {user.username} has been created")
-        return redirect(url_for("auth.login"))
+        processed_form = _process_user_body(form.data)
+
+        if isinstance(processed_form, Response):
+            flash(f"Creating the user failed because of problems with the input data. Please check the inputs and try again.")
+            return redirect(url_for("auth.create_user"))
+        
+        else:
+            # The re
+            db.session.add(processed_form)
+            db.session.commit()
+            flash(f"The user {form.data['username']} has been created")
+            return render_template("auth/manage_users.html")
+
     return render_template("auth/create_user.html", form=form)

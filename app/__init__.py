@@ -59,16 +59,8 @@ if "debug" in options:
 # continue the setup
 mail = Mail()
 cors = CORS()
-# cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
-# For: @app.route("/api/v1/users")
 
 bootstrap = Bootstrap()
-
-# app_admin = Admin(
-#     name='MolSSI Molecular Software DB Admin',
-#     template_mode='bootstrap3',
-#     base_template='admin/custom_base.html'
-# )
 
 jwt = JWTManager()
 authorize = Authorize(current_user=get_current_user)
@@ -132,6 +124,7 @@ def create_app(config_name=None):
     )
 
     conn_app.add_api("swagger.yml")
+
     db.init_app(app)
     with app.app_context():
         if options.initialize:
@@ -219,5 +212,7 @@ def create_app(config_name=None):
             logger.info(
                 "  added {} jobs and {} projects".format(n_added_jobs, n_added_projects)
             )
+
+    logger.info(f'{app.url_map}')
 
     return app
