@@ -1,8 +1,9 @@
 $(document).ready( function() { 
+    console.log(location.protocol)
     var table = $('#users').DataTable( {
     "responsive": true,
     "ajax": {
-        url: `api/users`,
+        url: `${location.protocol}/api/users`,
         async: false,
         dataType: 'json',
         dataSrc: function (data) {
@@ -32,7 +33,7 @@ $(document).ready( function() {
     },
     "buttons": [
         {
-            className: "col-md-auto col-sm-12 btn btn-outline-success btn-lg m-1 float-right",
+            className: "col-md-auto col-sm-12 btn btn-outline-success m-1 float-right",
             text: '<i class="fas fa-user-plus mr-2"></i>Create New User',
             action: function ( ) {
                 window.location='create_user'

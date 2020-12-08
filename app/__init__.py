@@ -140,6 +140,7 @@ def create_app(config_name=None):
         from .routes.jobs import jobs as jobs_blueprint
         from .routes.flowcharts import flowcharts as flowchart_blueprint
         from .routes.projects import projects as project_blueprint
+        from .routes.admin import admin as admin_blueprint
 
         from .routes.main import errors
 
@@ -147,6 +148,7 @@ def create_app(config_name=None):
         app.register_blueprint(jobs_blueprint)
         app.register_blueprint(flowchart_blueprint)
         app.register_blueprint(project_blueprint)
+        app.register_blueprint(admin_blueprint)
 
         app.register_error_handler(404, errors.not_found)
 
