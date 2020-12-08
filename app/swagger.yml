@@ -5,13 +5,15 @@ info:
   contact:
     email: janash@vt.edu
   version: "1.0.0"
+servers: 
+  - url: /api
 tags:
 - name: admins
   description: Secured Admin-only calls
 - name: developers
   description: Operations available to regular developers
 paths:
-  /api/jobs/{id}:
+  /jobs/{id}:
     get:
       tags:
       - developers
@@ -81,7 +83,7 @@ paths:
           description: Job deleted successfully.
         "404":
           description: Job not found.
-  /api/jobs/{id}/files:
+  /jobs/{id}/files:
     get:
       tags:
       - developers
@@ -108,7 +110,7 @@ paths:
           description: search results matching criteria
         "400":
           description: bad input parameter
-  /api/jobs:
+  /jobs:
     get:
       tags:
       - developers
@@ -202,7 +204,7 @@ paths:
           description: user not registered
         "422":
           description: error validating job data
-  /api/flowcharts:
+  /flowcharts:
     get:
       tags:
       - developers
@@ -237,7 +239,7 @@ paths:
                   $ref: '#/components/schemas/Flowchart'
         "400":
           description: bad input parameter
-  /api/flowcharts/{id}:
+  /flowcharts/{id}:
     get:
       tags:
       - developers
@@ -265,7 +267,7 @@ paths:
                   $ref: '#/components/schemas/Flowchart'
         "400":
           description: bad input parameter
-  /api/flowcharts/{id}/cytoscape:
+  /flowcharts/{id}/cytoscape:
     get:
       tags:
       - developers
@@ -293,7 +295,7 @@ paths:
                   $ref: '#/components/schemas/Flowchart'
         "400":
           description: bad input parameter
-  /api/projects/list:
+  /projects/list:
     # This is aruably does not follow proper REST API design.
     get:
       summary: gets a list of projects
@@ -309,7 +311,7 @@ paths:
                 type: array
                 items:
                   type: string
-  /api/projects:
+  /projects:
     get:
       tags:
       - developers
@@ -344,7 +346,7 @@ paths:
                   $ref: '#/components/schemas/Project'
         "400":
           description: bad input parameter
-  /api/projects/{id}:
+  /projects/{id}:
     get:
       tags:
       - developers
@@ -372,7 +374,7 @@ paths:
                   $ref: '#/components/schemas/Project'
         "400":
           description: bad input parameter
-  /api/projects/{id}/jobs:
+  /projects/{id}/jobs:
     get:
       tags:
       - developers
@@ -398,7 +400,7 @@ paths:
                 type: array
         "400":
           description: bad input parameter
-  /api/users:
+  /users:
     get:
       tags:
       - admin
@@ -450,7 +452,7 @@ paths:
         "422":
           description: error validating job data
 
-  /api/status:
+  /status:
     get:
       summary: return the status of the dashboard
       description: |
@@ -475,7 +477,7 @@ paths:
             text/plain:
               schema:
                 type: string
-  /api/auth/token:
+  /auth/token:
     post:
       summary: post username and password and get a token for the current user
       description: |
@@ -505,7 +507,7 @@ paths:
                 type: json
         "400":
           description: Bad credentials
-  /api/auth/token/refresh:
+  /auth/token/refresh:
     post:
       summary: Refresh the access token
       description: |
