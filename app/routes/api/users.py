@@ -11,10 +11,14 @@ from app.models import User, UserSchema, Role, RoleSchema, Group, GroupSchema
 
 __all__ = ["add_user", "get_users"]
 
+def _process_user_body(request_data):
+    """This function is a private internal function to process user data to get it in a format which can be added to the database.
 
-def add_user(body):
-    username = body["username"]
-    password = body["password"]
+    Takes request data in json and converts to user object. Returns 400 status if not valid.
+    """
+
+    username = request_data["username"]
+    password = request_data["password"]
 
     if username is None or password is None:
         return Response(
@@ -24,12 +28,55 @@ def add_user(body):
     if User.query.filter_by(username=username).first() is not None:
         return Response(f"User with username '{username}'' already exists", status=400)
 
-    user = User(username=username, password=password)
+    user_info = {"username":username, "password": password, "roles":[], "groups":[]}
 
-    db.session.add(user)
+    possible_keys = ["roles", 
+                    "groups", 
+                    "first_name", 
+                    "last_name", 
+                    "email_address"]
+    
+    map_values = {
+                    "roles": Role,
+                    "roles_values": [],
+                    "groups": Group,
+                    "group_values": []
+                }
+    
+    for key in possible_keys:
+        try:
+            if key == "roles" or key == "groups":
+                model = map_values[key]
+                for listed_value in request_data[key]:
+                    is_model = model.query.filter_by(name=listed_value).first()
+                    if not is_model:
+                        return response(f"{listed_value} is not an available value for {key}.", status=400)
+                    else:
+                        user_info[key].append(is_model)
+            else:
+                user_info[key] = request_data[key]
+        except KeyError as e:
+            # Not a key in the body. Pass.
+            pass
+        
+    user = User(**user_info)
+
+    return user
+
+
+@jwt_optional
+@authorize.has_role("admin")
+def add_user(body):
+    
+    get_data = _process_user_body(body)
+
+    if isinstance(get_data, Response):
+        return get_data
+    
+    db.session.add(get_data)
     db.session.commit()
 
-    return user.id, 201
+    return get_data.id, 201
 
 @jwt_optional
 @authorize.has_role("admin")
