@@ -8,6 +8,7 @@ def index():
     """Homepage"""
     return render_template("index.html")
 
+
 @main.route("/401")
 def unauthorized():
     """Unauthorized Access"""

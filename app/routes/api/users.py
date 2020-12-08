@@ -11,6 +11,7 @@ from app.models import User, UserSchema, Role, RoleSchema, Group, GroupSchema
 
 __all__ = ["add_user", "get_users"]
 
+
 def _process_user_body(request_data):
     """This function is a private internal function to process user data to get it in a format which can be added to the database.
 
@@ -28,21 +29,17 @@ def _process_user_body(request_data):
     if User.query.filter_by(username=username).first() is not None:
         return Response(f"User with username '{username}'' already exists", status=400)
 
-    user_info = {"username":username, "password": password, "roles":[], "groups":[]}
+    user_info = {"username": username, "password": password, "roles": [], "groups": []}
 
-    possible_keys = ["roles", 
-                    "groups", 
-                    "first_name", 
-                    "last_name", 
-                    "email_address"]
-    
+    possible_keys = ["roles", "groups", "first_name", "last_name", "email_address"]
+
     map_values = {
-                    "roles": Role,
-                    "roles_values": [],
-                    "groups": Group,
-                    "group_values": []
-                }
-    
+        "roles": Role,
+        "roles_values": [],
+        "groups": Group,
+        "group_values": [],
+    }
+
     for key in possible_keys:
         try:
             if key == "roles" or key == "groups":
@@ -50,7 +47,10 @@ def _process_user_body(request_data):
                 for listed_value in request_data[key]:
                     is_model = model.query.filter_by(name=listed_value).first()
                     if not is_model:
-                        return response(f"{listed_value} is not an available value for {key}.", status=400)
+                        return response(
+                            f"{listed_value} is not an available value for {key}.",
+                            status=400,
+                        )
                     else:
                         user_info[key].append(is_model)
             else:
@@ -58,7 +58,7 @@ def _process_user_body(request_data):
         except KeyError as e:
             # Not a key in the body. Pass.
             pass
-        
+
     user = User(**user_info)
 
     return user
@@ -67,16 +67,17 @@ def _process_user_body(request_data):
 @jwt_optional
 @authorize.has_role("admin")
 def add_user(body):
-    
+
     get_data = _process_user_body(body)
 
     if isinstance(get_data, Response):
         return get_data
-    
+
     db.session.add(get_data)
     db.session.commit()
 
     return get_data.id, 201
+
 
 @jwt_optional
 @authorize.has_role("admin")
@@ -102,10 +103,9 @@ def get_users():
             user_groups.append(group["name"])
 
         user_info = UserSchema(many=False).dump(current_user)
-        user_info['roles'] = user_roles
-        user_info['groups'] = user_groups
-    
+        user_info["roles"] = user_roles
+        user_info["groups"] = user_groups
+
         user_list.append(user_info)
-        
 
     return user_list, 200

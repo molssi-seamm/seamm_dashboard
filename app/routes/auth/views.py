@@ -26,6 +26,7 @@ from app.routes.api.users import _process_user_body
 
 logger = logging.getLogger(__name__)
 
+
 @auth.route("/login", methods=["GET", "POST"])
 def login():
 

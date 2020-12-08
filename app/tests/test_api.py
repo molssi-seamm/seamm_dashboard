@@ -84,6 +84,7 @@ def test_delete_job(client):
 
     assert response.status_code == 401
 
+
 def test_get_users(client):
     """Check get method of api/users on unauthenticated client"""
 
