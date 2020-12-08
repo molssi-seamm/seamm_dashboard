@@ -5,7 +5,7 @@ $.ajaxSetup ({
 
     // Get username and stuff
     $.ajax({
-    url: `api/status`,
+    url: `${location.protocol}/api/status`,
     dataType: 'json',
     async: false,
     success: function (data) {
