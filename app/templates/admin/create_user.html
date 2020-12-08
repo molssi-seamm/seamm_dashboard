@@ -52,17 +52,17 @@
             <p class="card-text font-weight-light font-italic">You can manage and add group roles on the <a href="/manage_groups">Group Management</a> and <a href="/manage_roles">Role Management</a> pages</p>
             <div class="row">
                 <div class="form-group col-sm-12">
-                    {% for error in form.user_roles.errors %}
+                    {% for error in form.roles.errors %}
                         <div class="alert alert-danger">{{ error }} </div>
                     {% endfor %}
-                    {{ wtf.form_field(form.user_roles, class='form-control', 
+                    {{ wtf.form_field(form.roles, class='form-control', 
                         placeholder='Choose User Roles') }}
                 </div>
                 <div class="form-group col-sm-12">
-                    {% for error in form.user_groups.errors %}
+                    {% for error in form.groups.errors %}
                         <div class="alert alert-danger">{{ error }} </div>
                     {% endfor %}
-                    {{ wtf.form_field(form.user_groups, class='form-control', 
+                    {{ wtf.form_field(form.groups, class='form-control', 
                         placeholder='Choose User Groups') }}
                 </div>
             </div>

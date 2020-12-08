@@ -28,8 +28,8 @@ def manage_users():
 def create_user():
 
     form = CreateUserForm()
-    form.user_groups.choices = [(g.name, g.name) for g in Group.query.all()]
-    form.user_roles.choices = [(r.name, r.name) for r in Role.query.all()]
+    form.groups.choices = [(g.name, g.name) for g in Group.query.all()]
+    form.roles.choices = [(r.name, r.name) for r in Role.query.all()]
 
     if form.validate_on_submit():
         processed_form = _process_user_body(form.data)

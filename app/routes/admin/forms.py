@@ -51,9 +51,9 @@ class CreateUserForm(FlaskForm):
         ],
     )
 
-    user_roles = SelectMultipleField("User Roles", choices=[])
+    roles = SelectMultipleField("User Roles", choices=[])
 
-    user_groups = SelectMultipleField("User Groups", choices=[])
+    groups = SelectMultipleField("User Groups", choices=[])
 
     password = PasswordField(
         "Password",
