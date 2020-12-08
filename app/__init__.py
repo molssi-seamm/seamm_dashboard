@@ -132,10 +132,7 @@ def create_app(config_name=None):
             db.drop_all()
         db.create_all()
 
-        from .auth import auth as auth_blueprint
-
-        app.register_blueprint(auth_blueprint)
-
+        from .routes.auth import auth as auth_blueprint
         from .routes.main import main as main_blueprint
         from .routes.jobs import jobs as jobs_blueprint
         from .routes.flowcharts import flowcharts as flowchart_blueprint
@@ -144,6 +141,7 @@ def create_app(config_name=None):
 
         from .routes.main import errors
 
+        app.register_blueprint(auth_blueprint)
         app.register_blueprint(main_blueprint)
         app.register_blueprint(jobs_blueprint)
         app.register_blueprint(flowchart_blueprint)
