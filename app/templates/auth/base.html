@@ -8,7 +8,8 @@
 <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #2f353a">
     <div class="container">
         <a class="navbar-brand" href="#">
-            <img class="navbar-brand-minimized" src="{{ url_for('static', filename='images/molssi-favicon-inverted.svg') }}" width="30" height="30" alt="MolSSI Logo">
+            <img class="navbar-brand-minimized ml-2" src="{{ url_for('static', filename='images/molssi-favicon-inverted.svg') }}" width="30" height="30" alt="MolSSI Logo">
+            Dashboard Admin
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -17,7 +18,7 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                <a class="nav-link" href="/">Dashboard </a>
+                <a class="nav-link" href="/"> Home</a>
                 </li>
             </ul>
             <ul class="navbar-nav" id="login-info">
@@ -30,10 +31,12 @@
 {% block content %}
 <div class="container mt-5">
     {% for message in get_flashed_messages() %}
-    <div class="alert alert-warning">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-        {{ message }}
-    </div>
+        {% if 'created' not in message %}
+            <div class="alert alert-warning">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                {{ message }}
+            </div>
+        {% endif %}
     {% endfor %}
 
     {% block page_content %}{% endblock %}
