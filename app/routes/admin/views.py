@@ -2,11 +2,7 @@
 Admin views
 """
 
-import logging
-
-import json
-
-from flask import render_template, redirect, url_for, flash, make_response, Response
+from flask import render_template, redirect, url_for, flash, Response
 
 from .forms import (
     CreateUserForm,
@@ -15,7 +11,7 @@ from .forms import (
 from . import admin
 
 from app import db
-from app.models import User, UserSchema, Role, Group
+from app.models import Role, Group
 from app.routes.api.users import _process_user_body
 
 
