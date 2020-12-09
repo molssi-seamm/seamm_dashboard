@@ -2,13 +2,11 @@ import logging
 
 from flask import (
     render_template,
-    redirect,
     flash,
     make_response,
 )
 
 from flask_jwt_extended import (
-    get_current_user,
     set_access_cookies,
     set_refresh_cookies,
     unset_jwt_cookies,
@@ -22,7 +20,6 @@ from . import auth
 
 from app.models import User
 from app.routes.api.auth import create_tokens
-from app.routes.api.users import _process_user_body
 
 logger = logging.getLogger(__name__)
 

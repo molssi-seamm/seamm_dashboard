@@ -4,7 +4,7 @@ Routes for REST authentication
 
 from datetime import timedelta
 
-from flask import jsonify, request, Response, make_response
+from flask import jsonify, Response, make_response
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
@@ -13,8 +13,6 @@ from flask_jwt_extended import (
     jwt_refresh_token_required,
     get_jwt_identity,
     unset_jwt_cookies,
-    unset_access_cookies,
-    unset_refresh_cookies,
 )
 
 from app.models import User, UserSchema
