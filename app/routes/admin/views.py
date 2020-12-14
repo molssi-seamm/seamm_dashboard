@@ -10,17 +10,19 @@ from .forms import (
 
 from . import admin
 
-from app import db
+from app import db, authorize
 from app.models import Role, Group
 from app.routes.api.users import _process_user_body
 
 
 @admin.route("/admin/manage_users")
+@authorize.has_role("admin")
 def manage_users():
     return render_template("admin/manage_users.html")
 
 
 @admin.route("/admin/create_user", methods=["GET", "POST"])
+@authorize.has_role("admin")
 def create_user():
 
     form = CreateUserForm()
