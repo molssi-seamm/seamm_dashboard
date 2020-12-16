@@ -33,15 +33,26 @@ function idleTimer() {
    function refresh_token() {
     let d = new Date();
     localStorage.setItem('timeOfActivity', d.getTime())
+    
+    // Placeholder for token.
+    let csrf_refresh;
+
+    // Get the csrf refresh token
+    document.cookie.split(";").forEach(function(value) { if (value.trim().split("=")[0] == 'csrf_refresh_token') { csrf_refresh = value.trim().split('=')[1] } })
+   
+    $.ajaxSetup({
+        headers: { 'X-CSRF-TOKEN': csrf_refresh }
+    })
+
     $.ajax({
-        url: `/api/auth/token/refresh`,
+        url: `${location.origin}/api/auth/token/refresh`,
         type: "POST",
         success: setTimeout(refresh_token, 3300000), // refresh the token every 55 minutes
         error: function () {
             // if this fails, the refresh token is expired and we remove the tokens.
             $.ajax({
-                url: `auth/logout`,
-                complete: location.reload(),
+                url: `${location.origin}/logout`,
+                //complete: location.reload(),
                 })
          }
         })

@@ -51,13 +51,6 @@ $.ajaxSetup ({
        
         },
         // error occurs because of expired access token. Remove cookie and reload page
-        error: function () {
-          $.ajax({
-            url: `${location.origin}/logout`,
-            complete: location.reload()
-          })
-          
-        },
       })
 
       window.addEventListener('storage', function(event){

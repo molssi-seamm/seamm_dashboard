@@ -175,12 +175,12 @@ def create_app(config_name=None):
     app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
 
     # Set the cookie paths
-    app.config["JWT_ACCESS_COOKIE_PATH"] = "/api"
+    # app.config["JWT_ACCESS_COOKIE_PATH"] = "/api"
     app.config["JWT_REFRESH_COOKIE_PATH"] = "/api/auth/token/refresh"
 
     # Cookie security
     app.config["JWT_COOKIE_SECURE"] = False
-    app.config["JWT_COOKIE_CSRF_PROTECT"] = False
+    app.config["JWT_COOKIE_CSRF_PROTECT"] = True
 
     # To avoid circular import
     # from app.admin import add_admin_views
