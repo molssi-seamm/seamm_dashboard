@@ -85,6 +85,17 @@ Do you wish to continue?
                 for (let i=0; i<jobNumbers.length; i++) {
                     let jobID = jobNumbers[i]
                     if (action === "run" || action === "re-run" ) {
+
+                        // Placeholder for token.
+                        let csrf_access;
+
+                        // Get the csrf refresh token
+                        document.cookie.split(";").forEach(function(value) { if (value.trim().split("=")[0] == 'csrf_access_token') { csrf_access = value.trim().split('=')[1] } })
+
+                        $.ajaxSetup({
+                            headers: { 'X-CSRF-TOKEN': csrf_access }
+                        })
+   
                         let putData = JSON.stringify(actionInformation[action]["request"])
                         $.ajax({
                             url: `api/jobs/${jobID}`,
@@ -112,7 +123,7 @@ Do you wish to continue?
                         })
                     };
             
-            //location.reload()   
+            location.reload()   
          } 
             
          }
