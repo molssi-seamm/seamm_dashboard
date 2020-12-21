@@ -1,5 +1,4 @@
 $(document).ready( function() { 
-    console.log(location.protocol)
     var table = $('#users').DataTable( {
     "responsive": true,
     "ajax": {
@@ -27,7 +26,7 @@ $(document).ready( function() {
         error: function(xhr){
             console.log("There is an error")
             if (xhr.status == 401) {
-                window.location = "401"
+                window.location = `${location.protocol}/401`
             }
         }
     },
