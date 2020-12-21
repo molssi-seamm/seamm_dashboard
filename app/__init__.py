@@ -14,12 +14,10 @@ from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from flask_authorize import Authorize
-from flask_jwt_extended import (
-    JWTManager,
-    create_access_token,
-    get_current_user,
-    get_jwt_identity,
-)
+
+from .jwt_patch import flask_jwt_extended
+
+from flask_jwt_extended import get_current_user
 
 from config import config
 from .template_filters import replace_empty
@@ -60,7 +58,7 @@ cors = CORS()
 
 bootstrap = Bootstrap()
 
-jwt = JWTManager()
+jwt = flask_jwt_extended.JWTManager()
 authorize = Authorize(current_user=get_current_user)
 
 moment = Moment()
@@ -68,6 +66,7 @@ toolbar = DebugToolbarExtension()
 
 db = SQLAlchemy()
 ma = Marshmallow()
+
 
 def create_app(config_name=None):
     """Flask app factory pattern
@@ -172,12 +171,13 @@ def create_app(config_name=None):
     app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
 
     # Set the cookie paths
-    app.config["JWT_ACCESS_COOKIE_PATH"] = "/api"
+    # app.config["JWT_ACCESS_COOKIE_PATH"] = "/api"
     app.config["JWT_REFRESH_COOKIE_PATH"] = "/api/auth/token/refresh"
 
     # Cookie security
     app.config["JWT_COOKIE_SECURE"] = False
-    app.config["JWT_COOKIE_CSRF_PROTECT"] = False
+    app.config["JWT_COOKIE_CSRF_PROTECT"] = True
+    app.config["JWT_CSRF_ACCESS_PATH"] = "/api/"
 
     # To avoid circular import
     # from app.admin import add_admin_views
