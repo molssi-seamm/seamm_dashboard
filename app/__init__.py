@@ -26,8 +26,6 @@ from .template_filters import replace_empty
 from .setup_logging import setup_logging
 from .setup_argparsing import options
 
-from .authorize_patch import Authorizer
-
 # Setup the logging, now that we know where the datastore is
 datastore = options.datastore
 setup_logging(datastore, options)
@@ -70,7 +68,6 @@ toolbar = DebugToolbarExtension()
 
 db = SQLAlchemy()
 ma = Marshmallow()
-
 
 def create_app(config_name=None):
     """Flask app factory pattern
@@ -175,12 +172,12 @@ def create_app(config_name=None):
     app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
 
     # Set the cookie paths
-    # app.config["JWT_ACCESS_COOKIE_PATH"] = "/api"
+    app.config["JWT_ACCESS_COOKIE_PATH"] = "/api"
     app.config["JWT_REFRESH_COOKIE_PATH"] = "/api/auth/token/refresh"
 
     # Cookie security
     app.config["JWT_COOKIE_SECURE"] = False
-    app.config["JWT_COOKIE_CSRF_PROTECT"] = True
+    app.config["JWT_COOKIE_CSRF_PROTECT"] = False
 
     # To avoid circular import
     # from app.admin import add_admin_views
