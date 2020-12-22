@@ -8,7 +8,7 @@ from .forms import (
     CreateUserForm,
 )
 
-from flask_jwt_extended import jwt_required, jwt_optional
+from flask_jwt_extended import jwt_optional
 
 from . import admin
 
@@ -19,14 +19,17 @@ from app.routes.api.users import _process_user_body
 
 @admin.route("/admin/manage_users")
 @jwt_optional
-@authorize.has_role("admin")
 def manage_users():
+    if not authorize.has_role("admin"):
+        return render_template("401.html")
     return render_template("admin/manage_users.html")
 
 @admin.route("/admin/create_user", methods=["GET", "POST"])
 @jwt_optional
-@authorize.has_role("admin")
 def create_user():
+
+    if not authorize.has_role("admin"):
+        return render_template("401.html")
 
     form = CreateUserForm()
     form.groups.choices = [(g.name, g.name) for g in Group.query.all()]
