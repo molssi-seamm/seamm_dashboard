@@ -11,11 +11,16 @@ import json
 def test_delete_job(admin_client, project_directory):
     """Check delete method of api/jobs/{jobID}"""
 
+    csrf_token = admin_client[1]
+    admin_client = admin_client[0]
+
+    csrf_headers = {"X-CSRF-TOKEN": csrf_token}
+
     expected_path = os.path.join(project_directory, "Job_000002")
 
     assert os.path.exists(expected_path)
 
-    response = admin_client.delete("api/jobs/2")
+    response = admin_client.delete("api/jobs/2", headers=csrf_headers)
 
     assert response.status_code == 200
 
@@ -24,6 +29,9 @@ def test_delete_job(admin_client, project_directory):
 
 def test_get_users(admin_client):
     """Check get method of api/users on admin client"""
+
+    csrf_token = admin_client[1]
+    admin_client = admin_client[0]
 
     response = admin_client.get("api/users")
 
@@ -34,6 +42,10 @@ def test_get_users(admin_client):
 
 def test_add_user(admin_client):
     """Check post method of api/users on admin client."""
+    csrf_token = admin_client[1]
+    admin_client = admin_client[0]
+
+    csrf_headers = {"X-CSRF-TOKEN": csrf_token}
 
     new_user = {
         "username": "waffles",
@@ -42,7 +54,10 @@ def test_add_user(admin_client):
     }
 
     response = admin_client.post(
-        "api/users", data=json.dumps(new_user), content_type="application/json"
+        "api/users",
+        data=json.dumps(new_user),
+        content_type="application/json",
+        headers=csrf_headers,
     )
 
     assert response.status_code == 201
