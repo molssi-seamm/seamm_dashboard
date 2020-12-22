@@ -16,6 +16,7 @@ $(document).ready( function() {
                     data[i].last_name,
                     data[i].roles,
                     data[i].groups,
+                    data[i].email,
                     `<button type="button" class="btn btn-primary"> <i class="fas fa-edit"></i> Manage User</button>
                     `
                     ]

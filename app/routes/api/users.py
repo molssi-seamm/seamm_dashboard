@@ -31,7 +31,7 @@ def _process_user_body(request_data):
 
     user_info = {"username": username, "password": password, "roles": [], "groups": []}
 
-    possible_keys = ["roles", "groups", "first_name", "last_name", "email_address"]
+    possible_keys = ["roles", "groups", "first_name", "last_name", "email"]
 
     map_values = {
         "roles": Role,
