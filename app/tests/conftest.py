@@ -21,6 +21,23 @@ from flask_jwt_extended import (
 from app.routes.api.auth import create_tokens
 
 
+def _get_cookie_from_response(response, cookie_name):
+    """
+    Function grabbed from testing suite of flask-jwt-extended.
+    """
+    cookie_headers = response.headers.getlist("Set-Cookie")
+
+    for header in cookie_headers:
+        attributes = header.split(";")
+        if cookie_name in attributes[0]:
+            cookie = {}
+            for attr in attributes:
+                split = attr.split("=")
+                cookie[split[0].strip().lower()] = split[1] if len(split) > 1 else True
+            return cookie
+    return None
+
+
 @pytest.fixture(scope="session")
 def project_directory(tmpdir_factory):
 
@@ -149,7 +166,11 @@ def auth_client(client):
         follow_redirects=True,
     )
 
-    yield auth_client
+    csrf_token = _get_cookie_from_response(response, "csrf_access_token")[
+        "csrf_access_token"
+    ]
+
+    yield auth_client, csrf_token
 
     response = auth_client.get("api/auth/token/remove", follow_redirects=True)
 
@@ -157,7 +178,7 @@ def auth_client(client):
 @pytest.fixture(scope="module")
 def admin_client(app):
     client = app.test_client()
-    client.post(
+    response = client.post(
         "api/auth/token",
         json=dict(
             username="admin_user",
@@ -166,7 +187,11 @@ def admin_client(app):
         follow_redirects=True,
     )
 
-    yield client
+    csrf_token = _get_cookie_from_response(response, "csrf_access_token")[
+        "csrf_access_token"
+    ]
+
+    yield client, csrf_token
 
     client.get("api/auth/token/remove", follow_redirects=True)
 
