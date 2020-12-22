@@ -335,3 +335,25 @@ class TestLiveServer:
 
         # File content div should not be displayed if another div is clicked on.
         assert not chrome_driver.find_element_by_id("file-content").is_displayed()
+
+    def test_admin_views_logged_out(self, app, chrome_driver):
+        """
+        Make sure admin views are protected
+        """
+
+        # Make sure we're logged out
+        self.log_out(chrome_driver)
+
+        # Try to access admin views - manage_users page
+        chrome_driver.get(f"{self.base_url}/admin/manage_users")
+
+        header = chrome_driver.find_elements_by_tag_name('h1')[0]
+
+        assert header.text == '401'
+
+        # Try to access admin views - create users page
+        chrome_driver.get(f"{self.base_url}/admin/create_user")
+
+        header = chrome_driver.find_elements_by_tag_name('h1')[0]
+
+        assert header.text == '401'
