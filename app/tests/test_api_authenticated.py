@@ -130,3 +130,45 @@ def test_get_users(auth_client):
     response = auth_client.get("api/users")
 
     assert response.status_code == 401
+
+
+def test_get_projects(auth_client):
+    """Check get method of api/projects on authenticated client"""
+
+    auth_client = auth_client[0]
+
+    response = auth_client.get("api/projects")
+
+    assert response.status_code == 200
+
+    assert len(response.json) == 1
+
+
+def test_get_project(auth_client):
+    """Check get method of api/projects on authenticated client"""
+
+    auth_client = auth_client[0]
+
+    response = auth_client.get("api/projects/1")
+
+    assert response.status_code == 200
+
+
+def test_get_project_jobs(auth_client):
+    """Check get method of api/projects on authenticated client"""
+
+    auth_client = auth_client[0]
+
+    response = auth_client.get("api/projects/1/jobs")
+
+    assert response.status_code == 200
+
+
+def test_get_project_jobs_404(auth_client):
+    """Check get method of api/projects on authenticated client"""
+
+    auth_client = auth_client[0]
+
+    response = auth_client.get("api/projects/100/jobs")
+
+    assert response.status_code == 404

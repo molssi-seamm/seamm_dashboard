@@ -36,7 +36,7 @@ class TestLiveServer:
     def base_url(self):
         return url_for("main.index", _external=True)
 
-    def log_in(self, chrome_driver):
+    def log_in(self, chrome_driver, username="sample_user", password="sample_password"):
         """
         Function to log sample user in for testing.
         """
@@ -44,10 +44,10 @@ class TestLiveServer:
         chrome_driver.get(login_url)
 
         username_field = chrome_driver.find_element_by_id("username")
-        username_field.send_keys("sample_user")
+        username_field.send_keys(username)
 
         username_field = chrome_driver.find_element_by_id("password")
-        username_field.send_keys("sample_password")
+        username_field.send_keys(password)
 
         button = chrome_driver.find_element_by_id("submit")
         button.click()
@@ -347,13 +347,52 @@ class TestLiveServer:
         # Try to access admin views - manage_users page
         chrome_driver.get(f"{self.base_url}/admin/manage_users")
 
-        header = chrome_driver.find_elements_by_tag_name('h1')[0]
+        header = chrome_driver.find_elements_by_tag_name("h1")[0]
 
-        assert header.text == '401'
+        assert header.text == "401"
 
         # Try to access admin views - create users page
         chrome_driver.get(f"{self.base_url}/admin/create_user")
 
-        header = chrome_driver.find_elements_by_tag_name('h1')[0]
+        header = chrome_driver.find_elements_by_tag_name("h1")[0]
 
-        assert header.text == '401'
+        assert header.text == "401"
+
+    def test_admin_create_user(self, app, chrome_driver):
+
+        # Make sure we're logged in as admin
+        self.log_in(chrome_driver, username="admin_user", password="iamadmin")
+
+        # Try to access admin views - manage_users page
+        chrome_driver.get(f"{self.base_url}/admin/create_user")
+
+        username_field = chrome_driver.find_element_by_id("username")
+        username_field.send_keys("new_user")
+
+        password_field = chrome_driver.find_element_by_id("password")
+        password_field.send_keys("test_password")
+
+        password2_field = chrome_driver.find_element_by_id("password2")
+        password2_field.send_keys("test_password")
+
+        firstname_field = chrome_driver.find_element_by_id("first_name")
+        firstname_field.send_keys("FirstName")
+
+        lastname_field = chrome_driver.find_element_by_id("last_name")
+        lastname_field.send_keys("LastName")
+
+        email_field = chrome_driver.find_element_by_id("email")
+        email_field.send_keys("email@email.com")
+
+        button = chrome_driver.find_element_by_id("submit")
+        button.click()
+
+        alert = chrome_driver.find_element_by_class_name("alert-success")
+
+        table_rows = chrome_driver.find_element_by_id(
+            "users"
+        ).find_elements_by_tag_name("tr")
+
+        # chrome_driver.get_screenshot_as_file(f'user_table.png')
+
+        assert len(table_rows) == 4

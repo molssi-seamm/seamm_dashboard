@@ -8,7 +8,7 @@ from flask_jwt_extended import jwt_optional
 from app.models import Project, ProjectSchema, Job, JobSchema
 from app import authorize
 
-__all__ = ["get_projects", "get_project", "list_projects", "get_project_jobs"]
+__all__ = ["get_projects", "get_project", "get_project_jobs"]
 
 
 @jwt_optional
@@ -76,16 +76,3 @@ def get_project_jobs(id):
     jobs_schema = JobSchema(many=True)
 
     return jobs_schema.dump(jobs), 200
-
-
-@jwt_optional
-def list_projects():
-    """List the projects in the datastore."""
-    projects = Project.query.all()
-
-    result = []
-    for project in projects:
-        if authorize.read(project):
-            result.append(project.name)
-
-    return {"projects": sorted(result)}, 200

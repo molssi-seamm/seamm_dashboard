@@ -295,22 +295,6 @@ paths:
                   $ref: '#/components/schemas/Flowchart'
         "400":
           description: bad input parameter
-  /projects/list:
-    # This is aruably does not follow proper REST API design.
-    get:
-      summary: gets a list of projects
-      description: |
-        Get a list of the projects.
-      operationId: app.routes.api.list_projects
-      responses:
-        "200":
-          description: the list of projects
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: string
   /projects:
     get:
       tags:
