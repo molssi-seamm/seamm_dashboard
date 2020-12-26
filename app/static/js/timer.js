@@ -26,7 +26,7 @@ function idleTimer() {
         let currentTime = nowTime.getTime()
         let elapsedTime = currentTime - localStorage.getItem('timeOfActivity')
         if (( elapsedTime >= timeOutTime)) {
-            window.location.href = '/logout';  // Logout user
+            window.location.href = `${location.origin}/logout`;  // Logout user
         }
     }
 
@@ -50,10 +50,7 @@ function idleTimer() {
         success: setTimeout(refresh_token, 3300000), // refresh the token every 55 minutes
         error: function () {
             // if this fails, the refresh token is expired and we remove the tokens.
-            $.ajax({
-                url: `${location.origin}/logout`,
-                //complete: location.reload(),
-                })
+            window.location.href =`${location.origin}/logout`;
          }
         })
   }

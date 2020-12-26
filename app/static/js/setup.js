@@ -51,6 +51,10 @@ $.ajaxSetup ({
        
         },
         // error occurs because of expired access token. Remove cookie and reload page
+    error: function () {
+      // if this fails, the refresh token is expired and we remove the tokens.
+      window.location.href = `${location.origin}/logout`;
+        } 
       })
 
       window.addEventListener('storage', function(event){
