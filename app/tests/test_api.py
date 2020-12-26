@@ -91,3 +91,37 @@ def test_get_users(client):
     response = client.get("api/users")
 
     assert response.status_code == 401
+
+
+def test_get_projects_unauthenticated(client):
+    """Check get method of api/projects on unauthenticated client"""
+
+    response = client.get("api/projects")
+
+    assert response.status_code == 200
+
+    assert len(response.json) == 0
+
+
+def test_get_project_unauthenticated(client):
+    """Check get method of api/projects on unauthenticated client"""
+
+    response = client.get("api/projects/1")
+
+    assert response.status_code == 401
+
+
+def test_get_project_not_found(client):
+    """Check get method of api/projects on unauthenticated client"""
+
+    response = client.get("api/projects/3")
+
+    assert response.status_code == 404
+
+
+def test_get_project_unauthenticated(client):
+    """Check get method of api/projects on unauthenticated client"""
+
+    response = client.get("api/projects/1/jobs")
+
+    assert response.status_code == 401
