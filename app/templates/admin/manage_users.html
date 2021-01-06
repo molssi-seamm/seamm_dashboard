@@ -7,7 +7,7 @@
     <h1>Manage Dashboard Users</h1>
 </div>
 {% for message in get_flashed_messages() %}
-  {% if 'created' in message %}
+  {% if 'successfully' in message %}
       <div class="alert alert-success">
           <button type="button" class="close" data-dismiss="alert">&times;</button>
           {{ message }}

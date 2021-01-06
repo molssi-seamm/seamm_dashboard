@@ -3,6 +3,8 @@ API calls for users (creating, logging in, logging out)
 
 """
 
+from copy import deepcopy
+
 from flask import Response
 from flask_jwt_extended import jwt_optional
 
@@ -12,7 +14,7 @@ from app.models import User, UserSchema, Role, RoleSchema, Group, GroupSchema
 __all__ = ["add_user", "get_users"]
 
 
-def _process_user_body(request_data):
+def _process_user_body(request_data, original_user_data=None):
     """This function is a private internal function to process user data to get it in a format which can be added to the database.
 
     Takes request data in json and converts to user object. Returns 400 status if not valid.
@@ -21,15 +23,51 @@ def _process_user_body(request_data):
     username = request_data["username"]
     password = request_data["password"]
 
-    if username is None or password is None:
-        return Response(
-            "Both username and password must be supplied to create new user", status=400
-        )
+    original_password_hash = ''
 
-    if User.query.filter_by(username=username).first() is not None:
-        return Response(f"User with username '{username}'' already exists", status=400)
+    if not original_user_data:
+        # Check that both username and password are supplied
+        if username is None or password is None:
+            return Response(
+                "Both username and password must be supplied to create new user",
+                status=400,
+            )
+        # Create starting user object with the appropriate information
+        user_info = {
+            "username": username,
+            "password": password,
+            "roles": [],
+            "groups": [],
+        }
+        user = User(**user_info)
 
-    user_info = {"username": username, "password": password, "roles": [], "groups": []}
+        # Check if username exists.
+        if User.query.filter_by(username=username).first() is not None:
+            return Response(
+                f"User with username '{username}'' already exists", status=400
+            )
+
+    else:
+        user = original_user_data
+        user.roles = []
+        user.groups = []
+
+        # Check if username exists. First we check if the name is in the database. If the name is in the database,
+        # this may be an update, so check if the supplied username is equal to the original user info.
+        if (
+            User.query.filter_by(username=username).first() is not None
+            and user.username != username
+        ):
+            return Response(
+                f"User with username '{username}' already exists", status=400
+            )
+
+        # After check, update username and password.
+        user.username = username
+
+        # only set the password if the password is not blank
+        if password:
+            user.password = password
 
     possible_keys = ["roles", "groups", "first_name", "last_name", "email"]
 
@@ -47,19 +85,19 @@ def _process_user_body(request_data):
                 for listed_value in request_data[key]:
                     is_model = model.query.filter_by(name=listed_value).first()
                     if not is_model:
-                        return response(
+                        return Response(
                             f"{listed_value} is not an available value for {key}.",
                             status=400,
                         )
                     else:
-                        user_info[key].append(is_model)
+                        if getattr(user, key) is None:
+                            setattr(user, key, [])
+                        getattr(user, key).append(is_model)
             else:
-                user_info[key] = request_data[key]
-        except KeyError as e:
+                setattr(user, key, request_data[key])
+        except KeyError:
             # Not a key in the body. Pass.
             pass
-
-    user = User(**user_info)
 
     return user
 
