@@ -10,33 +10,85 @@ from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo, Ema
 from wtforms import ValidationError
 from app.models import User
 
-from app import db
+def _validate_username(self, field):
+    if User.query.filter(User.username == field.data).first():
+        raise ValidationError(
+            f"Username {field.data} already in use. Please pick a different username"
+        )
+
+def _validate_email(self, field):
+    if User.query.filter(User.email == field.data).first():
+        raise ValidationError(
+            f"Email address {field.data} already in use. Please pick a different email address."
+        )
 
 
-class CreateUserForm(FlaskForm):
-    def validate_email(self, field):
-        if User.query.filter(User.email == field.data).first():
-            raise ValidationError(f"Email ({field.data}) already registered. ")
+def _password_none_or_usual(self, field):
+    """
+    This validator is for the manage user form. Either the password is not changed
+    (len 0), or the password is changed and should meet the usual length requirement.
+    """
+    if 0 < len(field.data) < 7:
+        raise ValidationError("Passwords must be at least 7 characters in length.")
 
-    def validate_username(self, field):
-        if User.query.filter(User.username == field.data).first():
-            raise ValidationError(
-                f"Username {field.data} already in use. Please pick a different username"
-            )
 
-    username = StringField(
-        "Username",
+# Common username field
+_username = StringField(
+    "Username",
+    validators=[
+        _validate_username,
+        DataRequired(),
+        Length(3, 64),
+        Regexp(
+            "^[A-Za-z][A-Za-z0-9_.]*$",
+            0,
+            "Usernames must have only letters, numbers, dots or " "underscores",
+        ),
+    ],
+)
+
+
+class CreateUsernamePasswordForm(FlaskForm):
+    """
+    A subform for creating a new username and password.
+    """
+
+    username = _username
+
+    password2 = PasswordField("Confirm password", validators=[DataRequired()])
+
+    password = PasswordField(
+        "Password",
         validators=[
-            validate_username,
             DataRequired(),
-            Length(3, 64),
-            Regexp(
-                "^[A-Za-z][A-Za-z0-9_.]*$",
-                0,
-                "Usernames must have only letters, numbers, dots or " "underscores",
-            ),
+            Length(min=7),
+            EqualTo("password2", message="Passwords must match."),
         ],
     )
+
+
+class EditUsernamePasswordForm(FlaskForm):
+    """
+    A subform for editing username and password.
+    """
+
+    username = _username
+
+    password = PasswordField(
+        "Password",
+        validators=[
+            _password_none_or_usual,
+            EqualTo("password2", message="Passwords must match."),
+        ],
+    )
+
+    password2 = PasswordField("Confirm Password")
+
+
+class ContactInformationForm(FlaskForm):
+    """
+    A form for adding or updating contact information.
+    """
 
     first_name = StringField("First Name", validators=[Length(3, 64)])
 
@@ -47,63 +99,30 @@ class CreateUserForm(FlaskForm):
         validators=[
             DataRequired(),
             Email(),
+            _validate_email,
         ],
     )
+
+
+class CreateUserForm(CreateUsernamePasswordForm, ContactInformationForm):
+    """
+    Form for adding or updating a user
+    """
 
     roles = SelectMultipleField("User Roles", choices=[])
 
     groups = SelectMultipleField("User Groups", choices=[])
 
-    password = PasswordField(
-        "Password",
-        validators=[
-            DataRequired(),
-            Length(min=7),
-            EqualTo("password2", message="Passwords must match."),
-        ],
-    )
-    password2 = PasswordField("Confirm password", validators=[DataRequired()])
     submit = SubmitField("Create New User")
 
 
-class ChangePasswordForm(FlaskForm):
-    old_password = PasswordField("Old password", validators=[DataRequired()])
-    password = PasswordField(
-        "New password",
-        validators=[
-            DataRequired(),
-            Length(min=7),
-            EqualTo("password2", message="Passwords must match."),
-        ],
-    )
-    password2 = PasswordField("Confirm new password", validators=[DataRequired()])
-    submit = SubmitField("Update Password")
+class ManageUserFormAdmin(EditUsernamePasswordForm, ContactInformationForm):
+    """
+    Form for adding or updating a user
+    """
 
+    roles = SelectMultipleField("User Roles", choices=[])
 
-class PasswordResetRequestForm(FlaskForm):
-    email = StringField("Email", validators=[DataRequired(), Length(3, 64), Email()])
-    submit = SubmitField("Reset Password")
+    groups = SelectMultipleField("User Groups", choices=[])
 
-
-class PasswordResetForm(FlaskForm):
-    password = PasswordField(
-        "New Password",
-        validators=[
-            DataRequired(),
-            EqualTo("password2", message="Passwords must match"),
-        ],
-    )
-    password2 = PasswordField("Confirm password", validators=[DataRequired()])
-    submit = SubmitField("Reset Password")
-
-
-class ChangeEmailForm(FlaskForm):
-    email = StringField(
-        "New Email", validators=[DataRequired(), Length(3, 64), Email()]
-    )
-    password = PasswordField("Password", validators=[DataRequired()])
-    submit = SubmitField("Update Email Address")
-
-    def validate_email(self, field):
-        if User.objects(email=field.data).first():
-            raise ValidationError("Email already registered.")
+    submit = SubmitField("Update User Information")
