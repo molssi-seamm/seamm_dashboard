@@ -1,7 +1,6 @@
 {% extends "auth/base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
-
 {% block page_content %}
 <div class="page-header">
     {% if "manage_user" in request.path %}
@@ -14,11 +13,11 @@
     <form action method="post">
         {{ form.csrf_token }}
         <a href="{{ url_for('admin.manage_users') }}"><button type="button" class="btn btn-light btn-lg mb-3"><i class="fas fa-chevron-circle-left mr-3"></i>Users List</button></a>
-        <div class="card">
+        <div class="card" >
             <div class="card-header">
-            User Account Information
+            User Account Information <span class="edit-section float-right" id="account-info-button"></span>
             </div>
-            <div class="card-body">
+            <div class="card-body" id="account-info">
             <h5 class="card-title">Username and Password</h5>
             {% if "manage_user" in request.path %}
             <p class="card-text font-weight-light font-italic">Change the username and/or password for user {{username}}.</p>
@@ -54,9 +53,9 @@
 
         <div class="card">
             <div class="card-header">
-            User Permissions
+            User Permissions <span class="edit-section float-right" id="permissions-button"></span>
             </div>
-            <div class="card-body">
+            <div class="card-body" id="permissions">
             <h5 class="card-title">User Groups and Roles</h5>
             <p class="card-text font-weight-light font-italic">Put the user into groups and add roles. Users will be able to see public jobs and projects by default.</p>
             <p class="card-text font-weight-light font-italic">You can manage and add group roles on the <a href="/manage_groups">Group Management</a> and <a href="/manage_roles">Role Management</a> pages</p>
@@ -79,16 +78,17 @@
             </div>
         </div>
 
-        <div class="card">
+        <div class="card" id="user-information">
             <div class="card-header">
-            User Informatiom
+            User Information <span class="edit-section float-right" id="user-information-button"></span>
             </div>
             <div class="card-body">
-            <h5 class="card-title">Contact Information for the User</h5>
+            <h5 class="card-title">Contact Information for the User</h5> 
             <p class="card-text font-weight-light font-italic">This contact information is not used by the SEAMM dashboard, but should be used by admin in order to contact users.</p>
             <div class="row">
                 <div class="form-group col-sm-12 col-md-6">
-                    {% for error in form.first_name.errors %}
+                    {% for error in form.first_name.errors %}'<button type="button" class="btn btn-secondary" title="Click to unlock and edit section." data-toggle="tooltip" data-placement="top"><i class="fas fa-lock"></i></button>'
+
                         <div class="alert alert-danger">{{ error }} </div>
                     {% endfor %}
                     {{ wtf.form_field(form.first_name, class='form-control', 
@@ -116,4 +116,26 @@
         </div>
     </form>
 </div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script src="{{ url_for('static', filename='node_modules/jquery/dist/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='node_modules/popper.js/dist/umd/popper.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='node_modules/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='node_modules/perfect-scrollbar/dist/perfect-scrollbar.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='node_modules/@fortawesome/fontawesome-free/js/all.min.js')}}"></script>
+
+    <script src="{{ url_for('static', filename='js/timer.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/setup.js') }}"></script>
+
+{% if "manage_user" in request.path %}
+    <script src="{{ url_for('static', filename='js/manage_user.js') }}"></script>
+{% endif %}
+
+
+<script>
+    $("body").addClass('bg-white')
+</script>
 {% endblock %}
