@@ -30,14 +30,20 @@ $.ajaxSetup ({
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Logged in as <strong>${data.username}</strong>
                 </a>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="#">Manage Account</a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">`
+          
+            if (data.roles.includes("admin")) {
+              loginString = loginString.concat(`<h6 class="dropdown-header">Admin Actions</h6>
+              <a class="dropdown-item" href="/admin/manage_users">Manage Users</a>
+              <a class="dropdown-item" href="/admin/manage_groups">Manage Groups</a>
+              <a class="dropdown-item" href="/admin/manage_roles">Manage Roles</a>`)
+            }
+
+          loginString = loginString.concat(`
+                    <h6 class="dropdown-header">User Actions</h6>
+                    <a class="dropdown-item" href="#">My Account</a>
                     <a class="dropdown-item" href="${location.origin}/logout">Logout</a>
-          `
-          if (data.roles.includes("admin")) {
-            loginString = loginString.concat(`<h6 class="dropdown-header">Admin Actions</h6>
-            <a class="dropdown-item" href="/admin/manage_users">Manage Users</a>`)
-          }
+          `)
           
           loginString = loginString.concat(`</div>
           </li>`)
