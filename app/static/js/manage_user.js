@@ -1,3 +1,63 @@
+function toggleLock(span) {
+
+    section = span.section
+
+    // delete old tooltips
+    tooltips = section.getElementsByClassName('tooltip')
+    for (let k=0; tooltips.length; tooltips++) {
+        tooltips[k].remove()
+    }
+
+    if (section.isDisabled) {
+
+        // Put in new info and enable 
+        span.innerHTML = '<button type="button" class="btn btn-secondary btn-lg" title="Section is unlocked for editing. Click to lock." data-toggle="tooltip" data-placement="top"><i class="fas fa-unlock"></i></button>'
+        $(`#${section.id}`).tooltip()
+
+        for (let i=0; i<section.fieldCollection.length; i++) {
+            section.fieldCollection[i].disabled = false
+            console.log('hello')
+        }
+
+        section.isDisabled = false;
+        
+    }
+
+    else {
+        span.innerHTML = '<button type="button" class="btn btn-secondary btn-lg" title="Click to unlock and edit section." data-toggle="tooltip" data-placement="top"><i class="fas fa-lock"></i></button>'
+        $(`#${section.id}`).tooltip()
+
+        for (let i=0; i<section.fieldCollection.length; i++) {
+            section.fieldCollection[i].disabled = true
+        }
+
+        section.isDisabled = true;
+    }
+}
+
+function getFormFields(section, disableSections = true) {
+    section.fieldCollection = []
+    section.isDisabled = true;
+    let inputFields = section.getElementsByTagName('input')
+    console.log(section)
+
+    for (let i=0; i<inputFields.length; i++) {
+        section.fieldCollection.push(inputFields[i])
+        if (disableSections) {
+            inputFields[i].disabled = true;
+        } 
+    }
+
+    let selectFields = section.getElementsByTagName('select')
+    
+    for (let i=0; i<selectFields.length; i++) {
+        section.fieldCollection.push(selectFields[i])
+        if (disableSections) {
+            selectFields[i].disabled = true;
+        } 
+    }
+}
+
 $(document).ready(function() {
 
     let submitButton = document.getElementById("submit")
@@ -8,54 +68,26 @@ $(document).ready(function() {
     let sectionFields = [];
 
     for(var i = 0; i < spans.length; i++){
-
-        spans[i].innerHTML='<button type="button" class="btn btn-secondary" title="Click to unlock and edit section." data-toggle="tooltip" data-placement="top"><i class="fas fa-lock"></i></button>';
-        
-        spanIDs.push(spans[i].id)
+        spans[i].innerHTML='<button type="button" class="btn btn-secondary btn-lg" title="Click to unlock and edit section." data-toggle="tooltip" data-placement="top"><i class="fas fa-lock"></i></button>';
         let sectionID = spans[i].id.split('-').slice(0,-1).join('-')
 
-        let fieldCollection = []
-        
-        let inputFields = document.getElementById(sectionID).getElementsByTagName('input')
+        spans[i].section = document.getElementById(sectionID)
 
-        for (let j = 0; j < inputFields.length; j++) {
-            inputFields[j].disabled = true;
-            fieldCollection.push(inputFields[j])
-        }
+        getFormFields(spans[i].section)
+        console.log(spans[i].fieldCollection)
 
-        let selectFields = document.getElementById(sectionID).getElementsByTagName('select')
+        // Add tooltip
+        $(`#${spans[i].id}`).tooltip()
 
-        for (let j = 0; j < selectFields.length; j++) {
-            selectFields[j].disabled = true;
-            fieldCollection.push(selectFields[j])
-        }
+        // Add button click behavior
+        $(`#${spans[i].id}`).click( function() {
 
-        sectionFields.push(fieldCollection)
+            toggleLock(this)
+            submitButton.disabled = false
+
+        })
         
     };
-
-    $('[data-toggle="tooltip"]').tooltip()
-
-    // Add button press actions
-    for (let i = 0; i < spanIDs.length; i++ ) {
-        $(`#${spanIDs[i]}`).click( function() {
-            let button = document.getElementById(spanIDs[i])
-            button.innerHTML='<button type="button" class="btn btn-secondary" title="Section is unlocked for editing." data-toggle="tooltip" data-placement="top"><i class="fas fa-unlock"></i></button>'
-            
-            for (let j=0; j < sectionFields[i].length; j++ ) {
-                sectionFields[i][j].disabled = false
-            }
-            // enable the submit button
-            submitButton.disabled = false;
-            
-            // Remove tooltip
-            tooltips = document.getElementsByClassName('tooltip')
-            for (let k=0; tooltips.length; tooltips++) {
-                tooltips[k].remove()
-            }
-
-        });
-    }
 
     $("#submit").click( function() {
 
@@ -63,7 +95,6 @@ $(document).ready(function() {
             for (let j=0; j < sectionFields[i].length; j++ ) {
                 sectionFields[i][j].disabled = false
             }
-    
             };
         });
     })
