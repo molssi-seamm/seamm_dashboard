@@ -179,9 +179,17 @@ def create_app(config_name=None):
     app.config["JWT_COOKIE_CSRF_PROTECT"] = True
     app.config["JWT_CSRF_ACCESS_PATH"] = "/api/"
 
-    # To avoid circular import
-    # from app.admin import add_admin_views
-    # add_admin_views()
+    # Add some default roles to the dashboard
+    with app.app_context():
+        from .models import Role
+
+        role_names = ["user", "group manager", "admin"]
+
+        for role_name in role_names:
+            role = Role(name=role_name)
+            db.session.add(role)
+
+        db.session.commit()
 
     logger.info("")
     logger.info("Final configuration:")

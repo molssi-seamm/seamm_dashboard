@@ -158,7 +158,11 @@ def file_owner(path):
         name = item.owner()
         user = db.session.query(User).filter_by(username=name).one_or_none()
         if user is None:
-            admin_role = Role(name="admin")
+            admin_role = db.session.query(Role).filter_by(name="admin").one_or_none()
+
+            if admin_role is None:
+                admin_role = Role(name="admin")
+
             user = User(username=name, password="default", roles=[admin_role])
             user.groups.append(group)
             db.session.add(user)
