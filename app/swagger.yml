@@ -384,6 +384,30 @@ paths:
                 type: array
         "400":
           description: bad input parameter
+  /groups:
+    get:
+      tags:
+      - admin
+      - managers
+      summary: retrieves dashboard groups
+      operationId: app.routes.api.get_groups
+      responses:
+        "200":
+          description: users listed
+        "403":
+          description: permission denied 
+  /roles:
+    get:
+      tags:
+      - admin
+      - managers
+      summary: retrieves dashboard groups
+      operationId: app.routes.api.get_roles
+      responses:
+        "200":
+          description: users listed
+        "403":
+          description: permission denied 
   /users:
     get:
       tags:
