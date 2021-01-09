@@ -16,7 +16,6 @@ function toggleLock(span) {
 
         for (let i=0; i<section.fieldCollection.length; i++) {
             section.fieldCollection[i].disabled = false
-            console.log('hello')
         }
 
         section.isDisabled = false;
@@ -33,28 +32,22 @@ function toggleLock(span) {
 
         section.isDisabled = true;
     }
+
+    span.section = section
 }
 
-function getFormFields(section, disableSections = true) {
+function getFormFields(section) {
     section.fieldCollection = []
-    section.isDisabled = true;
     let inputFields = section.getElementsByTagName('input')
-    console.log(section)
 
     for (let i=0; i<inputFields.length; i++) {
         section.fieldCollection.push(inputFields[i])
-        if (disableSections) {
-            inputFields[i].disabled = true;
-        } 
     }
 
     let selectFields = section.getElementsByTagName('select')
     
     for (let i=0; i<selectFields.length; i++) {
         section.fieldCollection.push(selectFields[i])
-        if (disableSections) {
-            selectFields[i].disabled = true;
-        } 
     }
 }
 
@@ -64,17 +57,22 @@ $(document).ready(function() {
     submitButton.disabled = true
 
     let spans = document.getElementsByClassName("edit-section")
-    let spanIDs = [];
-    let sectionFields = [];
+    $('input').each(function() {
+        $(this).attr("disabled", true)
+    })
+
+    $('select').each(function() {
+        $(this).attr("disabled", true)
+    })
 
     for(var i = 0; i < spans.length; i++){
         spans[i].innerHTML='<button type="button" class="btn btn-secondary btn-lg" title="Click to unlock and edit section." data-toggle="tooltip" data-placement="top"><i class="fas fa-lock"></i></button>';
         let sectionID = spans[i].id.split('-').slice(0,-1).join('-')
 
         spans[i].section = document.getElementById(sectionID)
+        spans[i].section.isDisabled = true;
 
         getFormFields(spans[i].section)
-        console.log(spans[i].fieldCollection)
 
         // Add tooltip
         $(`#${spans[i].id}`).tooltip()
@@ -86,16 +84,16 @@ $(document).ready(function() {
             submitButton.disabled = false
 
         })
-        
     };
 
     $("#submit").click( function() {
+        $('input').each(function() {
+            $(this).removeAttr('disabled');
+        })
 
-        for (let i = 0; i < spanIDs.length; i++ ) {
-            for (let j=0; j < sectionFields[i].length; j++ ) {
-                sectionFields[i][j].disabled = false
-            }
-            };
-        });
-    })
+        $('select').each(function() {
+            $(this).removeAttr('disabled');
+        })
+    });
+})
 

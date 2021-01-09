@@ -58,7 +58,7 @@
             <div class="card-body" id="permissions">
             <h5 class="card-title">User Groups and Roles</h5>
             <p class="card-text font-weight-light font-italic">Put the user into groups and add roles. Users will be able to see public jobs and projects by default.</p>
-            <p class="card-text font-weight-light font-italic">You can manage and add group roles on the <a href="/manage_groups">Group Management</a> and <a href="/manage_roles">Role Management</a> pages</p>
+            <p class="card-text font-weight-light font-italic">You can manage and add group roles on the <a href="/admin/manage_groups">Group Management</a> and <a href="/admin/manage_roles">Role Management</a> pages</p>
             <div class="row">
                 <div class="form-group col-sm-12">
                     {% for error in form.roles.errors %}
@@ -87,8 +87,7 @@
             <p class="card-text font-weight-light font-italic">This contact information is not used by the SEAMM dashboard, but should be used by admin in order to contact users.</p>
             <div class="row">
                 <div class="form-group col-sm-12 col-md-6">
-                    {% for error in form.first_name.errors %}'<button type="button" class="btn btn-secondary" title="Click to unlock and edit section." data-toggle="tooltip" data-placement="top"><i class="fas fa-lock"></i></button>'
-
+                    {% for error in form.first_name.errors %}
                         <div class="alert alert-danger">{{ error }} </div>
                     {% endfor %}
                     {{ wtf.form_field(form.first_name, class='form-control', 
