@@ -396,3 +396,40 @@ class TestLiveServer:
         # chrome_driver.get_screenshot_as_file(f'user_table.png')
 
         assert len(table_rows) == 4
+
+    def test_admin_edit_user(self, app, chrome_driver):
+
+        # Make sure we're logged in as admin
+        self.log_in(chrome_driver, username="admin_user", password="iamadmin")
+
+        # Try to access admin views - manage_users page
+        chrome_driver.get(f"{self.base_url}/admin/manage_user/1")
+
+        chrome_driver.get_screenshot_as_file(f'updated_user.png')
+
+        edit_button = chrome_driver.find_elements_by_css_selector('#user-information-button .btn')[0]
+        edit_button.click()
+
+        chrome_driver.get_screenshot_as_file(f'updated_user_after_after_click.png')
+
+        # with open('page_source.html', 'w+') as f:
+        #    f.write(chrome_driver.page_source)
+
+        firstname_field = chrome_driver.find_element_by_id("first_name")
+        firstname_field.send_keys("FirstName")
+
+        lastname_field = chrome_driver.find_element_by_id("last_name")
+        lastname_field.send_keys("LastName")
+
+        email_field = chrome_driver.find_element_by_id("email")
+        email_field.send_keys("changed_address@email.com")
+
+        #chrome_driver.get_screenshot_as_file(f'updated_user.png')
+
+        button = chrome_driver.find_element_by_id("submit")
+        button.click()
+
+        alert = chrome_driver.find_element_by_class_name("alert-success")
+        #chrome_driver.get_screenshot_as_file(f'user_table.png')
+
+
