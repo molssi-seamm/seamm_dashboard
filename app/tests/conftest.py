@@ -70,11 +70,12 @@ def app(project_directory):
     project = Project(**test_project)
 
     # Create some sample role
-    admin_role = Role(name="admin")
-    manager_role = Role(name="manager")
+    admin_role = Role.query.filter_by(name="admin").one_or_none()
+    manager_role = Role.query.filter_by(name="group manager").one_or_none()
+    user_role = Role.query.filter_by(name="user").one_or_none()
 
     # Create a sample user.
-    test_user = User(username="sample_user", password="sample_password")
+    test_user = User(username="sample_user", password="sample_password", roles=[user_role])
     test_admin = User(username="admin_user", password="iamadmin", roles=[admin_role])
 
     # Fill in some data
