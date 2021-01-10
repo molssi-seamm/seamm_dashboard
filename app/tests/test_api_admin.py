@@ -50,7 +50,7 @@ def test_add_user(admin_client):
     new_user = {
         "username": "waffles",
         "password": "waffles!",
-        "roles": ["manager"],
+        "roles": ["group manager"]
     }
 
     response = admin_client.post(
@@ -60,4 +60,4 @@ def test_add_user(admin_client):
         headers=csrf_headers,
     )
 
-    assert response.status_code == 201
+    assert response.status_code == 201, response.data
