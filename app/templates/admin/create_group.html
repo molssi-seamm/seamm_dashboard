@@ -1,0 +1,81 @@
+{% extends "auth/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block page_content %}
+<div class="page-header">
+    {% if "manage_user" in request.path %}
+        <h1>Manage User {{ username }}</h1>
+    {% else %}
+        <h1>Create New User</h1>
+    {% endif %}
+</div>
+<div class="container mt-5">
+    <form action method="post">
+        {{ form.csrf_token }}
+        <a href="{{ url_for('admin.manage_groups') }}"><button type="button" class="btn btn-light btn-lg mb-3"><i class="fas fa-chevron-circle-left mr-3"></i>Groups List</button></a>
+        <div class="card" >
+            <div class="card-header">
+            User Account Information <span class="edit-section float-right" id="account-info-button"></span>
+            </div>
+            <div class="card-body" id="account-info">
+            <h5 class="card-title">Username and Password</h5>
+            {% if "manage_user" in request.path %}
+            <p class="card-text font-weight-light font-italic">Change the username and/or password for user {{username}}.</p>
+            <p><strong>Proceed with caution. This will affect the user's ability to log in.</strong></p>
+            {% else %}
+                <p class="card-text font-weight-light font-italic">Enter the username and a temporary password for the user. The user should change this on their first log in.</p>
+            {% endif %}
+
+            <div class="row">
+                <div class="form-group col-sm-12">
+                    {{ wtf.form_field(form.group_name, class="form-control", 
+                        placeholder='New Group Name') }}
+                    {% for error in form.group_name.errors %}
+                        <div class="alert alert-danger">{{ error }} </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-sm-12">
+                    {{ wtf.form_field(form.group_members, class="form-control") }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <div class="card" >
+            <div class="card-header">
+                Project Permissions <span class="edit-section float-right" id="account-info-button"></span>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tr>
+                        <th>Project Name</th>
+                        <th>read</th>
+                        <th>update</th>
+                        <th>create</th>
+                        <th>delete</th>
+                    </tr>
+
+                    {% for project in project_names %}
+                        {% set project_ind = (loop.index - 1)*4 %}
+                        <tr>  
+                        <td>{{ project }}</td>
+                            {% for field in form %}
+                                {% if loop.index > 3 + project_ind and loop.index < 8 + project_ind %}
+                                <td>
+                                    {{ field }}
+                                </td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+
+        {{ wtf.form_field(form.submit, class="btn btn-primary form-control") }}
+<script>
+    $("body").addClass('bg-white')
+</script>
+{% endblock %}

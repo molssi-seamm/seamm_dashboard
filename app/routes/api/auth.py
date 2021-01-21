@@ -39,7 +39,6 @@ def create_tokens(user):
 
     return access_token, refresh_token
 
-
 def get_auth_token(body):
     """
     Endpoint for api/auth/token

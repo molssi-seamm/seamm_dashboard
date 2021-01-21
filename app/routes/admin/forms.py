@@ -4,6 +4,7 @@ from wtforms import (
     PasswordField,
     SubmitField,
     SelectMultipleField,
+    BooleanField,
 )
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo, Email
@@ -90,9 +91,9 @@ class ContactInformationForm(FlaskForm):
     A form for adding or updating contact information.
     """
 
-    first_name = StringField("First Name", validators=[Length(3, 64)])
+    first_name = StringField("First Name", validators=[Length(2, 64)])
 
-    last_name = StringField("Last Name", validators=[Length(3, 64)])
+    last_name = StringField("Last Name", validators=[Length(2, 64)])
 
     email = EmailField(
         "Email Address",
@@ -126,3 +127,17 @@ class ManageUserFormAdmin(EditUsernamePasswordForm, ContactInformationForm):
     groups = SelectMultipleField("User Groups", choices=[])
 
     submit = SubmitField("Update User Information")
+
+class EditGroupForm(FlaskForm):
+    """
+    Form for adding or editing a group
+    """
+
+    group_name = StringField("Group Name", validators=[ Length(2, 64), DataRequired() ])
+
+    group_members = SelectMultipleField("Group Members", choices=[])
+
+    submit = SubmitField("Submit")
+
+
+    

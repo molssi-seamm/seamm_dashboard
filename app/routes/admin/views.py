@@ -9,14 +9,17 @@ from flask_jwt_extended import jwt_optional
 from .forms import (
     CreateUserForm,
     ManageUserFormAdmin,
+    EditGroupForm,
     _validate_username,
     _validate_email,
 )
 
+from wtforms import BooleanField
+
 from . import admin
 
 from app import db, authorize
-from app.models import Role, Group, User
+from app.models import Role, Group, User, Project
 from app.routes.api.users import _process_user_body
 
 
@@ -27,6 +30,56 @@ def manage_users():
         return render_template("401.html")
     return render_template("admin/manage_users.html")
 
+@admin.route("/admin/manage_groups")
+@jwt_optional
+def manage_groups():
+    if not authorize.has_role("admin", "group manager"):
+        return render_template("401.html")
+    return render_template("admin/manage_groups.html")
+
+@admin.route("/admin/create_group", methods=["GET", "POST"])
+@jwt_optional
+def create_group():
+
+    if not authorize.has_role("admin", "group manager"):
+        return render_template("401.html")
+
+    # We have to add these fields dynamically based on the projects in the database
+    projects = Project.query.all()
+    field_read = []
+    project_names = []
+
+    # Bind boolean fields for permission types
+    for project in projects:
+        field_name = f"project_{project.id}"
+        setattr(EditGroupForm, f"{field_name}_read", BooleanField())
+        setattr(EditGroupForm, f"{field_name}_update", BooleanField())
+        setattr(EditGroupForm, f"{field_name}_create", BooleanField())
+        setattr(EditGroupForm, f"{field_name}_delete", BooleanField())
+        project_names.append(project.name)
+
+    form = EditGroupForm()
+    users = User.query.all()
+    form.group_members.choices = [(user.username, user.username) for user in users]
+
+    if form.validate_on_submit():
+        processed_form = _process_user_body(form.data)
+
+        if isinstance(processed_form, Response):
+            flash(
+                f"Creating the user failed because of problems with the input data. Please check the inputs and try again."
+            )
+            return redirect(url_for("admin.create_group"))
+
+        else:
+            db.session.add(processed_form)
+            db.session.commit()
+            flash(f"The user {form.data['username']} has been successfully created")
+            return render_template("admin/manage_users.html")
+
+    
+    return render_template("admin/create_group.html", form=form, project_names=project_names)
+
 
 @admin.route("/admin/create_user", methods=["GET", "POST"])
 @jwt_optional
@@ -35,7 +88,7 @@ def create_user():
     if not authorize.has_role("admin"):
         return render_template("401.html")
 
-    form = CreateUserForm(new_user=False)
+    form = CreateUserForm()
     form.groups.choices = [(g.name, g.name) for g in Group.query.all()]
     form.roles.choices = [(r.name, r.name) for r in Role.query.all()]
 
