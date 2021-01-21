@@ -8,7 +8,7 @@ from app import authorize
 from app.models import Role, RoleSchema
 
 @jwt_optional
-@authorize.has_role("admin", "manager")
+@authorize.has_role("admin", "group manager")
 def get_roles():
 
     roles = Role.query.all()
