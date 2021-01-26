@@ -46,11 +46,6 @@ job_project = db.Table(
     db.Column("project", db.Integer, db.ForeignKey("projects.id"), primary_key=True),
 )
 
-user_project = db.Table(
-    "user_project",
-    db.Column("user", db.Integer, db.ForeignKey("users.id"), primary_key=True),
-    db.Column("project", db.Integer, db.ForeignKey("projects.id"), primary_key=True),
-)
 
 
 class User(db.Model):
@@ -67,9 +62,6 @@ class User(db.Model):
 
     roles = db.relationship("Role", secondary=user_role, back_populates="users")
     groups = db.relationship("Group", secondary=user_group, back_populates="users")
-    projects = db.relationship(
-        "Project", secondary=user_project, back_populates="users"
-    )
 
     @property
     def password(self):
@@ -167,16 +159,24 @@ class Project(db.Model, PermissionsMixin):
         "Flowchart", secondary=flowchart_project, back_populates="projects"
     )
     jobs = db.relationship("Job", secondary=job_project, back_populates="projects")
-    users = db.relationship("User", secondary=user_project, back_populates="projects")
 
     def __repr__(self):
         return f"Project(name={self.name}, path={self.path}, description={self.description})"  # noqa: E501
 
 
 UserJobMixin = generate_association_table(User, Job)
+UserFlowchartMixin = generate_association_table(User, Flowchart)
+UserProjectMixin = generate_association_table(User, Project)
 
 class UserJobAssociation(db.Model, UserJobMixin):
     pass
+
+class UserFlowchartAssociation(db.Model, UserFlowchartMixin):
+    pass
+
+class UserProjectAssociation(db.Model, UserProjectMixin):
+    pass
+
 
 #############################
 #
