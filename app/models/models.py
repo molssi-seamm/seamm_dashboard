@@ -9,6 +9,8 @@ from flask_authorize import PermissionsMixin, RestrictionsMixin
 
 from app import db, jwt
 
+from .acl_models import generate_association_table
+
 #############################
 #
 # SQLAlchemy Models
@@ -33,21 +35,21 @@ user_role = db.Table(
 flowchart_project = db.Table(
     "flowchart_project",
     db.Column(
-        "flowchart", db.String(32), db.ForeignKey("flowchart.id"), primary_key=True
+        "flowchart", db.String(32), db.ForeignKey("flowcharts.id"), primary_key=True
     ),
-    db.Column("project", db.Integer, db.ForeignKey("project.id"), primary_key=True),
+    db.Column("project", db.Integer, db.ForeignKey("projects.id"), primary_key=True),
 )
 
 job_project = db.Table(
     "job_project",
-    db.Column("job", db.Integer, db.ForeignKey("job.id"), primary_key=True),
-    db.Column("project", db.Integer, db.ForeignKey("project.id"), primary_key=True),
+    db.Column("job", db.Integer, db.ForeignKey("jobs.id"), primary_key=True),
+    db.Column("project", db.Integer, db.ForeignKey("projects.id"), primary_key=True),
 )
 
 user_project = db.Table(
     "user_project",
     db.Column("user", db.Integer, db.ForeignKey("users.id"), primary_key=True),
-    db.Column("project", db.Integer, db.ForeignKey("project.id"), primary_key=True),
+    db.Column("project", db.Integer, db.ForeignKey("projects.id"), primary_key=True),
 )
 
 
@@ -114,7 +116,7 @@ class Role(db.Model):
 
 
 class Flowchart(db.Model, PermissionsMixin):
-    __tablename__ = "flowchart"
+    __tablename__ = "flowcharts"
 
     id = db.Column(db.String(32), nullable=False, primary_key=True)
     title = db.Column(db.String(100), nullable=True)
@@ -134,10 +136,10 @@ class Flowchart(db.Model, PermissionsMixin):
 
 
 class Job(db.Model, PermissionsMixin):
-    __tablename__ = "job"
+    __tablename__ = "jobs"
 
     id = db.Column(db.Integer, primary_key=True)
-    flowchart_id = db.Column(db.String(32), db.ForeignKey("flowchart.id"))
+    flowchart_id = db.Column(db.String(32), db.ForeignKey("flowcharts.id"))
     title = db.Column(db.String, nullable=True)
     description = db.Column(db.Text, nullable=True)
     path = db.Column(db.String, unique=True)
@@ -154,7 +156,7 @@ class Job(db.Model, PermissionsMixin):
 
 
 class Project(db.Model, PermissionsMixin):
-    __tablename__ = "project"
+    __tablename__ = "projects"
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False, unique=True)
@@ -170,6 +172,11 @@ class Project(db.Model, PermissionsMixin):
     def __repr__(self):
         return f"Project(name={self.name}, path={self.path}, description={self.description})"  # noqa: E501
 
+
+UserJobMixin = generate_association_table(User, Job)
+
+class UserJobAssociation(db.Model, UserJobMixin):
+    pass
 
 #############################
 #
