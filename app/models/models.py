@@ -46,6 +46,19 @@ job_project = db.Table(
     db.Column("project", db.Integer, db.ForeignKey("projects.id"), primary_key=True),
 )
 
+UserJobMixin = generate_association_table("User", "Job")
+UserFlowchartMixin = generate_association_table("User", "Flowchart")
+UserProjectMixin = generate_association_table("User", "Project")
+
+class UserJobAssociation(db.Model, UserJobMixin):
+    pass
+
+class UserFlowchartAssociation(db.Model, UserFlowchartMixin):
+    pass
+
+class UserProjectAssociation(db.Model, UserProjectMixin):
+    pass
+
 
 
 class User(db.Model):
@@ -162,21 +175,6 @@ class Project(db.Model, PermissionsMixin):
 
     def __repr__(self):
         return f"Project(name={self.name}, path={self.path}, description={self.description})"  # noqa: E501
-
-
-UserJobMixin = generate_association_table(User, Job)
-UserFlowchartMixin = generate_association_table(User, Flowchart)
-UserProjectMixin = generate_association_table(User, Project)
-
-class UserJobAssociation(db.Model, UserJobMixin):
-    pass
-
-class UserFlowchartAssociation(db.Model, UserFlowchartMixin):
-    pass
-
-class UserProjectAssociation(db.Model, UserProjectMixin):
-    pass
-
 
 #############################
 #
