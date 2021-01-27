@@ -188,25 +188,7 @@ def create_app(config_name=None):
         for role_name in role_names:
             role = Role(name=role_name)
             db.session.add(role)
-        
-        # make a visiting user
-        visitor = User(username="visitor", password="visitor", id=10)
-        job = Job(title="visitor_job", path="/", id=1000)
-
-        db.session.add(visitor)
-        db.session.add(job)
-        db.session.flush()
-        
-        a = UserJobAssociation(permissions=["read"], job_id=job.id, user_id=visitor.id)
-        a.job = job
-        
-        visitor.jobs.append(a)
-
-        db.session.add(a)
-        db.session.add(visitor)
-
-        db.session.commit()
-    
+            db.session.commit()
 
     logger.info("")
     logger.info("Final configuration:")

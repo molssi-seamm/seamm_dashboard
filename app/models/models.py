@@ -11,6 +11,8 @@ from app import db, jwt
 
 from .acl_models import generate_association_table
 
+from .authorize_patch import BasePermissionsMixin
+
 #############################
 #
 # SQLAlchemy Models
