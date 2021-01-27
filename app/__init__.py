@@ -181,15 +181,32 @@ def create_app(config_name=None):
 
     # Add some default roles to the dashboard
     with app.app_context():
-        from .models import Role
+        from .models import Role, User, Job, UserJobAssociation
 
         role_names = ["user", "group manager", "admin"]
 
         for role_name in role_names:
             role = Role(name=role_name)
             db.session.add(role)
+        
+        # make a visiting user
+        visitor = User(username="visitor", password="visitor", id=10)
+        job = Job(title="visitor_job", path="/", id=1000)
+
+        db.session.add(visitor)
+        db.session.add(job)
+        db.session.flush()
+        
+        a = UserJobAssociation(permissions=["read"], job_id=job.id, user_id=visitor.id)
+        a.job = job
+        
+        visitor.jobs.append(a)
+
+        db.session.add(a)
+        db.session.add(visitor)
 
         db.session.commit()
+    
 
     logger.info("")
     logger.info("Final configuration:")
@@ -207,6 +224,8 @@ def create_app(config_name=None):
             n_projects, n_added_projects, n_jobs, n_added_jobs = import_jobs(
                 os.path.join(options.datastore, "projects")
             )
+
+           
         t1 = time.perf_counter()
         logger.info(
             "Checked {} jobs and {} projects in {:.2f} s.".format(
