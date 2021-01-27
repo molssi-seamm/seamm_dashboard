@@ -5,10 +5,17 @@ from sqlalchemy.ext.declarative import declared_attr
 
 from flask_authorize.mixins import PipedList
 
-def generate_association_table(entity_name, resource_name):
+def generate_association_table(entity_name, resource_name, entity_tablename=None, resource_tablename=None):
 
-    entity_tablename = entity_name.lower() + 's'
-    resource_tablename = resource_name.lower() + 's'
+    # Make them plural by adding 's' :)
+    if not entity_tablename:
+        entity_tablename = entity_name.lower() + 's'
+    if not resource_tablename:
+        resource_tablename = resource_name.lower() + 's'
+
+    # More names
+    entity_name_lower = entity_name.lower()
+    resource_name_lower = resource_name.lower()
 
     @declared_attr
     def entity_id(cls):
@@ -20,25 +27,23 @@ def generate_association_table(entity_name, resource_name):
     
     @declared_attr
     def entity_relationship(cls):
-        return db.relationship(f"{entity_name}", backref=f"{resource_tablename}")
+        return db.relationship(f"{entity_name}", backref=db.backref(f"special_{resource_tablename}", lazy="dynamic"))
     
     @declared_attr
     def resource_relationship(cls):
-        db.relationship(f"{resource_name}", backref=f"{entity_tablename}")
+        db.relationship(f"{resource_name}", backref=db.backref(f"special_{entity_tablename}", lazy="dynamic"))
 
     class PermissionsAssociationMixin:
         __tablename__ = f"{entity_tablename}_{resource_tablename}_association"
 
-        locals()[f"{entity_tablename[:-1]}_id"] = entity_id
-        locals()[f"{resource_tablename[:-1]}_id"] = resource_id
+        locals()[f"{entity_name_lower}_id"] = entity_id
+        locals()[f"{resource_name_lower}_id"] = resource_id
 
-        locals()[f"{entity_tablename[:-1]}"] = entity_relationship
-        locals()[f"{resource_tablename[:-1]}"] = resource_relationship
+        locals()[f"{entity_tablename}"] = entity_relationship
+        locals()[f"{resource_tablename}"] = resource_relationship
 
         permissions = db.Column(PipedList)
-    
-    _permissions_mixin = PermissionsAssociationMixin
 
-    return _permissions_mixin
+    return PermissionsAssociationMixin
         
     
