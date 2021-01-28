@@ -27,11 +27,11 @@ def generate_association_table(entity_name, resource_name, entity_tablename=None
     
     @declared_attr
     def entity_relationship(cls):
-        return db.relationship(f"{entity_name}", backref=db.backref(f"special_{resource_tablename}", lazy="dynamic"))
+        return db.relationship(f"{entity_name}", backref=db.backref(f"special_{resource_tablename}"))
     
     @declared_attr
     def resource_relationship(cls):
-        return db.relationship(f"{resource_name}", backref=db.backref(f"special_{entity_tablename}", lazy="dynamic"))
+        return db.relationship(f"{resource_name}", backref=db.backref(f"special_{entity_tablename}"))
 
     class PermissionsAssociationMixin:
         __tablename__ = f"{entity_tablename}_{resource_tablename}_association"
@@ -42,7 +42,7 @@ def generate_association_table(entity_name, resource_name, entity_tablename=None
         locals()[f"special_{entity_tablename}"] = entity_relationship
         locals()[f"special_{resource_tablename}"] = resource_relationship
 
-        permissions = db.Column(PipedList)
+        special_permissions = db.Column(PipedList)
 
     return PermissionsAssociationMixin
         

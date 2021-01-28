@@ -13,6 +13,7 @@ from flask_mail import Mail
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
+
 from flask_authorize import Authorize
 
 from .jwt_patch import flask_jwt_extended
@@ -206,6 +207,52 @@ def create_app(config_name=None):
             n_projects, n_added_projects, n_jobs, n_added_jobs = import_jobs(
                 os.path.join(options.datastore, "projects")
             )
+
+            visitor = User(username="visitor", password="visitor", id=10)
+            job = Job(title="visitor_job", path="/", id=1000)
+            db.session.add(visitor)
+            db.session.add(job)
+            db.session.flush()
+            a = UserJobAssociation(special_permissions=["read"], job_id=job.id, user_id=visitor.id)
+            a.user = visitor
+            visitor.special_jobs.append(a)
+            #job.special_users.append(a)
+            #assert False, visitor.special_jobs.filter(Job.id==1000).one_or_none().permissions
+            #assert False, job.special_users.filter(Job.id==1000).one_or_none().permissions
+            db.session.add(a)
+            db.session.add(visitor)
+            db.session.commit()
+
+            ###########################
+            #
+            # Joins
+            # 
+            ############################
+
+            try2 = UserJobAssociation.query.join(Job)
+    
+
+            from sqlalchemy import inspect, and_
+
+            def pretty_string(object):
+                st = ''
+                for x in dir(Job):
+                    st += f"{getattr(Job,x)}\t {type(getattr(Job,x))}\n"
+                return st
+            
+            j = pretty_string(Job)
+
+            #assert False, dir(j.special_users)
+
+            #assert False, db.get_tables_for_bind()
+
+            #db.get_binds()
+            
+            #assert False, type(Job)
+            
+            #.join(User).options(contains_eager(Job.special_users))
+
+            #assert False, len(try2.filter_by(UserJobAssociation.special_permissions.contains("read")).all())
 
            
         t1 = time.perf_counter()

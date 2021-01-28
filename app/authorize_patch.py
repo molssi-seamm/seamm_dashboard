@@ -406,9 +406,10 @@ class Authorizer(object):
             special_permissions = [ x for x in dir(arg) if 'special' in x ]
             
             if hasattr(arg, "special_users") and CURRENT_USER():
-                row = arg.special_users.filter_by(user_id=CURRENT_USER().id ).one_or_none()
-                if row:
-                    permitted |= has_permission(operation, row.permissions)
+                pass
+                #row = arg.special_users.all()
+                #if row:
+                #    permitted |= has_permission(operation, row.permissions)
 
             if not permitted:
                 return False
