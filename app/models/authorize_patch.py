@@ -4,8 +4,14 @@ Patch to allow access control lists in flask-authorize
 """
 
 from flask_authorize.mixins import *
+from app.authorize_patch import *
+
+# Will have to create machinery for binding models
+from app.models import UserJobAssociation
 
 from sqlalchemy import or_
+
+from sqlalchemy.inspection import inspect
 
 
 @classmethod
@@ -14,7 +20,7 @@ def authorized(cls, check):
     Query operator for permissions mixins. This operator
     can be used in SQLAlchemy query statements, and will
     automatically decorate queries with appropriate owner/group
-    and permissionc checks.
+    and permission checks.
 
     Arguments:
         check (str): Permission to authorize (i.e. read, update)
@@ -37,13 +43,14 @@ def authorized(cls, check):
                 Article.authorized('read')
             ))
     """
-    from flask_authorize.plugin import CURRENT_USER
+    from app.authorize_patch import CURRENT_USER
 
     current_user = CURRENT_USER()
 
     clauses = [
         cls.other_permissions.contains(check),
     ]
+
     if hasattr(current_user, "id"):
         if hasattr(cls, "owner_id"):
             clauses.append(
@@ -60,18 +67,13 @@ def authorized(cls, check):
                 )
             )
 
+        from sqlalchemy import inspect
         # Check if user has special permissions for the resource
         if hasattr(current_user, f"special_{cls.__tablename__}"):
-            self_type = type(cls)
-            
-            item = getattr(current_user, f"special_{cls.__tablename__}")
-            permissions = item.filter(cls.id).one_or_none()
+            join = UserJobAssociation.query.join(Job)
+            assert False, vars()
 
-            if permissions:
-                clauses.append( permissions.contains(check) )
-
-
+        #assert False, clauses
     return or_(*clauses)
 
-
-BasePermissionsMixin.authorized = authorized
+#BasePermissionsMixin.authorized = authorized

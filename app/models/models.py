@@ -11,7 +11,7 @@ from app import db, jwt
 
 from .acl_models import generate_association_table
 
-from .authorize_patch import BasePermissionsMixin
+#from .authorize_patch import BasePermissionsMixin
 
 #############################
 #
@@ -20,6 +20,18 @@ from .authorize_patch import BasePermissionsMixin
 #############################
 
 # Authentication Mapping Tables
+UserJobMixin = generate_association_table("User", "Job")
+UserFlowchartMixin = generate_association_table("User", "Flowchart")
+UserProjectMixin = generate_association_table("User", "Project")
+
+class UserJobAssociation(db.Model, UserJobMixin):
+    pass
+
+class UserFlowchartAssociation(db.Model, UserFlowchartMixin):
+    pass
+
+class UserProjectAssociation(db.Model, UserProjectMixin):
+    pass
 
 user_group = db.Table(
     "user_group",
@@ -47,21 +59,6 @@ job_project = db.Table(
     db.Column("job", db.Integer, db.ForeignKey("jobs.id"), primary_key=True),
     db.Column("project", db.Integer, db.ForeignKey("projects.id"), primary_key=True),
 )
-
-UserJobMixin = generate_association_table("User", "Job")
-UserFlowchartMixin = generate_association_table("User", "Flowchart")
-UserProjectMixin = generate_association_table("User", "Project")
-
-class UserJobAssociation(db.Model, UserJobMixin):
-    pass
-
-class UserFlowchartAssociation(db.Model, UserFlowchartMixin):
-    pass
-
-class UserProjectAssociation(db.Model, UserProjectMixin):
-    pass
-
-
 
 class User(db.Model):
     __tablename__ = "users"
@@ -104,7 +101,7 @@ def user_loader_callback(identity):
         return None
 
 
-class Group(db.Model, RestrictionsMixin):
+class Group(db.Model):
     __tablename__ = "groups"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -161,7 +158,6 @@ class Job(db.Model, PermissionsMixin):
     def __repr__(self):
         return f"Job(path={self.path}, flowchart_id={self.flowchart}, submitted={self.submitted})"  # noqa: E501
 
-
 class Project(db.Model, PermissionsMixin):
     __tablename__ = "projects"
 
@@ -177,6 +173,7 @@ class Project(db.Model, PermissionsMixin):
 
     def __repr__(self):
         return f"Project(name={self.name}, path={self.path}, description={self.description})"  # noqa: E501
+
 
 #############################
 #

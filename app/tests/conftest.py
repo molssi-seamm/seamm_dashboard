@@ -6,7 +6,7 @@ from dateutil import parser
 
 from app import create_app, db
 from app.models.util import process_flowchart
-from app.models import Job, Flowchart, Project, User, Role
+from app.models import Job, Flowchart, Project, User, Role, UserJobAssociation
 from selenium import webdriver
 import chromedriver_binary  # Adds chromedriver binary to path
 
@@ -55,7 +55,7 @@ def project_directory(tmpdir_factory):
     return return_path
 
 
-@pytest.fixture(scope="module")
+
 def app(project_directory):
 
     test_project_path = project_directory
@@ -130,6 +130,17 @@ def app(project_directory):
 
     job3.permissions = {"other": ["read"]}
 
+    # Add visitor and give read access to a job
+    visitor = User(username="visitor", password="visitor", id=10)
+    a = UserJobAssociation(permissions=["read"], job_id=job2.id, user_id=visitor.id)
+    a.job = job1
+    visitor.special_jobs.append(a)
+    job1.special_users.append(visitor)
+    db.session.add(a)
+    db.session.add(visitor)
+    #assert False, job1.special_users.all()
+    #db.session.commit()
+
     flowchart = Flowchart(**flowchart_data)
     db.session.add(test_user)
     db.session.add(admin_role)
@@ -141,10 +152,11 @@ def app(project_directory):
     db.session.add(job3)
     db.session.add(flowchart)
     db.session.commit()
-    yield flask_app
+
+    return flask_app
 
     # clean up
-    app_context.pop()
+    #app_context.pop()
 
 
 @pytest.fixture(scope="module")
@@ -173,6 +185,26 @@ def auth_client(client):
     yield auth_client, csrf_token
 
     response = auth_client.get("api/auth/token/remove", follow_redirects=True)
+
+@pytest.fixture(scope="module")
+def visitor_client(client):
+    visitor_client = client
+    response = visitor_client.post(
+        "api/auth/token",
+        json=dict(
+            username="visitor",
+            password="visitor",
+        ),
+        follow_redirects=True,
+    )
+
+    csrf_token = _get_cookie_from_response(response, "csrf_access_token")[
+        "csrf_access_token"
+    ]
+
+    yield visitor_client, csrf_token
+
+    response = visitor_client.get("api/auth/token/remove", follow_redirects=True)
 
 
 @pytest.fixture(scope="module")
