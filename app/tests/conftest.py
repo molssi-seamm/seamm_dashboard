@@ -55,7 +55,7 @@ def project_directory(tmpdir_factory):
     return return_path
 
 
-
+@pytest.fixture(scope="module")
 def app(project_directory):
 
     test_project_path = project_directory
@@ -132,10 +132,9 @@ def app(project_directory):
 
     # Add visitor and give read access to a job
     visitor = User(username="visitor", password="visitor", id=10)
-    a = UserJobAssociation(permissions=["read"], job_id=job2.id, user_id=visitor.id)
+    a = UserJobAssociation(permissions=["read"], resource_id=job2.id, entity_id=visitor.id)
     a.job = job1
     visitor.special_jobs.append(a)
-    job1.special_users.append(visitor)
     db.session.add(a)
     db.session.add(visitor)
     #assert False, job1.special_users.all()
@@ -153,10 +152,10 @@ def app(project_directory):
     db.session.add(flowchart)
     db.session.commit()
 
-    return flask_app
+    yield flask_app
 
     # clean up
-    #app_context.pop()
+    app_context.pop()
 
 
 @pytest.fixture(scope="module")

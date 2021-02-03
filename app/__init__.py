@@ -201,6 +201,7 @@ def create_app(config_name=None):
     if not options.no_check:
         # Ugly but avoids circular import.
         from .models.import_jobs import import_jobs
+        from .models import User, Group, GroupJobAssociation
 
         t0 = time.perf_counter()
         with app.app_context():
@@ -208,51 +209,108 @@ def create_app(config_name=None):
                 os.path.join(options.datastore, "projects")
             )
 
+            job1 = Job.query.filter(Job.id == 1).one()
+
             visitor = User(username="visitor", password="visitor", id=10)
-            job = Job(title="visitor_job", path="/", id=1000)
-            db.session.add(visitor)
-            db.session.add(job)
-            db.session.flush()
-            a = UserJobAssociation(special_permissions=["read"], job_id=job.id, user_id=visitor.id)
-            a.user = visitor
-            visitor.special_jobs.append(a)
-            #job.special_users.append(a)
-            #assert False, visitor.special_jobs.filter(Job.id==1000).one_or_none().permissions
-            #assert False, job.special_users.filter(Job.id==1000).one_or_none().permissions
+            group = Group(name="visiting group", id=10)
+            
+            group.users.append(visitor)
+            a = GroupJobAssociation(permissions=["read"], resource_id=1, entity_id=10)
+            job = Job(title="visitor_job", path="/", id=1000, owner_id=1)
+            a.job = job1
+            group.special_jobs.append(a)
+
+            visitor2 = User(username="visitor2", password="visitor", id=100)
+            group2 = Group(name="visiting group2", id=100)
+
+            group2.users.append(visitor2)
+            b = GroupJobAssociation(permissions=["read", "write"], resource_id=1001, entity_id=100)
+            job2 = Job(title="visitor_job2", path="/a", id=1001)
+            b.job = job2
+            group2.special_jobs.append(b)
+
             db.session.add(a)
+            db.session.add(b)
+            db.session.add(job)
+            db.session.add(job2)
             db.session.add(visitor)
+            db.session.add(visitor2)
+            db.session.add(group)
+            db.session.add(group2)
+            db.session.flush()
+
+            group_list = [ x.special_groups.all() for x in Job.query.all() if x.special_groups.all() ]
+
+            #assert False, [ x.special_groups.all() for x in Job.query.all() if x.special_groups.all() ]
+
+            overlapping = [ y.resource_id for x in group_list for y in x if y.entity_id in [ n.id for n in visitor.groups ] and "read" in y.permissions ]
+
+            #assert False, overlapping
+
+            for assoc in group.special_jobs:
+                #assert False, assoc.permissions
+                print(assoc.job)
+
+            for assoc in job.special_users:
+                #assert False, f"{assoc.special_permissions} hello"
+                pass
+                
             db.session.commit()
-
-            ###########################
-            #
-            # Joins
-            # 
-            ############################
-
-            try2 = UserJobAssociation.query.join(Job)
-    
-
-            from sqlalchemy import inspect, and_
-
-            def pretty_string(object):
-                st = ''
-                for x in dir(Job):
-                    st += f"{getattr(Job,x)}\t {type(getattr(Job,x))}\n"
-                return st
             
-            j = pretty_string(Job)
+            # Find overlap between entity_id and current_users.special_groups
 
-            #assert False, dir(j.special_users)
-
-            #assert False, db.get_tables_for_bind()
-
-            #db.get_binds()
+            #assert False, (visitor.groups, Group.query.all()[1].special_jobs.all()[0].permissions)
+            #assert False, [x.id for x in visitor.groups]
             
-            #assert False, type(Job)
-            
-            #.join(User).options(contains_eager(Job.special_users))
+            #assert group2 in visitor.groups
+            #assert False, [ x.entity_id for x in job.special_groups.all() 
 
-            #assert False, len(try2.filter_by(UserJobAssociation.special_permissions.contains("read")).all())
+            #assert False, [z for z in visitor.groups if z.id in [ x.entity_id for x in job.special_groups.all()] ]
+            
+            #job.special_users.filter_by(resource_id=1000).one_or_none()
+
+            #Job.special_groups.in_(visitor.groups[0])
+
+            #visitor.groups[0].id.in_(Job.special_groups)
+            #session.query(ZKUser).filter(ZKUser.groups.any(ZKGroup.id.in_([1,2,3])))
+
+            #assert False, Job.special_groups.any(Job.special_groups.entity_id.in_([1]))
+
+            #assert False, ( Job.special_groups[0] )
+
+            #assert False, [x.id for x in visitor.groups if x in Job.special_groups.query.all() ]
+            
+           #assert False, visitor.groups 
+           #             
+            #Job.special_groups.all()[0].filter_by(entity_id = group_list) #[ y.permissions for x in group_list for y in x ]
+
+
+            #jobs = [x for x in Job.query.all()]
+
+            #test = [Job.query.filter_by(id = x.resource_id).one_or_none() for x in visitor.special_jobs]
+
+            #assert False, test[0].permissions
+
+            check = "read"
+
+           # Job.query( Job.id.in_( x.id for x in special_groups)
+            
+            #assert False, len(Job.query.filter(Job.id.in_([x.resource_id for x in getattr(visitor, f"special_{Job.__tablename__}") if check in x.permissions])).all())
+
+            #User.in_([x.user_id for x in Job.special_users])
+
+            # Jobs which are in users special_jobs 
+            # assert False, Job.query.filter(Job.id.in_([x.resource_id for x in getattr(visitor, f"special_{Job.__tablename__}")])).all()[0].id
+
+            # Jobs which have "read" in special permissions
+            #assert False, Job.query.filter(Job.id.in_([x.resource_id for x in visitor.special_jobs if "read" in x.permissions])).all()[0].id
+            #[x.permissions for x in visitor.special_jobs]
+
+            #[x.user_id for x in Job.special_users]
+            #[x.id for x in Job.special_users.user_id]
+
+            # Check current user for "special resource"
+            # Get ids of those and check permissions
 
            
         t1 = time.perf_counter()

@@ -1,4 +1,4 @@
-from .models import Job, Flowchart, Project, User, Group, Role, UserJobAssociation
+from .models import Job, Flowchart, Project, User, Group, Role, UserJobAssociation, GroupJobAssociation
 from .models import (
     JobSchema,
     FlowchartSchema,
