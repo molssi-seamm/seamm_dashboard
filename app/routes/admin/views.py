@@ -19,7 +19,7 @@ from wtforms import BooleanField
 from . import admin
 
 from app import db, authorize
-from app.models import Role, Group, User, Project
+from app.models import Role, Group, User, Project, GroupProjectAssociation
 from app.routes.api.users import _process_user_body
 
 
@@ -63,19 +63,45 @@ def create_group():
     form.group_members.choices = [(user.username, user.username) for user in users]
 
     if form.validate_on_submit():
-        processed_form = _process_user_body(form.data)
 
-        if isinstance(processed_form, Response):
-            flash(
-                f"Creating the user failed because of problems with the input data. Please check the inputs and try again."
-            )
-            return redirect(url_for("admin.create_group"))
+        # Process form data
 
-        else:
-            db.session.add(processed_form)
+        # Get users specified on form from db
+        users = User.query.filter(User.username.in_(form.data['group_members'])).all()
+
+        # Create new group containing users
+        group = Group(name=form.data['group_name'], users=users)
+        db.session.add(group)
+        db.session.flush()
+
+        ## Set special project permissions.
+
+        project_keys = [ x for x in form.data.keys() if 'project' in x if form.data[x] is True ]
+
+        for key in project_keys:
+            split = key.split('_')
+            project_id = int(split[1])
+            permission = [split[2]]
+
+            project = Project.query.filter_by(id=project_id).one()
+            group = Group.query.filter_by(id=group.id).one()
+
+            # Look to see if setting exists yet
+            assoc = GroupProjectAssociation.query.filter_by(entity_id=group.id, resource_id=project.id).one_or_none()
+
+            if not assoc:
+                assoc = GroupProjectAssociation(entity_id=group.id, resource_id=project.id, permissions=permission)
+            else:
+                assoc.permissions.extend(permission)
+
+            group.special_projects.append(assoc)
+
+            db.session.add(assoc)
+            db.session.add(group)
             db.session.commit()
-            flash(f"The group {form.data['group_name']} has been successfully created")
-            return render_template("admin/manage_groups.html")
+
+        flash(f"The group {form.data['group_name']} has been successfully created")
+        return render_template("admin/manage_groups.html")
 
     
     return render_template("admin/create_group.html", form=form, project_names=project_names)

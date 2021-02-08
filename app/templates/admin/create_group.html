@@ -6,7 +6,7 @@
     {% if "manage_user" in request.path %}
         <h1>Manage User {{ username }}</h1>
     {% else %}
-        <h1>Create New User</h1>
+        <h1>Create New Group</h1>
     {% endif %}
 </div>
 <div class="container mt-5">
@@ -17,59 +17,66 @@
             <div class="card-header">
             Group Information<span class="edit-section float-right" id="account-info-button"></span>
             </div>
-            <div class="card-body" id="account-info">
-            <h5 class="card-title">Group Name and Members</h5>
-            {% if "manage_group" in request.path %}
-            <p class="card-text font-weight-light font-italic">Update the group name and members for group.</p>
-            {% else %}
-                <p class="card-text font-weight-light font-italic">Create a new group and add members to the group.</p>
-            {% endif %}
+            <div class="card-body" id="group-info">
+                <h5 class="card-title">Group Name and Members</h5>
+                {% if "manage_group" in request.path %}
+                <p class="card-text font-weight-light font-italic">Update the group name and members for group.</p>
+                {% else %}
+                    <p class="card-text font-weight-light font-italic">Create a new group and add members to the group.</p>
+                {% endif %}
 
-            <div class="row">
-                <div class="form-group col-sm-12">
-                    {{ wtf.form_field(form.group_name, class="form-control", 
-                        placeholder='New Group Name') }}
-                    {% for error in form.group_name.errors %}
-                        <div class="alert alert-danger">{{ error }} </div>
-                    {% endfor %}
+                <div class="row">
+                    <div class="form-group col-sm-12">
+                        {{ wtf.form_field(form.group_name, class="form-control", 
+                            placeholder='New Group Name') }}
+                        {% for error in form.group_name.errors %}
+                            <div class="alert alert-danger">{{ error }} </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-sm-12">
+                        {{ wtf.form_field(form.group_members, class="form-control") }}
+                    </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="form-group col-sm-12">
-                    {{ wtf.form_field(form.group_members, class="form-control") }}
-                </div>
-            </div>
-        </div>
     </div>
 
         <div class="card" >
             <div class="card-header">
                 Special Project Permissions <span class="edit-section float-right" id="account-info-button"></span>
             </div>
-            <div class="card-body">
-                <table class="table">
-                    <tr>
-                        <th>Project Name</th>
-                        <th>read</th>
-                        <th>update</th>
-                        <th>create</th>
-                        <th>delete</th>
-                    </tr>
-
-                    {% for project in project_names %}
-                        {% set project_ind = (loop.index - 1)*4 %}
-                        <tr>  
-                        <td>{{ project }}</td>
-                            {% for field in form %}
-                                {% if loop.index > 3 + project_ind and loop.index < 8 + project_ind %}
-                                <td>
-                                    {{ field }}
-                                </td>
-                                {% endif %}
-                            {% endfor %}
+            <div class="card-body" id="group-info">
+                {% if "manage_group" in request.path %}
+                <p class="card-text font-weight-light font-italic">Update permissions for the group</p>
+                {% else %}
+                    <p class="card-text font-weight-light font-italic">Add special project permissions.</p>
+                {% endif %}
+                <div class="card-body">
+                    <table class="table">
+                        <tr>
+                            <th>Project Name</th>
+                            <th>read</th>
+                            <th>update</th>
+                            <th>create</th>
+                            <th>delete</th>
                         </tr>
-                    {% endfor %}
-                </table>
+
+                        {% for project in project_names %}
+                            {% set project_ind = (loop.index - 1)*4 %}
+                            <tr>  
+                            <td>{{ project }}</td>
+                                {% for field in form %}
+                                    {% if loop.index > 3 + project_ind and loop.index < 8 + project_ind %}
+                                    <td>
+                                        {{ field }}
+                                    </td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
             </div>
         </div>
 
