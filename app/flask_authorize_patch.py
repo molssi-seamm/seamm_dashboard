@@ -30,10 +30,6 @@ def generate_association_table(
     if not resource_tablename:
         resource_tablename = resource_name.lower() + "s"
 
-    # More names
-    # entity_name_lower = entity_name.lower()
-    # resource_name_lower = resource_name.lower()
-
     @declared_attr
     def left_id(cls):
         return Column(Integer, ForeignKey(f"{entity_tablename}.id"), primary_key=True)
@@ -62,8 +58,8 @@ def generate_association_table(
         entity_id = left_id
         resource_id = right_id
 
-        locals()[f"special_{entity_tablename}"] = entity_relationship
-        locals()[f"special_{resource_tablename}"] = resource_relationship
+        locals()[f"{entity_tablename}"] = entity_relationship
+        locals()[f"{resource_tablename}"] = resource_relationship
 
         permissions = Column(PipedList)
 
@@ -206,7 +202,6 @@ def allowed(self, *args, **kwargs):
         if hasattr(arg, "special_groups") and CURRENT_USER():
             for group in arg.special_groups.all():
                 if group.entity_id in [x.id for x in CURRENT_USER().groups]:
-
                     permitted |= operation in group.permissions
 
         if not permitted:

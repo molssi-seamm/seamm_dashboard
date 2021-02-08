@@ -288,7 +288,7 @@ def get_job(id):
         return Response(status=404)
 
     if not authorize.read(job):
-        return Response(f"{job.permissions}.", status=401)
+        return Response(f"You are not authorized to view this content.", status=401)
 
     job_schema = JobSchema(many=False)
     return job_schema.dump(job), 200

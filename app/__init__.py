@@ -14,7 +14,8 @@ from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 
-from .flask_authorize_patch import Authorize
+from flask_authorize import Authorize
+from .flask_authorize_patch import Authorizer
 
 from .jwt_patch import flask_jwt_extended
 
@@ -201,51 +202,13 @@ def create_app(config_name=None):
     if not options.no_check:
         # Ugly but avoids circular import.
         from .models.import_jobs import import_jobs
-        from .models import User, Group, GroupJobAssociation
+        from .models import User, Group, GroupJobAssociation, GroupProjectAssociation
 
         t0 = time.perf_counter()
         with app.app_context():
             n_projects, n_added_projects, n_jobs, n_added_jobs = import_jobs(
                 os.path.join(options.datastore, "projects")
             )
-
-            job1 = Job.query.filter(Job.id == 1).one()
-
-            visitor = User(username="visitor", password="visitor", id=10)
-            group = Group(name="visiting group", id=10)
-            
-            group.users.append(visitor)
-            a = GroupJobAssociation(permissions=["read"], resource_id=1, entity_id=10)
-            job = Job(title="visitor_job", path="/", id=1000, owner_id=1)
-            a.job = job1
-            group.special_jobs.append(a)
-
-            visitor2 = User(username="visitor2", password="visitor", id=100)
-            group2 = Group(name="visiting group2", id=100)
-
-            group2.users.append(visitor2)
-            b = GroupJobAssociation(permissions=["read", "write"], resource_id=1001, entity_id=100)
-            job2 = Job(title="visitor_job2", path="/a", id=1001)
-            b.job = job2
-            group2.special_jobs.append(b)
-
-            db.session.add(a)
-            db.session.add(b)
-            db.session.add(job)
-            db.session.add(job2)
-            db.session.add(visitor)
-            db.session.add(visitor2)
-            db.session.add(group)
-            db.session.add(group2)
-            db.session.flush()
-
-            group_list = [ x.special_groups.all() for x in Job.query.all() if x.special_groups.all() ]
-
-            overlapping = [ y.resource_id for x in group_list for y in x if y.entity_id in [ n.id for n in visitor.groups ] and "read" in y.permissions ]
-
-            for assoc in job.special_users:
-                #assert False, f"{assoc.special_permissions} hello"
-                pass
                 
             db.session.commit()
             
