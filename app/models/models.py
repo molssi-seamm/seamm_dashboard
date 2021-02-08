@@ -23,6 +23,8 @@ UserJobMixin = generate_association_table("User", "Job")
 UserFlowchartMixin = generate_association_table("User", "Flowchart")
 UserProjectMixin = generate_association_table("User", "Project")
 GroupJobMixin = generate_association_table("Group", "Job")
+GroupProjectMixin = generate_association_table("Group", "Project")
+GroupFlowchartMixin = generate_association_table("Group", "Flowchart")
 
 class UserJobAssociation(db.Model, UserJobMixin):
     pass
@@ -34,6 +36,12 @@ class UserProjectAssociation(db.Model, UserProjectMixin):
     pass
 
 class GroupJobAssociation(db.Model, GroupJobMixin):
+    pass
+
+class GroupProjectAssociation(db.Model, GroupProjectMixin):
+    pass
+
+class GroupFlowchartAssociation(db.Model, GroupFlowchartMixin):
     pass
 
 user_group = db.Table(
@@ -122,7 +130,7 @@ class Role(db.Model):
     users = db.relationship("User", secondary=user_role, back_populates="roles")
 
 
-class Flowchart(db.Model, PermissionsMixin):
+class Flowchart(db.Model, AccessControlPermissionsMixin):
     __tablename__ = "flowcharts"
 
     id = db.Column(db.String(32), nullable=False, primary_key=True)
@@ -161,7 +169,7 @@ class Job(db.Model, AccessControlPermissionsMixin):
     def __repr__(self):
         return f"Job(path={self.path}, flowchart_id={self.flowchart}, submitted={self.submitted})"  # noqa: E501
 
-class Project(db.Model, PermissionsMixin):
+class Project(db.Model, AccessControlPermissionsMixin):
     __tablename__ = "projects"
 
     id = db.Column(db.Integer, primary_key=True)
