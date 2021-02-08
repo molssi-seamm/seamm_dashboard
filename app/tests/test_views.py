@@ -393,9 +393,9 @@ class TestLiveServer:
             "users"
         ).find_elements_by_tag_name("tr")
 
-        # chrome_driver.get_screenshot_as_file(f'user_table.png')
+        chrome_driver.get_screenshot_as_file(f'user_table.png')
 
-        assert len(table_rows) == 4
+        assert len(table_rows) == 5
 
     def test_admin_edit_user(self, app, chrome_driver):
 

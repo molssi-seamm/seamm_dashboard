@@ -5,8 +5,10 @@ Table models for SEAMM datastore SQLAlchemy database.
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
-from flask_authorize import PermissionsMixin, RestrictionsMixin, AccessControlPermissionsMixin
-from flask_authorize.mixin_generator import generate_association_table
+from flask_authorize import PermissionsMixin, RestrictionsMixin
+
+# Patched flask authorize
+from app.flask_authorize_patch import AccessControlPermissionsMixin, generate_association_table
 
 from app import db, jwt
 
