@@ -74,8 +74,8 @@ def create_group():
         else:
             db.session.add(processed_form)
             db.session.commit()
-            flash(f"The user {form.data['username']} has been successfully created")
-            return render_template("admin/manage_users.html")
+            flash(f"The group {form.data['group_name']} has been successfully created")
+            return render_template("admin/manage_groups.html")
 
     
     return render_template("admin/create_group.html", form=form, project_names=project_names)

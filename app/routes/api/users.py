@@ -3,8 +3,6 @@ API calls for users (creating, logging in, logging out)
 
 """
 
-from copy import deepcopy
-
 from flask import Response
 from flask_jwt_extended import jwt_optional
 

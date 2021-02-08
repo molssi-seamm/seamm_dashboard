@@ -11,8 +11,7 @@ from app import authorize
 
 from flask_jwt_extended import (
     get_current_user,
-    jwt_optional,
-    jwt_required,
+    jwt_optional
 )
 
 logger = logging.getLogger("__file__")
