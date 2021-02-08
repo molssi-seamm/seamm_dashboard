@@ -14,7 +14,7 @@ from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 
-from flask_authorize import Authorize
+from .flask_authorize_patch import Authorize
 
 from .jwt_patch import flask_jwt_extended
 
