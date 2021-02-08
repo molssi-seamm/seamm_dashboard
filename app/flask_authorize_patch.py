@@ -7,7 +7,7 @@ from flask_authorize.mixins import PipedList, PermissionsMixin
 
 from flask_authorize.plugin import Authorize
 
-__all__ = ["generate_association_table", "AccessControlPermissionsMixin", "Authorizer"]
+__all__ = ["generate_association_table", "AccessControlPermissionsMixin", "Authorize"]
 
 
 def generate_association_table(
@@ -21,8 +21,8 @@ def generate_association_table(
         resource_tablename = resource_name.lower() + "s"
 
     # More names
-    entity_name_lower = entity_name.lower()
-    resource_name_lower = resource_name.lower()
+    # entity_name_lower = entity_name.lower()
+    # resource_name_lower = resource_name.lower()
 
     @declared_attr
     def left_id(cls):

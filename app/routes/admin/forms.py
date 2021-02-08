@@ -4,7 +4,6 @@ from wtforms import (
     PasswordField,
     SubmitField,
     SelectMultipleField,
-    BooleanField,
 )
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo, Email
