@@ -8,7 +8,13 @@ from wtforms import (
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo, Email
 from wtforms import ValidationError
-from app.models import User
+from app.models import User, Group
+
+def _validate_group(self, field):
+    if Group.query.filter(Group.name == field.data).first():
+        raise ValidationError(
+            f"Group name '{field.data}' already in use. Please pick a different group name."
+        )
 
 def _validate_username(self, field):
     if User.query.filter(User.username == field.data).first():
@@ -132,7 +138,7 @@ class EditGroupForm(FlaskForm):
     Form for adding or editing a group
     """
 
-    group_name = StringField("Group Name", validators=[ Length(2, 64), DataRequired() ])
+    group_name = StringField("Group Name", validators=[ Length(2, 64), DataRequired(), _validate_group ])
 
     group_members = SelectMultipleField("Group Members", choices=[])
 
