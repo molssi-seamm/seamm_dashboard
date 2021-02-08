@@ -4,6 +4,7 @@ API calls for projects
 
 from flask import Response
 from flask_jwt_extended import jwt_optional
+from sqlalchemy import and_
 
 from app.models import Project, ProjectSchema, Job, JobSchema
 from app import authorize
@@ -17,10 +18,9 @@ def get_projects(description=None, limit=None):
     # If limit is not set, set limit to all jobs in DB.
     if limit is None:
         limit = Project.query.count()
-
     if description is not None:
         projects = Project.query.filter(
-            Project.authorized("read"), Project.description.contains(description)
+            and_(Project.authorized("read"), Project.description.contains(description))
         ).limit(limit)
     else:
         projects = Project.query.filter(Project.authorized("read")).limit(limit)
