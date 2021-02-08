@@ -5,7 +5,7 @@ Table models for SEAMM datastore SQLAlchemy database.
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
-from flask_authorize import PermissionsMixin, RestrictionsMixin
+from flask_authorize import PermissionsMixin, RestrictionsMixin, AccessControlPermissionsMixin
 from flask_authorize.mixin_generator import generate_association_table
 
 from app import db, jwt
@@ -144,7 +144,7 @@ class Flowchart(db.Model, PermissionsMixin):
         return f"Flowchart(id={self.id}, description={self.description}, path={self.path})"  # noqa: E501
 
 
-class Job(db.Model, PermissionsMixin):
+class Job(db.Model, AccessControlPermissionsMixin):
     __tablename__ = "jobs"
 
     id = db.Column(db.Integer, primary_key=True)
