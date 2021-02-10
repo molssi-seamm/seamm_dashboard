@@ -1,0 +1,30 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "admin/base.html" %}
+
+
+{% block page_content %}
+<div class="container">
+    <div class="d-flex justify-content-center">
+        <h1>Delete User</h1>
+    </div>
+    <div class="d-flex justify-content-center m-5">
+        You have chosen to delete a user from the dashboard. To complete this action, type the username of the user 
+        you wish to delete in the textbox and check "confirm". The name of the user must match the user for which you 
+        have started this action
+    </div>
+    <div class="d-flex justify-content-center">
+        {{ wtf.quick_form(form) }}
+        <br>
+    </div>
+</div>
+{% endblock %}
+
+
+<script src="{{ url_for('static', filename='node_modules/jquery/dist/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='node_modules/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+<script src="{{ url_for('static', filename='node_modules/datatables.net-dt/js/dataTables.dataTables.min.js') }}"></script> 
+<script src="{{ url_for('static', filename='node_modules/datatables.net-bs4/js/dataTables.bootstrap4.min.js') }}"></script> 
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='node_modules/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}"/>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='node_modules/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css') }}"/>
+
+<script src="{{ url_for('static', filename='js/manage_users.js') }}"></script>

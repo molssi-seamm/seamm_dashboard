@@ -6,15 +6,17 @@ from copy import deepcopy
 
 from flask import render_template, redirect, url_for, flash, Response, request
 
-from flask_jwt_extended import jwt_optional
+from flask_jwt_extended import jwt_optional, fresh_jwt_required, jwt_required, get_current_user
 
 from .forms import (
     CreateUserForm,
     ManageUserFormAdmin,
     EditGroupForm,
+    DeleteUserForm,
     _validate_username,
     _validate_email,
     _validate_group,
+    _validate_user_delete,
 )
 
 from wtforms import BooleanField
@@ -137,7 +139,7 @@ def create_group():
 @jwt_optional
 def manage_group(group_id):
     # Permissions check
-    if not authorize.has_role("admin"):
+    if not authorize.has_role("admin", "group manager"):
         return render_template("401.html")
 
     # Get the group information
@@ -267,4 +269,43 @@ def manage_user(user_id):
             flash(f"The user {form.data['username']} has been successfully updated.")
             return render_template("admin/manage_users.html")
 
-    return render_template("admin/create_user.html", form=form, username=user.username)
+    return render_template("admin/create_user.html", form=form, username=user.username, user_id=user.id)
+
+@admin.route("/admin/manage_user/<user_id>/delete", methods=["GET", "POST"])
+@jwt_required
+@fresh_jwt_required
+def delete_user(user_id):
+    # Permissions check
+    if not authorize.has_role("admin"):
+        return render_template("401.html")
+
+    user_remove = User.query.filter(User.id == user_id).one()
+
+    if user_remove.id == get_current_user().id:
+        flash(f"You cannot remove your own account from the dashboard.")
+        return render_template("admin/manage_users.html")
+    
+    form = DeleteUserForm()
+
+    try:
+        form.username.validators.remove(_validate_username)
+    except:
+        pass
+
+    if request.method == "POST":
+
+        specified_user = User.query.filter_by(username=form.username.data).one_or_none()
+
+        if specified_user is None or str(specified_user.id) != user_id:
+            form.username.validators.append(_validate_user_delete)
+            flash("The input username did not match the requested user.")
+
+        if form.validate():
+            db.session.delete(specified_user)
+            db.session.commit()
+            flash(f"User {specified_user.username} removed from the dashboard.")
+
+            return render_template("admin/manage_users.html")
+            
+    
+    return render_template("admin/delete_user.html", form=form)
