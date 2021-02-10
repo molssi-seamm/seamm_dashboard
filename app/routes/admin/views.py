@@ -182,7 +182,7 @@ def manage_group(group_id):
             flash(f"The group {form.data['group_name']} has been successfully updated.")
             return render_template("admin/manage_groups.html")
 
-    return render_template("admin/create_group.html", form=form, project_names=project_names)
+    return render_template("admin/create_group.html", form=form, project_names=project_names, group_name=group.name)
     
 
 @admin.route("/admin/create_user", methods=["GET", "POST"])
