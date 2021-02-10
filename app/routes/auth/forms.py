@@ -9,3 +9,9 @@ class LoginForm(FlaskForm):
     password = PasswordField("Password", validators=[DataRequired()])
     # remember_me = BooleanField("Keep me logged in")
     submit = SubmitField("Log In")
+
+class ConfirmLogin(FlaskForm):
+    """A login form which doesn't have a username field"""
+
+    password = PasswordField("Password", validators=[DataRequired()])
+    submit = SubmitField("Log In")

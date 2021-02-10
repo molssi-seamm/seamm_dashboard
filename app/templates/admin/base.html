@@ -55,9 +55,11 @@
 <script src="{{ url_for('static', filename='node_modules/datatables.net-select/js/dataTables.select.min.js') }}"></script>
 <script src="{{ url_for('static', filename='node_modules/datatables.net-buttons/js/dataTables.buttons.min.js') }}"></script>
 
-
+{% if "delete" not in request.path %}
 <script src="{{ url_for('static', filename='js/timer.js') }}"></script>
 <script src="{{ url_for('static', filename='js/setup.js') }}"></script>
+{% endif %}
+
 <script>
     $("body").addClass('bg-white')
     $('[data-toggle="tooltip"]').tooltip()

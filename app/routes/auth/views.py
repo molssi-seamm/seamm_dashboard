@@ -4,20 +4,29 @@ from flask import (
     render_template,
     flash,
     make_response,
+    request,
+    redirect
 )
 
 from flask_jwt_extended import (
     set_access_cookies,
     set_refresh_cookies,
     unset_jwt_cookies,
+    create_access_token,
+    get_current_user,
+
 )
 
 from .forms import (
     LoginForm,
+    ConfirmLogin
 )
+
+from app.models import User, UserSchema
 
 from . import auth
 
+from app import jwt
 from app.models import User
 from app.routes.api.auth import create_tokens
 
@@ -45,6 +54,29 @@ def login():
         flash("Invalid username or password.")
 
     return render_template("auth/login.html", form=form)
+
+@jwt.needs_fresh_token_loader
+@auth.route("/confirm_login", methods=["GET", "POST"])
+def fresh_login():
+
+    form = ConfirmLogin()
+    user = get_current_user()
+
+    if form.validate_on_submit():
+
+        if user.verify_password(form.password.data):
+            user_schema = UserSchema(many=False)
+            user = user_schema.dump(user)
+            response = redirect(request.referrer)
+
+            # Add cookies to response
+            access_token = create_access_token(identity=user, fresh=True)
+            set_access_cookies(response, access_token)
+
+            return response
+        flash("Invalid username or password.")
+
+    return render_template("auth/confirm_login.html", form=form)
 
 
 # Login required.

@@ -4,6 +4,7 @@ from wtforms import (
     PasswordField,
     SubmitField,
     SelectMultipleField,
+    BooleanField,
 )
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo, Email
@@ -15,6 +16,9 @@ def _validate_group(self, field):
         raise ValidationError(
             f"Group name '{field.data}' already in use. Please pick a different group name."
         )
+
+def _validate_user_delete(self, field):
+    raise ValidationError(f"Input username does not match user ID.")
 
 def _validate_username(self, field):
     if User.query.filter(User.username == field.data).first():
@@ -143,6 +147,15 @@ class EditGroupForm(FlaskForm):
     group_members = SelectMultipleField("Group Members", choices=[])
 
     submit = SubmitField("Submit")
+
+class DeleteUserForm(FlaskForm):
+    """
+    Form for deleting a user.
+    """
+
+    username = _username
+    confirm = BooleanField("Confirm")
+    submit = SubmitField("Delete User")
 
 
     
