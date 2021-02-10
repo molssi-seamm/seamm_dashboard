@@ -148,15 +148,14 @@ def create_app(config_name=None):
 
         app.register_error_handler(404, errors.not_found)
 
+
     # init
     mail.init_app(app)
     cors.init_app(app)
     bootstrap.init_app(app)
     authorize.init_app(app)
     jwt.init_app(app)
-    # app_admin.init_app(app)
     moment.init_app(app)
-    # toolbar.init_app(app)
 
     # jinja template
     app.jinja_env.filters["empty"] = replace_empty
@@ -183,8 +182,7 @@ def create_app(config_name=None):
 
     # Add some default roles to the dashboard
     with app.app_context():
-        from .models import Role, User, Job, UserJobAssociation
-
+        from .models import Role, User, Job, Project
         role_names = ["user", "group manager", "admin"]
 
         for role_name in role_names:

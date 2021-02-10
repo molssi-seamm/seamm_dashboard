@@ -2,6 +2,8 @@
 Admin views
 """
 
+from copy import deepcopy
+
 from flask import render_template, redirect, url_for, flash, Response, request
 
 from flask_jwt_extended import jwt_optional
@@ -12,6 +14,7 @@ from .forms import (
     EditGroupForm,
     _validate_username,
     _validate_email,
+    _validate_group,
 )
 
 from wtforms import BooleanField
@@ -22,6 +25,73 @@ from app import db, authorize
 from app.models import Role, Group, User, Project, GroupProjectAssociation
 from app.routes.api.users import _process_user_body
 
+def _bind_projects_to_form(form, projects, group=None, new=True):
+
+    if not new and not group:
+        raise ValueError("A group must be given if the form is being created for an existing group.")
+
+    project_names = []
+    actions = ["read", "update", "create", "delete"]
+    
+    # Bind boolean fields for permission types
+    for project in projects:
+        field_name = f"project_{project.id}"
+        permissions = []
+        if not new:
+            assoc = GroupProjectAssociation.query.filter_by(resource_id=project.id, entity_id=group.id).one_or_none()
+            
+            if assoc:
+                permissions = assoc.permissions
+
+        for action in actions:
+            checked = action in permissions
+            setattr(form, f"{field_name}_{action}", BooleanField(default=checked))
+        
+        project_names.append(project.name)
+    
+    return form, project_names
+
+def _process_group_form_data(form):
+
+    # Process form data
+    # Get users specified on form from db
+    users = User.query.filter(User.username.in_(form.data['group_members'])).all()
+
+    group = Group.query.filter_by(name=form.data['group_name']).one_or_none()
+    
+    if group is None:
+        # Create new group containing users
+        group = Group(name=form.data['group_name'], users=users)
+    else:
+        group.users = users
+
+    db.session.add(group)
+    db.session.commit()
+
+    ## Set special project permissions.
+
+    project_keys = [ x for x in form.data.keys() if 'project' in x if form.data[x] is True ]
+
+    for key in project_keys:
+        split = key.split('_')
+        project_id = int(split[1])
+        permission = [split[2]]
+
+        project = Project.query.filter_by(id=project_id).one()
+
+        # Look to see if setting exists yet
+        assoc = GroupProjectAssociation.query.filter_by(entity_id=group.id, resource_id=project.id).one_or_none()
+
+        if not assoc:
+            assoc = GroupProjectAssociation(entity_id=group.id, resource_id=project.id, permissions=permission)
+        else:
+            assoc.permissions.extend(permission)
+
+        group.special_projects.append(assoc)
+
+        db.session.add(assoc)
+        db.session.add(group)
+        db.session.commit()
 
 @admin.route("/admin/manage_users")
 @jwt_optional
@@ -40,65 +110,22 @@ def manage_groups():
 @admin.route("/admin/create_group", methods=["GET", "POST"])
 @jwt_optional
 def create_group():
-
     if not authorize.has_role("admin", "group manager"):
         return render_template("401.html")
 
     # We have to add these fields dynamically based on the projects in the database
     projects = Project.query.all()
-    field_read = []
-    project_names = []
 
-    # Bind boolean fields for permission types
-    for project in projects:
-        field_name = f"project_{project.id}"
-        setattr(EditGroupForm, f"{field_name}_read", BooleanField())
-        setattr(EditGroupForm, f"{field_name}_update", BooleanField())
-        setattr(EditGroupForm, f"{field_name}_create", BooleanField())
-        setattr(EditGroupForm, f"{field_name}_delete", BooleanField())
-        project_names.append(project.name)
+    form_copy = deepcopy(EditGroupForm)
+    form_copy, project_names = _bind_projects_to_form(form_copy, projects)
 
-    form = EditGroupForm()
+    form = form_copy()
     users = User.query.all()
     form.group_members.choices = [(user.username, user.username) for user in users]
 
     if form.validate_on_submit():
 
-        # Process form data
-
-        # Get users specified on form from db
-        users = User.query.filter(User.username.in_(form.data['group_members'])).all()
-
-        # Create new group containing users
-        group = Group(name=form.data['group_name'], users=users)
-        db.session.add(group)
-        db.session.flush()
-
-        ## Set special project permissions.
-
-        project_keys = [ x for x in form.data.keys() if 'project' in x if form.data[x] is True ]
-
-        for key in project_keys:
-            split = key.split('_')
-            project_id = int(split[1])
-            permission = [split[2]]
-
-            project = Project.query.filter_by(id=project_id).one()
-            group = Group.query.filter_by(id=group.id).one()
-
-            # Look to see if setting exists yet
-            assoc = GroupProjectAssociation.query.filter_by(entity_id=group.id, resource_id=project.id).one_or_none()
-
-            if not assoc:
-                assoc = GroupProjectAssociation(entity_id=group.id, resource_id=project.id, permissions=permission)
-            else:
-                assoc.permissions.extend(permission)
-
-            group.special_projects.append(assoc)
-
-            db.session.add(assoc)
-            db.session.add(group)
-            db.session.commit()
+        _process_group_form_data(form)
 
         flash(f"The group {form.data['group_name']} has been successfully created")
         return render_template("admin/manage_groups.html")
@@ -106,6 +133,57 @@ def create_group():
     
     return render_template("admin/create_group.html", form=form, project_names=project_names)
 
+@admin.route("/admin/manage_group/<group_id>", methods=["GET", "POST"])
+@jwt_optional
+def manage_group(group_id):
+    # Permissions check
+    if not authorize.has_role("admin"):
+        return render_template("401.html")
+
+    # Get the group information
+    group = Group.query.get(group_id)
+
+    if not group:
+        return render_template("404.html")
+    
+    # We have to add these fields dynamically based on the projects in the database
+    projects = Project.query.all()
+
+    form_copy = deepcopy(EditGroupForm)
+    form_copy, project_names = _bind_projects_to_form(form_copy, projects, new=False, group=group)
+
+    form = form_copy()
+    users = User.query.all()
+    form.group_members.choices = [(user.username, user.username) for user in users]
+    
+     # Set defaults
+    if request.method == "GET":
+        form.group_name.data = group.name
+        form.group_members.data = [g.username for g in group.users]
+
+    if request.method == "POST":
+        try:
+            form.group_name.validators.remove(_validate_group)
+        except:
+            pass
+        
+        # field has been attempted to be updated and we
+        # must check the input
+        if form.group_name.data != group.name:
+            if Group.query.filter(Group.name == form.group_name.data).first():
+                form.username.validators.append(_validate_group)
+
+        # use validate instead of validate_on_submit so we can add our own validators (lines above)
+        if form.validate():
+
+            _process_group_form_data(form)
+
+            db.session.commit()
+            flash(f"The group {form.data['group_name']} has been successfully updated.")
+            return render_template("admin/manage_groups.html")
+
+    return render_template("admin/create_group.html", form=form, project_names=project_names)
+    
 
 @admin.route("/admin/create_user", methods=["GET", "POST"])
 @jwt_optional
