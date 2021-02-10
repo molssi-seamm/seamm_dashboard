@@ -50,7 +50,7 @@ class GroupProjectAssociation(db.Model, GroupProjectMixin):
 
         if name == "permissions":
             # See if there is an asociation between the group and project
-            project = Project.query.filter_by(id=self.entity_id).one()
+            project = Project.query.filter_by(id=self.resource_id).one()
             
             if project.jobs:
                 for job in project.jobs:
