@@ -3,6 +3,7 @@
 
 {% block page_content %}
 <div class="page-header">
+    <h1>{{ form.specialprojecst_read }}</h1>
     {% if "manage_group" in request.path %}
         <h1>Manage Group {{ group_name }}</h1>
     {% else %}
@@ -41,18 +42,56 @@
                 </div>
             </div>
     </div>
-
+    {% if "manage_group" in request.path %}
         <div class="card" >
             <div class="card-header">
-                Special Project Permissions <span class="edit-section float-right" id="special-permissions-info-button"></span>
+                Owned Project Permissions <span class="edit-section float-right" id="owned-permissions-info-button"></span>
             </div>
-            <div class="card-body" id="special-permissions-info">
-                {% if "manage_group" in request.path %}
+            <div class="card-body" id="owned-permissions-info">
                 <p class="card-text font-weight-light font-italic">Update permissions for the group.</p>
-                {% else %}
-                    <p class="card-text font-weight-light font-italic">Add special project permissions.</p>
-                {% endif %}
                 <div class="card-body">
+                    {% if owned_project_names|length > 0 %}
+                        <table class="table">
+                            <tr>
+                                <th>Project Name</th>
+                                <th>read</th>
+                                <th>update</th>
+                                <th>create</th>
+                                <th>delete</th>
+                            </tr>
+
+                            {% for project in owned_project_names %}
+                                <tr>  
+                                <td>{{ project["name"] }}</td>
+                                    {% for permission in ["read", "update", "create", "delete"] %}
+                                        <td>
+                                            {{ form["ownedproject_"+project["id"]|string+"_"+permission] }}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    {% else %}
+                        <p class="card-text font-weight-light font-italic">There are no projects in the dashboard which this group owns.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+    {% endif %}
+
+    <div class="card" >
+        <div class="card-header">
+            Special Project Permissions <span class="edit-section float-right" id="special-permissions-info-button"></span>
+        </div>
+        <div class="card-body" id="special-permissions-info">
+            {% if "manage_group" in request.path %}
+            <p class="card-text font-weight-light font-italic">Update permissions for the group.</p>
+            {% else %}
+                <p class="card-text font-weight-light font-italic">Add special project permissions.</p>
+            {% endif %}
+            <div class="card-body">
+                {% if special_project_names|length > 0 %}
                     <table class="table">
                         <tr>
                             <th>Project Name</th>
@@ -62,23 +101,23 @@
                             <th>delete</th>
                         </tr>
 
-                        {% for project in project_names %}
-                            {% set project_ind = (loop.index - 1)*4 %}
+                        {% for project in special_project_names %}
                             <tr>  
-                            <td>{{ project }}</td>
-                                {% for field in form %}
-                                    {% if loop.index > 3 + project_ind and loop.index < 8 + project_ind %}
+                            <td>{{ project["name"] }}</td>
+                                {% for permission in ["read", "update", "create", "delete"] %}
                                     <td>
-                                        {{ field }}
+                                        {{ form["specialproject_"+project["id"]|string+"_"+permission] }}
                                     </td>
-                                    {% endif %}
                                 {% endfor %}
                             </tr>
                         {% endfor %}
                     </table>
-                </div>
+                {% else %}
+                    <p class="card-text font-weight-light font-italic">There are no projects in the dashboard which this group does not own.</p>
+                {% endif %}
             </div>
         </div>
+    </div>
 
         {{ wtf.form_field(form.submit, class="btn btn-primary form-control") }}
 {% endblock %}
