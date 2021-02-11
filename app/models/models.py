@@ -219,6 +219,20 @@ class Project(db.Model, AccessControlPermissionsMixin):
 
     def __repr__(self):
         return f"Project(name={self.name}, path={self.path}, description={self.description})"  # noqa: E501
+    
+    def set_permissions(self, permissions):
+        super().set_permissions(permissions)
+
+        for job in self.jobs:
+            job.set_permissions(permissions)
+            db.session.add(job)
+            db.session.commit()
+        
+        for flowchart in self.flowcharts:
+            flowchart.set_permissions(permissions)
+            db.session.add(flowchart)
+            db.session.commit()
+
 
 
 #############################
