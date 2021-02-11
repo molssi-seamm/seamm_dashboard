@@ -35,8 +35,12 @@ $.ajaxSetup ({
             if (data.roles.includes("admin")) {
               loginString = loginString.concat(`<h6 class="dropdown-header">Admin Actions</h6>
               <a class="dropdown-item" href="/admin/manage_users">Manage Users</a>
-              <a class="dropdown-item" href="/admin/manage_groups">Manage Groups</a>
-              <a class="dropdown-item" href="/admin/manage_roles">Manage Roles</a>`)
+              <a class="dropdown-item" href="/admin/manage_groups">Manage Groups</a>`)
+            }
+
+            if (data.roles.includes("group manager")) {
+              loginString = loginString.concat(`<h6 class="dropdown-header">Admin Actions</h6>
+              <a class="dropdown-item" href="/admin/manage_groups">Manage Groups</a>`)
             }
 
           loginString = loginString.concat(`
