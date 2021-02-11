@@ -6,7 +6,12 @@ from copy import deepcopy
 
 from flask import render_template, redirect, url_for, flash, Response, request
 
-from flask_jwt_extended import jwt_optional, fresh_jwt_required, jwt_required, get_current_user
+from flask_jwt_extended import (
+    jwt_optional,
+    fresh_jwt_required,
+    jwt_required,
+    get_current_user,
+)
 
 from .forms import (
     CreateUserForm,
@@ -27,43 +32,79 @@ from app import db, authorize
 from app.models import Role, Group, User, Project, GroupProjectAssociation
 from app.routes.api.users import _process_user_body
 
-def _bind_projects_to_form(form, projects, group=None, new=True):
+
+def _bind_special_projects_to_form(form, projects, group=None, new=True):
 
     if not new and not group:
-        raise ValueError("A group must be given if the form is being created for an existing group.")
+        raise ValueError(
+            "A group must be given if the form is being created for an existing group."
+        )
 
     project_names = []
     actions = ["read", "update", "create", "delete"]
-    
+
     # Bind boolean fields for permission types
     for project in projects:
-        field_name = f"project_{project.id}"
+        field_name = f"specialproject_{project.id}"
         permissions = []
         if not new:
-            assoc = GroupProjectAssociation.query.filter_by(resource_id=project.id, entity_id=group.id).one_or_none()
-            
+            assoc = GroupProjectAssociation.query.filter_by(
+                resource_id=project.id, entity_id=group.id
+            ).one_or_none()
+
             if assoc:
                 permissions = assoc.permissions
 
         for action in actions:
             checked = action in permissions
             setattr(form, f"{field_name}_{action}", BooleanField(default=checked))
-        
-        project_names.append(project.name)
-    
+
+        project_names.append({
+            "name": project.name,
+            "id": project.id
+        }) 
+
     return form, project_names
+
+
+def _bind_owned_projects_to_form(form, projects, group=None, new=True):
+
+    if not new and not group:
+        raise ValueError(
+            "A group must be given if the form is being created for an existing group."
+        )
+
+    project_names = []
+    actions = ["read", "update", "create", "delete"]
+
+    # Bind boolean fields for permission types
+    for project in projects:
+        field_name = f"ownedproject_{project.id}"
+        permissions = project.group_permissions
+
+        for action in actions:
+            checked = action in permissions
+            setattr(form, f"{field_name}_{action}", BooleanField(default=checked))
+
+        project_names.append({
+            "name": project.name,
+            "id": project.id
+        }) 
+
+    return form, project_names
+
 
 def _process_group_form_data(form):
 
     # Process form data
     # Get users specified on form from db
-    users = User.query.filter(User.username.in_(form.data['group_members'])).all()
+    users = User.query.filter(User.username.in_(form.data["group_members"])).all()
 
-    group = Group.query.filter_by(name=form.data['group_name']).one_or_none()
-    
+    group = Group.query.filter_by(name=form.data["group_name"]).one_or_none()
+
     if group is None:
         # Create new group containing users
-        group = Group(name=form.data['group_name'], users=users)
+        group = Group(name=form.data["group_name"], users=users)
     else:
         group.users = users
 
@@ -71,21 +112,33 @@ def _process_group_form_data(form):
     db.session.commit()
 
     ## Set special project permissions.
+    special_projects = GroupProjectAssociation.query.filter_by(entity_id=group.id).all()
 
-    project_keys = [ x for x in form.data.keys() if 'project' in x if form.data[x] is True ]
+    # Zero permissions
+    for p in special_projects:
+        p.permissions = []
 
-    for key in project_keys:
-        split = key.split('_')
+    specialproject_keys = [
+        x for x in form.data.keys() if "specialproject" in x if form.data[x] is True
+    ]
+
+    # Update permissions
+    for key in specialproject_keys:
+        split = key.split("_")
         project_id = int(split[1])
         permission = [split[2]]
 
         project = Project.query.filter_by(id=project_id).one()
 
         # Look to see if setting exists yet
-        assoc = GroupProjectAssociation.query.filter_by(entity_id=group.id, resource_id=project.id).one_or_none()
+        assoc = GroupProjectAssociation.query.filter_by(
+            entity_id=group.id, resource_id=project.id
+        ).one_or_none()
 
         if not assoc:
-            assoc = GroupProjectAssociation(entity_id=group.id, resource_id=project.id, permissions=permission)
+            assoc = GroupProjectAssociation(
+                entity_id=group.id, resource_id=project.id, permissions=permission
+            )
         else:
             assoc.permissions.extend(permission)
 
@@ -95,6 +148,34 @@ def _process_group_form_data(form):
         db.session.add(group)
         db.session.commit()
 
+    ## Set owned project permissions
+    owned_projects = Project.query.filter_by(group_id=group.id)
+    for project in owned_projects:
+        # Zero permissions
+        perm = project.permissions
+        perm["group"] = []
+        project.set_permissions(perm)
+        db.session.add(project)
+        db.session.commit()
+        
+
+    ownedproject_keys = [
+        x for x in form.data.keys() if "ownedproject" in x if form.data[x] is True
+    ]
+
+    # Update permissions
+    for key in ownedproject_keys:
+        split = key.split("_")
+        project_id = int(split[1])
+        permission = split[2]
+
+        project = Project.query.filter_by(id=project_id).one()
+        perm = deepcopy(project.permissions)
+        perm["group"].append(permission)
+        project.set_permissions(perm)
+        db.session.add(project)
+        db.session.commit()
+
 @admin.route("/admin/manage_users")
 @jwt_optional
 def manage_users():
@@ -102,12 +183,14 @@ def manage_users():
         return render_template("401.html")
     return render_template("admin/manage_users.html")
 
+
 @admin.route("/admin/manage_groups")
 @jwt_optional
 def manage_groups():
     if not authorize.has_role("admin", "group manager"):
         return render_template("401.html")
     return render_template("admin/manage_groups.html")
+
 
 @admin.route("/admin/create_group", methods=["GET", "POST"])
 @jwt_optional
@@ -119,7 +202,7 @@ def create_group():
     projects = Project.query.all()
 
     form_copy = deepcopy(EditGroupForm)
-    form_copy, project_names = _bind_projects_to_form(form_copy, projects)
+    form_copy, project_names = _bind_special_projects_to_form(form_copy, projects)
 
     form = form_copy()
     users = User.query.all()
@@ -132,8 +215,10 @@ def create_group():
         flash(f"The group {form.data['group_name']} has been successfully created")
         return render_template("admin/manage_groups.html")
 
-    
-    return render_template("admin/create_group.html", form=form, project_names=project_names)
+    return render_template(
+        "admin/create_group.html", form=form, special_project_names=project_names
+    )
+
 
 @admin.route("/admin/manage_group/<group_id>", methods=["GET", "POST"])
 @jwt_optional
@@ -147,18 +232,31 @@ def manage_group(group_id):
 
     if not group:
         return render_template("404.html")
-    
-    # We have to add these fields dynamically based on the projects in the database
+
+    # We have to add project fields dynamically based on the projects in the database
+
+    # Get projects owned by the group
+    owned_projects = Project.query.filter_by(group_id=group.id).all()
+
+    # Get all projects in db
     projects = Project.query.all()
 
+    # special projects
+    special_projects = list(set(projects) - set(owned_projects))
+
     form_copy = deepcopy(EditGroupForm)
-    form_copy, project_names = _bind_projects_to_form(form_copy, projects, new=False, group=group)
+    form_copy, special_projects = _bind_special_projects_to_form(
+        form_copy, special_projects, new=False, group=group
+    )
+    form_copy, owned_projects = _bind_owned_projects_to_form(
+        form_copy, owned_projects, new=False, group=group
+    )
 
     form = form_copy()
     users = User.query.all()
     form.group_members.choices = [(user.username, user.username) for user in users]
-    
-     # Set defaults
+
+    # Set defaults
     if request.method == "GET":
         form.group_name.data = group.name
         form.group_members.data = [g.username for g in group.users]
@@ -168,7 +266,7 @@ def manage_group(group_id):
             form.group_name.validators.remove(_validate_group)
         except:
             pass
-        
+
         # field has been attempted to be updated and we
         # must check the input
         if form.group_name.data != group.name:
@@ -184,8 +282,14 @@ def manage_group(group_id):
             flash(f"The group {form.data['group_name']} has been successfully updated.")
             return render_template("admin/manage_groups.html")
 
-    return render_template("admin/create_group.html", form=form, project_names=project_names, group_name=group.name)
-    
+    return render_template(
+        "admin/create_group.html",
+        form=form,
+        owned_project_names=owned_projects,
+        special_project_names=special_projects,
+        group_name=group.name,
+    )
+
 
 @admin.route("/admin/create_user", methods=["GET", "POST"])
 @jwt_optional
@@ -269,7 +373,10 @@ def manage_user(user_id):
             flash(f"The user {form.data['username']} has been successfully updated.")
             return render_template("admin/manage_users.html")
 
-    return render_template("admin/create_user.html", form=form, username=user.username, user_id=user.id)
+    return render_template(
+        "admin/create_user.html", form=form, username=user.username, user_id=user.id
+    )
+
 
 @admin.route("/admin/manage_user/<user_id>/delete", methods=["GET", "POST"])
 @jwt_required
@@ -284,7 +391,7 @@ def delete_user(user_id):
     if user_remove.id == get_current_user().id:
         flash(f"You cannot remove your own account from the dashboard.")
         return render_template("admin/manage_users.html")
-    
+
     form = DeleteUserForm()
 
     try:
@@ -306,6 +413,5 @@ def delete_user(user_id):
             flash(f"User {specified_user.username} removed from the dashboard.")
 
             return render_template("admin/manage_users.html")
-            
-    
+
     return render_template("admin/delete_user.html", form=form)
