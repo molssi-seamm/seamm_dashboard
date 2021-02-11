@@ -18,6 +18,7 @@ from .forms import (
     ManageUserFormAdmin,
     EditGroupForm,
     DeleteUserForm,
+    DeleteGroupForm,
     _validate_username,
     _validate_email,
     _validate_group,
@@ -271,7 +272,7 @@ def manage_group(group_id):
         # must check the input
         if form.group_name.data != group.name:
             if Group.query.filter(Group.name == form.group_name.data).first():
-                form.username.validators.append(_validate_group)
+                form.group_name.validators.append(_validate_group)
 
         # use validate instead of validate_on_submit so we can add our own validators (lines above)
         if form.validate():
@@ -288,6 +289,7 @@ def manage_group(group_id):
         owned_project_names=owned_projects,
         special_project_names=special_projects,
         group_name=group.name,
+        group_id=group.id,
     )
 
 
@@ -415,3 +417,33 @@ def delete_user(user_id):
             return render_template("admin/manage_users.html")
 
     return render_template("admin/delete_user.html", form=form)
+
+
+@admin.route("/admin/manage_group/<group_id>/delete", methods=["GET", "POST"])
+@jwt_required
+@fresh_jwt_required
+def delete_group(group_id):
+    # Permissions check
+    if not authorize.has_role("admin", "group manager"):
+        return render_template("401.html")
+
+    group_remove = Group.query.filter(Group.id == group_id).one()
+
+    form = DeleteGroupForm()
+
+    if request.method == "POST":
+
+        specified_group = Group.query.filter_by(name=form.group_name.data).one_or_none()
+
+        if specified_group is None or str(specified_group.id) != group_id:
+            form.group_name.validators.append(_validate_user_delete)
+            flash("The input group name did not match the requested group.")
+
+        if form.validate():
+            db.session.delete(specified_group)
+            db.session.commit()
+            flash(f"Group {specified_group.name} removed from the dashboard.")
+
+            return render_template("admin/manage_groups.html")
+
+    return render_template("admin/delete_group.html", form=form)

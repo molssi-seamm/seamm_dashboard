@@ -20,6 +20,9 @@ def _validate_group(self, field):
 def _validate_user_delete(self, field):
     raise ValidationError(f"Input username does not match user ID.")
 
+def _validate_group_delete(self, field):
+    raise ValidationError(f"Input group name does not match group ID.")
+
 def _validate_username(self, field):
     if User.query.filter(User.username == field.data).first():
         raise ValidationError(
@@ -156,6 +159,15 @@ class DeleteUserForm(FlaskForm):
     username = _username
     confirm = BooleanField("Confirm")
     submit = SubmitField("Delete User")
+
+class DeleteGroupForm(FlaskForm):
+    """
+    Form for deleting a user.
+    """
+
+    group_name = StringField("Group Name", validators=[ Length(2, 64), DataRequired() ])
+    confirm = BooleanField("Confirm")
+    submit = SubmitField("Delete Group")
 
 
     
