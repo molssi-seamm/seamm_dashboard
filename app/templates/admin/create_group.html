@@ -11,9 +11,23 @@
     {% endif %}
 </div>
 <div class="container mt-5">
+
+    <a href="{{ url_for('admin.manage_groups') }}"><button type="button" class="btn btn-light btn-lg mb-3"><i class="fas fa-chevron-circle-left mr-3"></i>Groups List</button></a>
+
+
+    {% if "manage_group" in request.path %}
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+            <a class="nav-link active" href="#">Manage User</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link" href="/admin/manage_group/{{ group_id }}/delete">Remove Group</a>
+            </li>
+        </ul>
+    {% endif %}
+
     <form action method="post">
         {{ form.csrf_token }}
-        <a href="{{ url_for('admin.manage_groups') }}"><button type="button" class="btn btn-light btn-lg mb-3"><i class="fas fa-chevron-circle-left mr-3"></i>Groups List</button></a>
         <div class="card" >
             <div class="card-header">
             Group Information<span class="edit-section float-right" id="group-info-button"></span>
