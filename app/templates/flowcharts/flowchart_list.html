@@ -1,28 +1,27 @@
-
-<script src="static/js/flowchart_list.js"></script>
-
+<script src="{{ url_for('static', filename='js/flowchart_list.js') }}"></script>
+<script src= "{{ url_for('static', filename='js/tooltips.js') }}"></script>
 <div class="animated fadeIn sidebar-nav hidden" id="view">
-  <div class="row">
-      <table id="flowcharts" class="table table-responsive-sm table-bordered table-striped table-sm" style="width:100%">
-        <thead>
-          <tr>
-            <th>
-              Flowchart Title
-            </th>
-            <th>
-              Flowchart Description
-            </th>
-            <th>
-              Associated Jobs
-            </th>
-            <th>
-              View
-            </th>
-            <th>
-              Actions
-            </th>
-          </tr>
-        </thead>
-      </table>
-    </div>
+  <h1 class='pb-1'><span id='page-title'></span>Flowcharts</h1>
+  <div id="description" class='pb-3'></div>
+  <table id="flowcharts" class="table table-responsive-sm table-bordered table-striped table-sm" style="width:100%">
+    <thead>
+      <tr>
+        <th>
+          Flowchart Title
+        </th>
+        <th>
+          Flowchart Description
+        </th>
+        <th>
+          Associated Jobs
+        </th>
+        <th>
+          View
+        </th>
+        <th>
+          Actions
+        </th>
+      </tr>
+    </thead>
+  </table>
 </div>
