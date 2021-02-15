@@ -38,6 +38,11 @@ function cardView(data){
             </div>
         </div>`
     }
+
+    if (data.length == 0) {
+        card_string = `<p>You have no projects.</p>`
+    }
+
     $('#project-cards').html(card_string)
 }
 

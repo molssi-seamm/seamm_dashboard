@@ -71,15 +71,16 @@ class TestLiveServer:
         if logged_in:
             self.log_in(chrome_driver)
             # Should have three finished jobs, 1 flowchart, and 1 project when logged in.
-            expected_values = "0 3 0 1 1".split()
+            expected_values = "3 0 3 1 1".split()
 
         else:
             # Make sure we are logged out
             self.log_out(chrome_driver)
             # Should have one public job and nothing else.
-            expected_values = "0 1 0 0 0".split()
+            expected_values = "1 0 1 0 0".split()
 
         chrome_driver.get(self.base_url)
+        chrome_driver.get_screenshot_as_file(f'main_{logged_in}.png')
         ui_view = chrome_driver.find_element_by_id("ui-view")
         displayed_values = ui_view.find_elements_by_class_name("text-value")
 
