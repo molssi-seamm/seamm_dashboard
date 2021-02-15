@@ -52,6 +52,7 @@ def status():
         user_id = None
 
     # Get information about jobs, projects, flowcharts
+    num_jobs = Job.query.filter(Job.authorized("read")).count()
     num_jobs_running = Job.query.filter(
         and_(Job.status == "running", Job.authorized("read"))
     ).count()
@@ -71,6 +72,7 @@ def status():
         "username": username,
         "roles": user_roles,
         "jobs": {
+            "total": num_jobs,
             "running": num_jobs_running,
             "finished": num_jobs_finished,
             "queued": num_jobs_queued,

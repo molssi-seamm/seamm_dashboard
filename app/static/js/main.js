@@ -18,9 +18,9 @@
     })
 
     // Load info into divs
+    document.getElementById('num-jobs-in-dashboard').textContent = dashboardStatus.jobs.total
     document.getElementById('num-jobs-running').textContent = dashboardStatus.jobs.running
     document.getElementById('num-jobs-finished').textContent = dashboardStatus.jobs.finished
-    document.getElementById('num-jobs-queued').textContent = dashboardStatus.jobs.queued
     document.getElementById('num-projects').textContent = dashboardStatus.projects
     document.getElementById('num-flowcharts').textContent = dashboardStatus.flowcharts
 
