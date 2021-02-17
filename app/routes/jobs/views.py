@@ -1,6 +1,8 @@
 from flask import request, render_template, flash, redirect, url_for
 
-from app import db
+from flask_jwt_extended import jwt_optional
+
+from app import db, authorize
 
 from . import jobs
 
@@ -16,25 +18,47 @@ def jobs_list():
 
 @jobs.route("/views/jobs/<id>")
 @jobs.route("/views//jobs/<id>")
+@jwt_optional
 def job_details(id):
-    return render_template("jobs/job_report.html")
+    job = Job.query.get(id)
+    
+    if not authorize.read(job):
+        return render_template("401.html")
+    
+    edit_job = authorize.update(job)
+
+    # Build the url ourselves.
+    base_url = url_for("main.index")
+    edit_url = base_url + f"jobs/{id}/edit"
+
+    return render_template("jobs/job_report.html", edit_job=edit_job, job=job, edit_url=edit_url)
 
 
-@jobs.route("/views/jobs/<job_id>/edit", methods=["GET", "POST"])
-@jobs.route("/views//jobs/<job_id>/edit", methods=["GET", "POST"])
+@jobs.route("/jobs/<job_id>/edit", methods=["GET", "POST"])
+@jwt_optional
 def edit_job(job_id):
+
     job = Job.query.get(job_id)
+
+    if not authorize.update(job):
+        return render_template("401.html")
+
     form = EditJob()
 
+    # Build the url ourselves.
+    base_url = url_for("main.index")
+    job_url = base_url + f"#jobs/{job_id}"
+
     if form.validate_on_submit():
-        job.name = form.name.data
-        job.notes = form.notes.data
+        job.title = form.name.data
+        job.description = form.notes.data
         db.session.commit()
         flash("Job updated successfully.", "successs")
-        return redirect(url_for("jobs.jobs_list"))
+
+        return redirect(job_url)
+    
     elif request.method == "GET":
-        if job.name is not None:
-            form.name.data = job.name
-        if job.notes is not None:
-            form.notes.data = job.notes
-    return render_template("jobs/edit_job.html", title="Edit Job", form=form)
+        form.name.data = job.title
+        form.notes.data = job.description
+            
+    return render_template("jobs/edit_job.html", title=f"Edit Job {job_id}", form=form, back_url=job_url)

@@ -4,6 +4,6 @@ from wtforms.validators import DataRequired
 
 
 class EditJob(FlaskForm):
-    name = StringField("Job Name", validators=[DataRequired()])
-    notes = TextAreaField("Notes")
+    name = StringField("Job Title")
+    notes = TextAreaField("Description")
     submit = SubmitField("Update Job")

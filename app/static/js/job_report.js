@@ -45,8 +45,6 @@ function setFileDivSize() {
     let jsHeight = viewCardHeight - (searchLocation.bottom - location.bottom)
     jsTree.style.height = `${jsHeight}px`;
 
-    console.log(jsHeight)
-
 }
 
 function loadFlow(flowchartID) {
@@ -119,6 +117,20 @@ function loadOther(file) {
             $("#pre-code").addClass('line-numbers')
             }
         Prism.highlightAll() });
+}
+
+function loadDescription(description) {
+    $("#file-content").html(`<pre style="white-space:pre-wrap;" id="pre-code"><code id="codeBlock" class="language-text animated fadeIn"></code>`)
+    
+    if (description.length < 75000) {
+        $("#pre-code").addClass('line-numbers')
+    }
+
+    description = "Job Description:\n" + description
+
+    $("#codeBlock").text(description)
+        
+    Prism.highlightAll();
 }
 
 function loadStructure(URL) {
@@ -317,7 +329,7 @@ $(document).ready(function() {
 
     // Load in the job status
     $("#job-status").html(jobData.status)
-    $('#job-title').text(treeElements[0].text)
+    $('#root-folder').text(treeElements[0].text)
     
     // JS Tree stuff
     $('#js-tree').jstree({ 'core' : {
@@ -395,10 +407,30 @@ $(document).ready(function() {
         }
     )
 
-    toggleDivs(contentDivs)
+
+    toggleDivs(contentDivs, "file-content")
+    
     // Show content
     document.getElementById("view").classList.toggle("hidden")
     setFileDivSize()
+
+    if ( jobData["description"] ) { 
+        loadDescription(jobData["description"])
+    }
+
+    $("#load-description").click(function() {
+        try {
+            table.destroy();
+            $('#csv-data tr').remove();
+            $('#csv-data thead').remove();
+            $('#csv-data tbody').remove();
+        } catch {
+            // Do nothing.
+        }
+        toggleDivs(contentDivs, "file-content")
+        loadDescription(jobData["description"]);
+
+    })
     
 
 })

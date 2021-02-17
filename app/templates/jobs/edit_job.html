@@ -1,39 +1,37 @@
-    <div class="content-section">
-        <form method="POST" action="">
-            {{ form.hidden_tag() }}
-            <fieldset class="form-group">
-                <legend class="border-bottom mb4">{{ title }}</legend>
-            
-                <div class="form-group">
-                        {{ form.name.label(class="form-control-label") }}
-                        {% if form.name.errors %}
-                        {{ form.name(class="form-controlform-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.name.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.name(class="form-controlform-control-lg") }}
-                    {% endif %}
-                </div>
-                <div class="form-group">
-                        {{ form.notes.label(class="form-control-label") }}
-                        {% if form.notes.errors %}
-                        {{ form.notes(class="form-controlform-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.notes.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.notes(class="form-controlform-control-lg") }}
-                    {% endif %}
-                </div>
-            </fieldset>
+{% extends "auth/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block page_content %}
+
+<div class="content-section">
+
+    <a href="{{ back_url }}"><button type="button" class="btn btn-light btn-lg mb-3"><i class="fas fa-chevron-circle-left mr-3"></i>Return to Files List</button></a>
+    <form method="POST" action="">
+        {{ form.csrf_token }}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb4">{{ title }}</legend>
+        
             <div class="form-group">
-                {{ form.submit(class="btn btn-outline-info") }}
+                {{ wtf.form_field(form.name, class='form-control') }}
+                {% for error in form.name.errors %}
+                        <div class="alert alert-danger">{{ error }} </div>
+                {% endfor %}
             </div>
-        </form>
-    </div>
+            <div class="form-group">
+                {{ wtf.form_field(form.notes, class='form-control') }}
+                {% for error in form.notes.errors %}
+                        <div class="alert alert-danger">{{ error }} </div>
+                {% endfor %}
+            </div>
+        </fieldset>
+        <div class="mb-5"> 
+            {{ wtf.form_field(form.submit, class="btn btn-primary form-control") }}
+        </div>
+    </form>
 </div>
+</div>
+
+
+{% endblock %}
+
