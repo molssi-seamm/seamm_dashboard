@@ -11,7 +11,8 @@
         <div class="h4 mt-3 row" id="root-folder"></div>
         <div class="row"><strong>Title: </strong> <span id="job-title" class="ml-2">{{ job.title }}</span></div>
         <div class="row"><strong>Status: </strong><span id="job-status" class="ml-2"></span></div>
-        <div class="row"><strong>Actions: </strong></div>
+        <div class="row"><strong>{{ own_string }}</strong></div>
+        <div class="row mt-2"><strong><h5>Actions:</h5> </strong></div>
         <div id="buttons" class="row">
           {% if edit_job == true %}
             <a href="{{ edit_url }}"><button type="button" id="edit-job" class="btn btn-sm btn-primary float-left mx-1" title="Edit Job Description and Title" data-toggle="tooltip" data-placement="top"><i class="fas fa-edit"></i></button></a>

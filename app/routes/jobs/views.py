@@ -1,6 +1,6 @@
 from flask import request, render_template, flash, redirect, url_for
 
-from flask_jwt_extended import jwt_optional
+from flask_jwt_extended import jwt_optional, get_current_user
 
 from app import db, authorize
 
@@ -27,11 +27,16 @@ def job_details(id):
     
     edit_job = authorize.update(job)
 
+    own_string = "You do not own this job."
+
+    if job.owner == get_current_user():
+        own_string = "You are the job owner."
+
     # Build the url ourselves.
     base_url = url_for("main.index")
     edit_url = base_url + f"jobs/{id}/edit"
 
-    return render_template("jobs/job_report.html", edit_job=edit_job, job=job, edit_url=edit_url)
+    return render_template("jobs/job_report.html", edit_job=edit_job, job=job, edit_url=edit_url, own_string=own_string)
 
 
 @jobs.route("/jobs/<job_id>/edit", methods=["GET", "POST"])
