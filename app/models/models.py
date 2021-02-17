@@ -5,12 +5,16 @@ Table models for SEAMM datastore SQLAlchemy database.
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
+from marshmallow_sqlalchemy.fields import Related, Nested
 from flask_authorize import PermissionsMixin
 
 from flask import current_app
 
 # Patched flask authorize
-from app.flask_authorize_patch import AccessControlPermissionsMixin, generate_association_table
+from app.flask_authorize_patch import (
+    AccessControlPermissionsMixin,
+    generate_association_table,
+)
 
 from app import db, jwt
 
@@ -28,17 +32,22 @@ GroupJobMixin = generate_association_table("Group", "Job")
 GroupProjectMixin = generate_association_table("Group", "Project")
 GroupFlowchartMixin = generate_association_table("Group", "Flowchart")
 
+
 class UserJobAssociation(db.Model, UserJobMixin):
     pass
+
 
 class UserFlowchartAssociation(db.Model, UserFlowchartMixin):
     pass
 
+
 class UserProjectAssociation(db.Model, UserProjectMixin):
     pass
 
+
 class GroupJobAssociation(db.Model, GroupJobMixin):
     pass
+
 
 class GroupProjectAssociation(db.Model, GroupProjectMixin):
     def __setattr__(self, name, value):
@@ -51,33 +60,47 @@ class GroupProjectAssociation(db.Model, GroupProjectMixin):
         if name == "permissions":
             # See if there is an asociation between the group and project
             project = Project.query.filter_by(id=self.resource_id).one()
-            
+
             if project.jobs:
                 for job in project.jobs:
-                    assoc = GroupJobAssociation.query.filter_by(entity_id=self.entity_id, resource_id=job.id).one_or_none()
+                    assoc = GroupJobAssociation.query.filter_by(
+                        entity_id=self.entity_id, resource_id=job.id
+                    ).one_or_none()
                     if assoc:
                         assoc.permissions = value
                     else:
-                        assoc = GroupJobAssociation(entity_id=self.entity_id, resource_id=job.id, permissions=value)
-                    
+                        assoc = GroupJobAssociation(
+                            entity_id=self.entity_id,
+                            resource_id=job.id,
+                            permissions=value,
+                        )
+
                     db.session.add(assoc)
                     db.session.commit()
-            
+
             if project.flowcharts:
                 for flowchart in project.flowcharts:
-                    assoc = GroupFlowchartAssociation.query.filter_by(entity_id=self.entity_id, resource_id=flowchart.id).one_or_none()
+                    assoc = GroupFlowchartAssociation.query.filter_by(
+                        entity_id=self.entity_id, resource_id=flowchart.id
+                    ).one_or_none()
                     if assoc:
                         assoc.permissions = value
                     else:
-                        assoc = GroupFlowchartAssociation(entity_id=self.entity_id, resource_id=flowchart.id, permissions=value)
-                    
+                        assoc = GroupFlowchartAssociation(
+                            entity_id=self.entity_id,
+                            resource_id=flowchart.id,
+                            permissions=value,
+                        )
+
                     db.session.add(assoc)
                     db.session.commit()
-            
+
         super().__setattr__(name, value)
+
 
 class GroupFlowchartAssociation(db.Model, GroupFlowchartMixin):
     pass
+
 
 user_group = db.Table(
     "user_group",
@@ -105,6 +128,7 @@ job_project = db.Table(
     db.Column("job", db.Integer, db.ForeignKey("jobs.id"), primary_key=True),
     db.Column("project", db.Integer, db.ForeignKey("projects.id"), primary_key=True),
 )
+
 
 class User(db.Model):
     __tablename__ = "users"
@@ -204,6 +228,7 @@ class Job(db.Model, AccessControlPermissionsMixin):
     def __repr__(self):
         return f"Job(path={self.path}, flowchart_id={self.flowchart}, submitted={self.submitted})"  # noqa: E501
 
+
 class Project(db.Model, AccessControlPermissionsMixin):
     __tablename__ = "projects"
 
@@ -219,7 +244,7 @@ class Project(db.Model, AccessControlPermissionsMixin):
 
     def __repr__(self):
         return f"Project(name={self.name}, path={self.path}, description={self.description})"  # noqa: E501
-    
+
     def set_permissions(self, permissions):
         super().set_permissions(permissions)
 
@@ -227,12 +252,11 @@ class Project(db.Model, AccessControlPermissionsMixin):
             job.set_permissions(permissions)
             db.session.add(job)
             db.session.commit()
-        
+
         for flowchart in self.flowcharts:
             flowchart.set_permissions(permissions)
             db.session.add(flowchart)
             db.session.commit()
-
 
 
 #############################
@@ -247,6 +271,10 @@ class JobSchema(SQLAlchemyAutoSchema):
         include_fk = True
         include_relationships = True
         model = Job
+        exclude = ("flowchart",)
+
+    owner = Related("username")
+    group = Related("name")
 
 
 class FlowchartSchema(SQLAlchemyAutoSchema):
@@ -254,6 +282,13 @@ class FlowchartSchema(SQLAlchemyAutoSchema):
         include_fk = True
         include_relationships = True
         model = Flowchart
+        exclude = (
+            "json",
+            "text",
+        )
+
+    owner = Related("username")
+    group = Related("name")
 
 
 class ProjectSchema(SQLAlchemyAutoSchema):
@@ -262,12 +297,16 @@ class ProjectSchema(SQLAlchemyAutoSchema):
         include_relationships = True
         model = Project
 
+    owner = Related("username")
+    group = Related("name")
+
 
 class UserSchema(SQLAlchemyAutoSchema):
     class Meta:
         include_fk = True
         include_relationships = True
         model = User
+        exclude = ("password_hash",)
 
 
 class GroupSchema(SQLAlchemyAutoSchema):
@@ -275,6 +314,16 @@ class GroupSchema(SQLAlchemyAutoSchema):
         include_fk = True
         include_relationships = True
         model = Group
+
+    users = Nested(
+        UserSchema(
+            only=(
+                "username",
+                "id",
+            ),
+            many=True,
+        )
+    )
 
 
 class RoleSchema(SQLAlchemyAutoSchema):
