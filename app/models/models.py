@@ -266,17 +266,6 @@ class Project(db.Model, AccessControlPermissionsMixin):
 #############################
 
 
-class JobSchema(SQLAlchemyAutoSchema):
-    class Meta:
-        include_fk = True
-        include_relationships = True
-        model = Job
-        exclude = ("flowchart",)
-
-    owner = Related("username")
-    group = Related("name")
-
-
 class FlowchartSchema(SQLAlchemyAutoSchema):
     class Meta:
         include_fk = True
@@ -285,6 +274,9 @@ class FlowchartSchema(SQLAlchemyAutoSchema):
         exclude = (
             "json",
             "text",
+            "owner_permissions",
+            "group_permissions",
+            "other_permissions",
         )
 
     owner = Related("username")
@@ -296,9 +288,35 @@ class ProjectSchema(SQLAlchemyAutoSchema):
         include_fk = True
         include_relationships = True
         model = Project
+        exclude = ("owner_permissions", "group_permissions", "other_permissions")
 
     owner = Related("username")
     group = Related("name")
+
+
+class JobSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        include_fk = True
+        include_relationships = True
+        model = Job
+        exclude = (
+            "flowchart",
+            "owner_permissions",
+            "group_permissions",
+            "other_permissions",
+        )
+
+    owner = Related("username")
+    group = Related("name")
+    projects = Nested(
+        ProjectSchema(
+            only=(
+                "name",
+                "id",
+            ),
+            many=True,
+        )
+    )
 
 
 class UserSchema(SQLAlchemyAutoSchema):
