@@ -2,6 +2,23 @@
 <script src= "{{ url_for('static', filename='js/tooltips.js') }}"></script>
 <div class="animated fadeIn sidebar-nav hidden" id="view">
   <h1 class='pb-1'><span id='page-title'></span><button type="button" id="refresh" class="btn btn-lg btn-primary ml-4" title="Refresh Table" data-toggle="tooltip" data-placement="top"><i class="fas fa-sync"></i></button></h1>
+  {% if project == true %}
+      <div class="row">
+        <h5>Project Actions</h5>
+      </div>
+      <div class="row mb-5">
+        {% if edit_project == true %}
+          <a href="{{ edit_url }}"><button type="button" id="edit-job" class="btn btn-lg btn-primary float-left mx-1" title="Edit Project Description and Title" data-toggle="tooltip" data-placement="top"><i class="fas fa-edit"></i></button></a>
+        {% else %}
+        <button type="button" id="edit-job" class="btn btn-lg btn-primary float-left mx-1" title="You do not have permission to edit this job" data-toggle="tooltip" data-placement="top" disabled><i class="fas fa-edit"></i></button>
+        {% endif %}
+        {% if manage_project == true %}
+            <a href="{{ edit_url }}"><button type="button" id="edit-job" class="btn btn-lg btn-primary float-left mx-1" title="Manage User Access" data-toggle="tooltip" data-placement="top"><i class="fas fa-users-cog"></i></button></a>
+          {% else %}
+          <button type="button" id="edit-job" class="btn btn-lg btn-primary float-left mx-1" title="You do not have permission to manage user access for this job." data-toggle="tooltip" data-placement="top" disabled><i class="fas fa-users-cog"></i></button>
+        {% endif %}
+      </div>
+  {% endif %}
   <div id="description" class='pb-3'></div>
     <table id="jobs" class="table table-responsive-sm table-bordered table-striped table-sm" style="width:100%">
       <thead>

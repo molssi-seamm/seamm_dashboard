@@ -162,7 +162,7 @@ def create_app(config_name=None):
 
     # Authorization configuration
     app.config["AUTHORIZE_DEFAULT_PERMISSIONS"] = dict(
-        owner=["read", "update", "delete", "create"],
+        owner=["read", "update", "delete", "create", "manage"],
         group=["read", "update"],
         other=[""],
     )
@@ -182,13 +182,14 @@ def create_app(config_name=None):
 
     # Add some default roles to the dashboard
     with app.app_context():
-        from .models import Role, User, Job, Project
+        from .models import Role, User, Job, Project, Group
         role_names = ["user", "group manager", "admin"]
 
         for role_name in role_names:
             role = Role(name=role_name)
             db.session.add(role)
             db.session.commit()
+
 
     logger.info("")
     logger.info("Final configuration:")

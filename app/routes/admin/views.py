@@ -42,7 +42,7 @@ def _bind_special_projects_to_form(form, projects, group=None, new=True):
         )
 
     project_names = []
-    actions = ["read", "update", "create", "delete"]
+    actions = ["read", "update", "create", "delete", "manage"]
 
     # Bind boolean fields for permission types
     for project in projects:
@@ -76,7 +76,7 @@ def _bind_owned_projects_to_form(form, projects, group=None, new=True):
         )
 
     project_names = []
-    actions = ["read", "update", "create", "delete"]
+    actions = ["read", "update", "create", "delete", "manage"]
 
     # Bind boolean fields for permission types
     for project in projects:

@@ -18,7 +18,7 @@
     {% if "manage_group" in request.path %}
         <ul class="nav nav-tabs">
             <li class="nav-item">
-            <a class="nav-link active" href="#">Manage User</a>
+            <a class="nav-link active" href="#">Manage Group</a>
             </li>
             <li class="nav-item">
             <a class="nav-link" href="/admin/manage_group/{{ group_id }}/delete">Remove Group</a>
@@ -72,12 +72,13 @@
                                 <th>update</th>
                                 <th>create</th>
                                 <th>delete</th>
+                                <th>manage</th>
                             </tr>
 
                             {% for project in owned_project_names %}
                                 <tr>  
                                 <td>{{ project["name"] }}</td>
-                                    {% for permission in ["read", "update", "create", "delete"] %}
+                                    {% for permission in ["read", "update", "create", "delete", "manage"] %}
                                         <td>
                                             {{ form["ownedproject_"+project["id"]|string+"_"+permission] }}
                                         </td>
@@ -113,12 +114,13 @@
                             <th>update</th>
                             <th>create</th>
                             <th>delete</th>
+                            <th>manage</th>
                         </tr>
 
                         {% for project in special_project_names %}
                             <tr>  
                             <td>{{ project["name"] }}</td>
-                                {% for permission in ["read", "update", "create", "delete"] %}
+                                {% for permission in ["read", "update", "create", "delete", "manage"] %}
                                     <td>
                                         {{ form["specialproject_"+project["id"]|string+"_"+permission] }}
                                     </td>

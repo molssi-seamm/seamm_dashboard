@@ -14,12 +14,13 @@
         <div class="row"><strong>{{ own_string }}</strong></div>
         <div class="row mt-2"><strong><h5>Actions:</h5> </strong></div>
         <div id="buttons" class="row">
+          <button type="button" id="load-description" class="btn btn-lg btn-primary float-left mx-1" title="Load Job Description" data-toggle="tooltip" data-placement="top"><i class="fas fa-align-justify"></i></button>
           {% if edit_job == true %}
-            <a href="{{ edit_url }}"><button type="button" id="edit-job" class="btn btn-sm btn-primary float-left mx-1" title="Edit Job Description and Title" data-toggle="tooltip" data-placement="top"><i class="fas fa-edit"></i></button></a>
+            <a href="{{ edit_url }}"><button type="button" id="edit-job" class="btn btn-lg btn-primary float-left mx-1" title="Edit Job Description and Title" data-toggle="tooltip" data-placement="top"><i class="fas fa-edit"></i></button></a>
           {% else %}
-          <button type="button" id="edit-job" class="btn btn-sm btn-primary float-left mx-1" title="You do not have permission to edit this job" data-toggle="tooltip" data-placement="top" disabled><i class="fas fa-edit"></i></button>
+          <button type="button" id="edit-job" class="btn btn-lg btn-primary float-left mx-1" title="You do not have permission to edit this job" data-toggle="tooltip" data-placement="top" disabled><i class="fas fa-edit"></i></button>
           {% endif %}
-          <button type="button" id="load-description" class="btn btn-sm btn-primary float-left mx-1" title="Load Job Description" data-toggle="tooltip" data-placement="top"><i class="fas fa-align-justify"></i></button>
+
         </div>
         <div class='h5 mt-3'>Browse files for job<span><button type="button" id="refresh-file-list" class="btn btn btn-outline-primary float-right mb-3" title="Refresh File List" data-toggle="tooltip" data-placement="top"><i class="fas fa-sync"></i></button></span></div>
         <div class="input-group">
