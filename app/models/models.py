@@ -42,7 +42,53 @@ class UserFlowchartAssociation(db.Model, UserFlowchartMixin):
 
 
 class UserProjectAssociation(db.Model, UserProjectMixin):
-    pass
+    def __setattr__(self, name, value):
+        """
+        Change behavior of set attribute so that when a user gets permissions for a project,
+        they get updated permissions for all jobs and flowcharts within the project.
+        """
+        from app import db
+
+        if name == "permissions":
+            # See if there is an asociation between the group and project
+            project = Project.query.filter_by(id=self.resource_id).one()
+
+            if project.jobs:
+                for job in project.jobs:
+                    assoc = UserJobAssociation.query.filter_by(
+                        entity_id=self.entity_id, resource_id=job.id
+                    ).one_or_none()
+                    
+                    if assoc:
+                        assoc.permissions = value
+                    else:
+                        assoc = UserJobAssociation(
+                            entity_id=self.entity_id,
+                            resource_id=job.id,
+                            permissions=value,
+                        )
+
+                    db.session.add(assoc)
+                    db.session.commit()
+
+            if project.flowcharts:
+                for flowchart in project.flowcharts:
+                    assoc = UserFlowchartAssociation.query.filter_by(
+                        entity_id=self.entity_id, resource_id=flowchart.id
+                    ).one_or_none()
+                    if assoc:
+                        assoc.permissions = value
+                    else:
+                        assoc = UserFlowchartAssociation(
+                            entity_id=self.entity_id,
+                            resource_id=flowchart.id,
+                            permissions=value,
+                        )
+
+                    db.session.add(assoc)
+                    db.session.commit()
+
+        super().__setattr__(name, value)
 
 
 class GroupJobAssociation(db.Model, GroupJobMixin):
@@ -52,7 +98,7 @@ class GroupJobAssociation(db.Model, GroupJobMixin):
 class GroupProjectAssociation(db.Model, GroupProjectMixin):
     def __setattr__(self, name, value):
         """
-        Change behavior of set attribute so that when a user gets permissions for a project,
+        Change behavior of set attribute so that when a group gets permissions for a project,
         they get updated permissions for all jobs and flowcharts within the project.
         """
         from app import db
