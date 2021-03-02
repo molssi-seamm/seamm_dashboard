@@ -201,7 +201,6 @@ def create_app(config_name=None):
     if not options.no_check:
         # Ugly but avoids circular import.
         from .models.import_jobs import import_jobs
-        from .models import User, Group, GroupJobAssociation, GroupProjectAssociation
 
         t0 = time.perf_counter()
         with app.app_context():
