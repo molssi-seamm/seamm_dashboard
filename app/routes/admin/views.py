@@ -115,20 +115,26 @@ def _process_group_form_data(form):
     ## Set special project permissions.
     special_projects = GroupProjectAssociation.query.filter_by(entity_id=group.id).all()
 
-    # Zero permissions
-    for p in special_projects:
-        p.permissions = []
+    permissions_dict = {}
 
     specialproject_keys = [
         x for x in form.data.keys() if "specialproject" in x if form.data[x] is True
     ]
 
-    # Update permissions
+    # First collect permissions which were set in form
     for key in specialproject_keys:
         split = key.split("_")
         project_id = int(split[1])
-        permission = [split[2]]
 
+        try:
+            permissions_dict[project_id].append(split[2])
+        except KeyError:
+            permissions_dict[project_id] = [split[2]]
+
+    
+    #assert False, permissions_dict
+
+    for project_id, permission in permissions_dict.items():
         project = Project.query.filter_by(id=project_id).one()
 
         # Look to see if setting exists yet
@@ -141,13 +147,13 @@ def _process_group_form_data(form):
                 entity_id=group.id, resource_id=project.id, permissions=permission
             )
         else:
-            assoc.permissions.extend(permission)
+            assoc.permissions = permission 
 
-        group.special_projects.append(assoc)
-
+        
         db.session.add(assoc)
-        db.session.add(group)
         db.session.commit()
+
+        
 
     ## Set owned project permissions
     owned_projects = Project.query.filter_by(group_id=group.id)
