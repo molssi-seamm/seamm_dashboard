@@ -45,7 +45,7 @@ $.ajaxSetup ({
 
           loginString = loginString.concat(`
                     <h6 class="dropdown-header">User Actions</h6>
-                    <a class="dropdown-item" href="#">My Account</a>
+                    <a class="dropdown-item" href="${location.origin}/my-account">My Account</a>
                     <a class="dropdown-item" href="${location.origin}/logout">Logout</a>
           `)
           

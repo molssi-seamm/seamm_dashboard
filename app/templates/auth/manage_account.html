@@ -1,0 +1,179 @@
+{% extends "auth/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Manage Your Account</h1>
+</div>
+<div class="container mt-5">
+
+    <a href="{{ url_for('main.index') }}"><button type="button" class="btn btn-light btn-lg mb-3"><i class="fas fa-chevron-circle-left mr-3"></i>Back to dashboard home</button></a>
+    
+    {% if "manage_user" in request.path %}
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+            <a class="nav-link active" href="#">Manage User</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link" href="/admin/manage_user/{{ user_id }}/delete">Remove User</a>
+            </li>
+        </ul>
+    {% endif %}
+    
+    <form action method="post">
+        {{ form.csrf_token }}
+        <div class="card">
+            <div class="card-header">
+            User Account Information <span class="edit-section float-right" id="account-info-button"></span>
+            </div>
+            <div class="card-body" id="account-info">
+            <h5 class="card-title">Username and Password</h5>
+            
+            <p class="card-text font-weight-light font-italic">Update your password here. Only a dashboard administrator can change your userrname.</p>
+
+            <div class="row">
+                <div class="form-group col-sm-12">
+                    Username: {{ user.username }}
+                </div>
+                <div class="form-group col-sm-12 col-md-6">
+                    {{ wtf.form_field(form.password, class='form-control', 
+                        placeholder='Password') }}
+                </div>
+                <div class="form-group col-sm-12 col-md-6">
+                    {{ wtf.form_field(form.password2, class='form-control', 
+                        placeholder='Confirm Password') }}
+                </div>
+                <div class="col-md-12">
+                    {% for error in form.password.errors %}
+                        <div class="alert alert-danger">{{ error }} </div>
+                    {% endfor %}
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+            User Permissions
+            </div>
+            <div class="card-body" id="permissions">
+            <h5 class="card-title">User Groups and Roles</h5>
+            <p class="card-text font-weight-light font-italic">This section lists your roles and groups. Roles and groups can only be changed by dashboard administrators in the appropriate place for the project.</p>
+            <div class="row">
+                <div class="form-group col-sm-12">
+                    Your Roles:
+                    <ul>
+                        {% if user.roles|length > 0 %}
+                            {% for role in user.roles %}
+                                <li>{{ role.name }}</li>
+                            {% endfor %}
+                        {% else %}
+                            You have no roles.
+                        {% endif %}
+                    </ul>
+
+                    Your Groups:
+                    <ul>
+                        {% if user.groups|length > 0 %}
+                            {% for group in user.groups %}
+                                <li>{{ group.name }}</li>
+                            {% endfor %}
+                        {% else %}
+                            You have no roles.
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="form-group col-sm-12">
+                </div>
+            </div>
+            <h5 class="card-title">Special User Permissions</h5>
+            <p class="card-text font-weight-light font-italic">This section shows projects that you have special access too. Your access to these projects can only be changed by project managers or dashboard administrators.</p>
+            <div class="row card-body">
+                    {% if projects|length > 0 %}
+                        {% for group in projects %}
+                        <table class="table">
+                            <tr>
+                                <th>Project Name</th>
+                                <th>read</th>
+                                <th>update</th>
+                                <th>create</th>
+                                <th>delete</th>
+                                <th>manage</th>
+                            </tr>
+        
+                            {% for project in projects %}
+                                <tr>  
+                                <td>{{ project["name"] }}</td>
+                                    {% for permission in ["read", "update", "create", "delete", "manage"] %}
+                                        <td>
+                                            {{ form["specialproject_"+project["id"]|string+"_"+permission] }}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </table>
+                        {% endfor %}
+                    {% else %}
+                        You have no special project permissions.
+                    {% endif %}
+            </div>
+            </div>
+        </div>
+
+        <div class="card" id="user-information">
+            <div class="card-header">
+            User Information <span class="edit-section float-right" id="user-information-button"></span>
+            </div>
+            <div class="card-body">
+            <h5 class="card-title">Contact Information for the User</h5> 
+            <p class="card-text font-weight-light font-italic">This contact information is not used by the SEAMM dashboard, but exists so that dashboard administrators can contact you if necessary.</p>
+            <div class="row">
+                <div class="form-group col-sm-12 col-md-6">
+                    {% for error in form.first_name.errors %}
+                        <div class="alert alert-danger">{{ error }} </div>
+                    {% endfor %}
+                    {{ wtf.form_field(form.first_name, class='form-control', 
+                        placeholder='First Name') }}
+                </div>
+                <div class="form-group col-sm-12 col-md-6">
+                    {% for error in form.last_name.errors %}
+                        <div class="alert alert-danger">{{ error }} </div>
+                    {% endfor %}
+                    {{ wtf.form_field(form.last_name, class='form-control', 
+                        placeholder='Last Name') }}
+                </div>
+                <div class="form-group col-sm-12">
+                    {% for error in form.email.errors %}
+                        <div class="alert alert-danger">{{ error }} </div>
+                    {% endfor %}
+                    {{ wtf.form_field(form.email, class='form-control', 
+                        placeholder='Email Address') }}
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="mb-5"> 
+            {{ wtf.form_field(form.submit, class="btn btn-primary form-control") }}
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script src="{{ url_for('static', filename='node_modules/jquery/dist/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='node_modules/popper.js/dist/umd/popper.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='node_modules/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='node_modules/perfect-scrollbar/dist/perfect-scrollbar.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='node_modules/@fortawesome/fontawesome-free/js/all.min.js')}}"></script>
+
+    <script src="{{ url_for('static', filename='js/setup.js') }}"></script>
+
+    <script src="{{ url_for('static', filename='js/manage_user.js') }}"></script>
+
+
+<script>
+    $("body").addClass('bg-white')
+</script>
+{% endblock %}
