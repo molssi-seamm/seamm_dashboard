@@ -30,8 +30,86 @@ from wtforms import BooleanField
 from . import admin
 
 from app import db, authorize
-from app.models import Role, Group, User, Project, GroupProjectAssociation
+from app.models import (
+    Role,
+    Group,
+    User,
+    Project,
+    GroupProjectAssociation,
+    UserProjectAssociation,
+)
 from app.routes.api.users import _process_user_body
+
+
+def _process_user_permissions(filled_form, user):
+
+    specialproject_keys = [
+        x
+        for x in filled_form.data.keys()
+        if "specialproject" in x
+        if filled_form.data[x] is True
+    ]
+
+    permissions_dict = {}
+
+    # First collect permissions which were set in form
+    for key in specialproject_keys:
+        split = key.split("_")
+        project_id = int(split[1])
+
+        try:
+            permissions_dict[project_id].append(split[2])
+        except KeyError:
+            permissions_dict[project_id] = [split[2]]
+
+    for project_id, permission in permissions_dict.items():
+        project = Project.query.filter_by(id=project_id).one()
+
+        # Look to see if setting exists yet
+        assoc = UserProjectAssociation.query.filter_by(
+            entity_id=user.id, resource_id=project.id
+        ).one_or_none()
+
+        if not assoc:
+            assoc = UserProjectAssociation(
+                entity_id=user.id, resource_id=project.id, permissions=permission
+            )
+        else:
+            assoc.permissions = permission
+
+        db.session.add(assoc)
+        db.session.commit()
+
+
+def _bind_user_projects_to_form(form, projects, user=None, new=True):
+
+    if not new and not user:
+        raise ValueError(
+            "A user must be given if the form is being created for an existing user."
+        )
+
+    project_names = []
+    actions = ["read", "update", "create", "delete", "manage"]
+
+    # Bind boolean fields for permission types
+    for project in projects:
+        field_name = f"specialproject_{project.id}"
+        permissions = []
+        if not new:
+            assoc = UserProjectAssociation.query.filter_by(
+                resource_id=project.id, entity_id=user.id
+            ).one_or_none()
+
+            if assoc:
+                permissions = assoc.permissions
+
+        for action in actions:
+            checked = action in permissions
+            setattr(form, f"{field_name}_{action}", BooleanField(default=checked))
+
+        project_names.append({"name": project.name, "id": project.id})
+
+    return form, project_names
 
 
 def _bind_special_projects_to_form(form, projects, group=None, new=True):
@@ -60,10 +138,7 @@ def _bind_special_projects_to_form(form, projects, group=None, new=True):
             checked = action in permissions
             setattr(form, f"{field_name}_{action}", BooleanField(default=checked))
 
-        project_names.append({
-            "name": project.name,
-            "id": project.id
-        }) 
+        project_names.append({"name": project.name, "id": project.id})
 
     return form, project_names
 
@@ -87,10 +162,7 @@ def _bind_owned_projects_to_form(form, projects, group=None, new=True):
             checked = action in permissions
             setattr(form, f"{field_name}_{action}", BooleanField(default=checked))
 
-        project_names.append({
-            "name": project.name,
-            "id": project.id
-        }) 
+        project_names.append({"name": project.name, "id": project.id})
 
     return form, project_names
 
@@ -131,9 +203,6 @@ def _process_group_form_data(form):
         except KeyError:
             permissions_dict[project_id] = [split[2]]
 
-    
-    #assert False, permissions_dict
-
     for project_id, permission in permissions_dict.items():
         project = Project.query.filter_by(id=project_id).one()
 
@@ -147,13 +216,10 @@ def _process_group_form_data(form):
                 entity_id=group.id, resource_id=project.id, permissions=permission
             )
         else:
-            assoc.permissions = permission 
+            assoc.permissions = permission
 
-        
         db.session.add(assoc)
         db.session.commit()
-
-        
 
     ## Set owned project permissions
     owned_projects = Project.query.filter_by(group_id=group.id)
@@ -164,7 +230,6 @@ def _process_group_form_data(form):
         project.set_permissions(perm)
         db.session.add(project)
         db.session.commit()
-        
 
     ownedproject_keys = [
         x for x in form.data.keys() if "ownedproject" in x if form.data[x] is True
@@ -182,6 +247,7 @@ def _process_group_form_data(form):
         project.set_permissions(perm)
         db.session.add(project)
         db.session.commit()
+
 
 @admin.route("/admin/manage_users")
 @jwt_optional
@@ -271,7 +337,7 @@ def manage_group(group_id):
     if request.method == "POST":
         try:
             form.group_name.validators.remove(_validate_group)
-        except:
+        except ValueError:
             pass
 
         # field has been attempted to be updated and we
@@ -306,7 +372,11 @@ def create_user():
     if not authorize.has_role("admin"):
         return render_template("401.html")
 
-    form = CreateUserForm()
+    projects = Project.query.all()
+
+    form = deepcopy(CreateUserForm)
+    form, project_names = _bind_user_projects_to_form(form, projects=projects)
+    form = form()
     form.groups.choices = [(g.name, g.name) for g in Group.query.all()]
     form.roles.choices = [(r.name, r.name) for r in Role.query.all()]
 
@@ -322,10 +392,13 @@ def create_user():
         else:
             db.session.add(processed_form)
             db.session.commit()
+
+            _process_user_permissions(form, processed_form)
+
             flash(f"The user {form.data['username']} has been successfully created")
             return render_template("admin/manage_users.html")
 
-    return render_template("admin/create_user.html", form=form)
+    return render_template("admin/create_user.html", form=form, projects=project_names)
 
 
 @admin.route("/admin/manage_user/<user_id>", methods=["GET", "POST"])
@@ -342,7 +415,14 @@ def manage_user(user_id):
     if not user:
         return render_template("404.html")
 
-    form = ManageUserFormAdmin()
+    projects = Project.query.all()
+
+    form = deepcopy(ManageUserFormAdmin)
+    form, project_names = _bind_user_projects_to_form(
+        form, projects=projects, user=user, new=False
+    )
+    form = form()
+
     form.groups.choices = [(g.name, g.name) for g in Group.query.all()]
     form.roles.choices = [(r.name, r.name) for r in Role.query.all()]
 
@@ -359,7 +439,7 @@ def manage_user(user_id):
         try:
             form.username.validators.remove(_validate_username)
             form.email.validators.remove(_validate_email)
-        except:
+        except ValueError:
             pass
 
         # field has been attempted to be updated and we
@@ -382,7 +462,11 @@ def manage_user(user_id):
             return render_template("admin/manage_users.html")
 
     return render_template(
-        "admin/create_user.html", form=form, username=user.username, user_id=user.id
+        "admin/create_user.html",
+        form=form,
+        username=user.username,
+        user_id=user.id,
+        projects=project_names,
     )
 
 
@@ -404,7 +488,7 @@ def delete_user(user_id):
 
     try:
         form.username.validators.remove(_validate_username)
-    except:
+    except ValueError:
         pass
 
     if request.method == "POST":
