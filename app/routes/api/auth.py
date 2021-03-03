@@ -4,7 +4,7 @@ Routes for REST authentication
 
 from datetime import timedelta
 
-from flask import jsonify, Response, make_response
+from flask import jsonify, Response, make_response, request, redirect, url_for
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
@@ -38,6 +38,7 @@ def create_tokens(user):
     refresh_token = create_refresh_token(identity=user, expires_delta=exp2_time)
 
     return access_token, refresh_token
+
 
 def get_auth_token(body):
     """
@@ -88,6 +89,24 @@ def refresh_auth_token():
     resp = Response({"refresh": True})
     set_access_cookies(resp, access_token)
     return resp, 200
+
+
+@jwt.unauthorized_loader
+def needed_token_callback(_):
+    if "api" in request.url:
+        return (
+            jsonify(
+                {
+                    "status": 401,
+                    "sub_status": 42,
+                    "msg": "You are missing a token, please login.",
+                }
+            ),
+            401,
+        )
+
+    else:
+        return redirect(url_for("auth.login"))
 
 
 @jwt.expired_token_loader
