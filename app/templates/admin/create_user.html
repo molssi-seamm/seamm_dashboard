@@ -71,7 +71,7 @@
             <div class="card-body" id="permissions">
             <h5 class="card-title">User Groups and Roles</h5>
             <p class="card-text font-weight-light font-italic">Put the user into groups and add roles. Users will be able to see public jobs and projects by default.</p>
-            <p class="card-text font-weight-light font-italic">You can manage and add group roles on the <a href="/admin/manage_groups">Group Management</a> and <a href="/admin/manage_roles">Role Management</a> pages</p>
+            <p class="card-text font-weight-light font-italic">You can manage and add groups on the <a href="/admin/manage_groups">Group Management</a> page.</p>
             <div class="row">
                 <div class="form-group col-sm-12">
                     {% for error in form.roles.errors %}
@@ -87,6 +87,32 @@
                     {{ wtf.form_field(form.groups, class='form-control', 
                         placeholder='Choose User Groups') }}
                 </div>
+            </div>
+            <h5 class="card-title">Special User Permissions</h5>
+            <p class="card-text font-weight-light font-italic">Manage the user's special access to projects here. Project managers can also change this information for individual projects.</p>
+            <div class="row card-body">
+                <table class="table">
+                    <tr>
+                        <th>Project Name</th>
+                        <th>read</th>
+                        <th>update</th>
+                        <th>create</th>
+                        <th>delete</th>
+                        <th>manage</th>
+                    </tr>
+
+                    {% for project in projects %}
+                        <tr>  
+                        <td>{{ project["name"] }}</td>
+                            {% for permission in ["read", "update", "create", "delete", "manage"] %}
+                                <td>
+                                    {{ form["specialproject_"+project["id"]|string+"_"+permission] }}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </table>
+
             </div>
             </div>
         </div>

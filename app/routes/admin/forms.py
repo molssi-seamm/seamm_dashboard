@@ -11,23 +11,28 @@ from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo, Ema
 from wtforms import ValidationError
 from app.models import User, Group
 
+
 def _validate_group(self, field):
     if Group.query.filter(Group.name == field.data).first():
         raise ValidationError(
             f"Group name '{field.data}' already in use. Please pick a different group name."
         )
 
+
 def _validate_user_delete(self, field):
     raise ValidationError(f"Input username does not match user ID.")
 
+
 def _validate_group_delete(self, field):
     raise ValidationError(f"Input group name does not match group ID.")
+
 
 def _validate_username(self, field):
     if User.query.filter(User.username == field.data).first():
         raise ValidationError(
             f"Username {field.data} already in use. Please pick a different username"
         )
+
 
 def _validate_email(self, field):
     if User.query.filter(User.email == field.data).first():
@@ -140,16 +145,20 @@ class ManageUserFormAdmin(EditUsernamePasswordForm, ContactInformationForm):
 
     submit = SubmitField("Update User Information")
 
+
 class EditGroupForm(FlaskForm):
     """
     Form for adding or editing a group
     """
 
-    group_name = StringField("Group Name", validators=[ Length(2, 64), DataRequired(), _validate_group ])
+    group_name = StringField(
+        "Group Name", validators=[Length(2, 64), DataRequired(), _validate_group]
+    )
 
     group_members = SelectMultipleField("Group Members", choices=[])
 
     submit = SubmitField("Submit")
+
 
 class DeleteUserForm(FlaskForm):
     """
@@ -160,14 +169,12 @@ class DeleteUserForm(FlaskForm):
     confirm = BooleanField("Confirm")
     submit = SubmitField("Delete User")
 
+
 class DeleteGroupForm(FlaskForm):
     """
     Form for deleting a user.
     """
 
-    group_name = StringField("Group Name", validators=[ Length(2, 64), DataRequired() ])
+    group_name = StringField("Group Name", validators=[Length(2, 64), DataRequired()])
     confirm = BooleanField("Confirm")
     submit = SubmitField("Delete Group")
-
-
-    
