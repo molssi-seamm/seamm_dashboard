@@ -514,8 +514,6 @@ def delete_group(group_id):
     if not authorize.has_role("admin", "group manager"):
         return render_template("401.html")
 
-    group_remove = Group.query.filter(Group.id == group_id).one()
-
     form = DeleteGroupForm()
 
     if request.method == "POST":

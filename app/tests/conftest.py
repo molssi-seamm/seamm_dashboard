@@ -194,7 +194,7 @@ def visitor_client(client):
 
     yield visitor_client, csrf_token
 
-    response = visitor_client.get("api/auth/token/remove", follow_redirects=True)
+    visitor_client.get("api/auth/token/remove", follow_redirects=True)
 
 
 @pytest.fixture(scope="module")
