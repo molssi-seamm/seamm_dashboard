@@ -509,10 +509,6 @@ paths:
       responses:
         "200":
           description: Login successful.
-          content:
-            text/plain:
-              schema:
-                type: json
         "400":
           description: Bad credentials
   /auth/token/refresh:
@@ -524,10 +520,6 @@ paths:
       responses:
         "200":
           description: Token refreshed.
-          content:
-            text/plain:
-              schema:
-                type: json
         "400":
           description: Bad credentials
 components:

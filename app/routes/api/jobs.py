@@ -16,7 +16,7 @@ import urllib.parse
 from marshmallow import ValidationError
 from sqlalchemy import and_
 from flask import send_from_directory, Response
-from flask_jwt_extended import jwt_optional
+from flask_jwt_extended import jwt_required
 
 from app import db, datastore, authorize
 from app.models import User, Project, Job, JobSchema, Flowchart
@@ -44,7 +44,7 @@ file_icons = {
 }
 
 
-@jwt_optional
+@jwt_required(optional=True)
 def get_jobs(createdSince=None, createdBefore=None, limit=None):
     """
     Function for API endpoint /api/jobs
@@ -141,7 +141,7 @@ def get_job_id(filename):
     return job_id
 
 
-@jwt_optional
+@jwt_required(optional=True)
 def add_job(body):
     """Add a new job to the queue.
 
@@ -270,7 +270,7 @@ def add_job(body):
     return {"id": job.id}, 201, {"location": format("/jobs/{}".format(job.id))}
 
 
-@jwt_optional
+@jwt_required(optional=True)
 def get_job(id):
     """
     Function for api endpoint api/jobs/{id}
@@ -294,7 +294,7 @@ def get_job(id):
     return job_schema.dump(job), 200
 
 
-@jwt_optional
+@jwt_required(optional=True)
 def update_job(id, body):
     """
     Function to update jobs - endpoint api/jobs/{id}
@@ -331,7 +331,7 @@ def update_job(id, body):
     return Response(status=201)
 
 
-@jwt_optional
+@jwt_required(optional=True)
 @authorize.has_role("admin")
 def delete_job(id):
     """
@@ -369,7 +369,7 @@ def delete_job(id):
         return Response(status=200)
 
 
-@jwt_optional
+@jwt_required(optional=True)
 def get_job_files(id, file_path=None):
     """
     Function for get method of api endpoint api/jobs/{id}/files. If the file_path parameter is used, this endpoint will send the file which is indicated by the path.

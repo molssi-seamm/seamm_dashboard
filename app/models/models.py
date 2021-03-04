@@ -200,12 +200,12 @@ class User(db.Model):
         return check_password_hash(self.password_hash, password)
 
 
-@jwt.user_loader_callback_loader
-def user_loader_callback(identity):
+@jwt.user_lookup_loader
+def user_loader_callback(jwt_header, jwt_payload):
     """Function for app, to return user object"""
 
-    if identity:
-        username = identity["username"]
+    if jwt_header:
+        username = jwt_payload["sub"]["username"]
         user = User.query.filter_by(username=username).one_or_none()
 
         return user

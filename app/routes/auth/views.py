@@ -8,8 +8,7 @@ from flask_jwt_extended import (
     unset_jwt_cookies,
     create_access_token,
     get_current_user,
-    jwt_optional,
-    fresh_jwt_required,
+    jwt_required,
 )
 
 from .forms import LoginForm, ConfirmLogin, UpdateAccountInfoForm
@@ -77,8 +76,7 @@ def fresh_login():
 
 
 @auth.route("/my-account", methods=["GET", "POST"])
-@jwt_optional
-@fresh_jwt_required
+@jwt_required(optional=True, fresh=True)
 def my_account():
 
     current_user = get_current_user()

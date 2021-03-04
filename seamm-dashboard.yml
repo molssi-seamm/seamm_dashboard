@@ -7,6 +7,9 @@ dependencies:
   - nodejs
   - pip
   - pip:
+    - email-validator
+    - flask-authorize
+    - flask-jwt-extended
     - configargparse
     - connexion[swagger-ui]
     - fasteners
@@ -28,7 +31,7 @@ dependencies:
     - sqlalchemy
     - wtforms
     # For testing:
-    - chromedriver-binary==80.0.3987.106.0
+    - chromedriver-binary
     - pytest
     - pytest-selenium
     - pytest-flask

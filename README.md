@@ -32,8 +32,10 @@ You can then run the dashboard after you have installed and activated the dashbo
 If you do not have SEAMM installed, you can view a demo dashboard by using the data in this repository. Use the command
 
 ```
-./results_dashboard.py --initialize --datastore $(pwd)/data
+./results_dashboard.py --initialize --datastore $(pwd)/data --jwt-secret-key 'super-secret' --secret-key 'another-super-secret'
 ```
+
+If you are running the dashboard in production, you should use better secrets.
 
 Open a browser and navigate to `http://localhost:5000/` to  view the sample dashboard. 
 

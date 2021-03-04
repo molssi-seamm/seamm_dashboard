@@ -3,7 +3,7 @@ API calls for projects
 """
 
 from flask import Response
-from flask_jwt_extended import jwt_optional
+from flask_jwt_extended import jwt_required
 from sqlalchemy import and_
 
 from app.models import Project, ProjectSchema, Job, JobSchema
@@ -12,7 +12,7 @@ from app import authorize
 __all__ = ["get_projects", "get_project", "get_project_jobs"]
 
 
-@jwt_optional
+@jwt_required(optional=True)
 def get_projects(description=None, limit=None):
 
     # If limit is not set, set limit to all jobs in DB.
@@ -30,7 +30,7 @@ def get_projects(description=None, limit=None):
     return projects_schema.dump(projects), 200
 
 
-@jwt_optional
+@jwt_required(optional=True)
 def get_project(id):
     """
     Function for api endpoint api/projects/{id}
@@ -51,7 +51,7 @@ def get_project(id):
     return project_schema.dump(project), 200
 
 
-@jwt_optional
+@jwt_required(optional=True)
 def get_project_jobs(id):
     """
     Function for api endpoint api/projects/{id}/jobs. Get jobs associated with a project.

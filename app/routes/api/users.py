@@ -4,7 +4,7 @@ API calls for users (creating, logging in, logging out)
 """
 
 from flask import Response
-from flask_jwt_extended import jwt_optional
+from flask_jwt_extended import jwt_required
 
 from app import db, authorize
 from app.models import User, UserSchema, Role, RoleSchema, Group, GroupSchema
@@ -98,7 +98,7 @@ def _process_user_body(request_data, original_user_data=None):
     return user
 
 
-@jwt_optional
+@jwt_required(optional=True)
 @authorize.has_role("admin")
 def add_user(body):
 
@@ -113,7 +113,7 @@ def add_user(body):
     return get_data.id, 201
 
 
-@jwt_optional
+@jwt_required(optional=True)
 @authorize.has_role("admin")
 def get_users():
     users = User.query.all()
