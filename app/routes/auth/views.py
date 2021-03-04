@@ -52,8 +52,9 @@ def login():
 
 
 @jwt.needs_fresh_token_loader
+@jwt_required(optional=True)
 @auth.route("/confirm_login", methods=["GET", "POST"])
-def fresh_login():
+def fresh_login(jwt_header, jwt_payload):
 
     form = ConfirmLogin()
     user = get_current_user()
