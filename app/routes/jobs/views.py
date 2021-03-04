@@ -13,7 +13,6 @@ from app.models import Job
 @jobs.route("/views/jobs/")
 @jobs.route("/views//jobs/")
 def jobs_list():
-    project = False
     return render_template("jobs/jobs_list.html", project=False)
 
 

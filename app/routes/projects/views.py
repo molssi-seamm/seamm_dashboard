@@ -57,11 +57,6 @@ def project_jobs_list(id):
 
     project = Project.query.get(id)
 
-    own_string = "You do not own this job."
-
-    if project.owner == get_current_user():
-        own_string = "You are the job owner."
-
     manage_project = authorize.manage(project)
     edit_project = authorize.update(project)
 
@@ -134,9 +129,6 @@ def manage_project(project_id):
     )
 
     form = form()
-
-    owner_user = project.owner
-    owner_group = project.group
 
     # Build the url ourselves.
     base_url = url_for("main.index")

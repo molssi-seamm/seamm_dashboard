@@ -17,7 +17,7 @@ from flask_authorize.plugin import (
 
 from flask import current_app
 
-__all__ = ["generate_association_table", "AccessControlPermissionsMixin", "Authorize"]
+__all__ = ["generate_association_table", "AccessControlPermissionsMixin"]
 
 
 def generate_association_table(

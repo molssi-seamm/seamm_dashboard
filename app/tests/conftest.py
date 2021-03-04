@@ -10,15 +10,6 @@ from app.models import Job, Flowchart, Project, User, Role, UserJobAssociation
 from selenium import webdriver
 import chromedriver_binary  # Adds chromedriver binary to path
 
-from flask import make_response
-from flask_jwt_extended import (
-    set_access_cookies,
-    set_refresh_cookies,
-    unset_jwt_cookies,
-)
-
-from app.routes.api.auth import create_tokens
-
 
 def _get_cookie_from_response(response, cookie_name):
     """
@@ -183,7 +174,7 @@ def auth_client(client):
 
     yield auth_client, csrf_token
 
-    response = auth_client.get("api/auth/token/remove", follow_redirects=True)
+    auth_client.get("api/auth/token/remove", follow_redirects=True)
 
 @pytest.fixture(scope="module")
 def visitor_client(client):

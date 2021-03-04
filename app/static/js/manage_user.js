@@ -1,9 +1,9 @@
 function toggleLock(span) {
 
-    section = span.section
+    let section = span.section
 
     // delete old tooltips
-    tooltips = section.getElementsByClassName('tooltip')
+    let tooltips = section.getElementsByClassName('tooltip')
     for (let k=0; tooltips.length; tooltips++) {
         tooltips[k].remove()
     }
