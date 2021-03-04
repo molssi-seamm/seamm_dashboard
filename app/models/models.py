@@ -6,9 +6,6 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from marshmallow_sqlalchemy.fields import Related, Nested
-from flask_authorize import PermissionsMixin
-
-from flask import current_app
 
 # Patched flask authorize
 from app.flask_authorize_patch import (
