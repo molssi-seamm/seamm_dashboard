@@ -20,7 +20,7 @@ from app.models import User, UserSchema
 from . import auth
 
 from app import jwt
-from app.models import User, UserProjectAssociation, Project
+from app.models import User, UserProjectAssociation
 from app.routes.api.auth import create_tokens
 
 from app.routes.admin.forms import _validate_email

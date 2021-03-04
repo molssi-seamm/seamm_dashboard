@@ -184,9 +184,6 @@ def _process_group_form_data(form):
     db.session.add(group)
     db.session.commit()
 
-    ## Set special project permissions.
-    special_projects = GroupProjectAssociation.query.filter_by(entity_id=group.id).all()
-
     permissions_dict = {}
 
     specialproject_keys = [
@@ -456,7 +453,7 @@ def manage_user(user_id):
         if form.validate():
 
             user = _process_user_body(form.data, original_user_data=user)
-
+            db.session.add(user)
             db.session.commit()
             flash(f"The user {form.data['username']} has been successfully updated.")
             return render_template("admin/manage_users.html")

@@ -1,8 +1,6 @@
 """
 Tests for the API (public user)
 """
-
-import os
 import json
 
 import pytest
@@ -118,10 +116,3 @@ def test_get_project_not_found(client):
 
     assert response.status_code == 404
 
-
-def test_get_project_unauthenticated(client):
-    """Check get method of api/projects on unauthenticated client"""
-
-    response = client.get("api/projects/1/jobs")
-
-    assert response.status_code == 401

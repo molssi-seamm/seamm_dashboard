@@ -21,8 +21,6 @@ def _process_user_body(request_data, original_user_data=None):
     username = request_data["username"]
     password = request_data["password"]
 
-    original_password_hash = ''
-
     if not original_user_data:
         # Check that both username and password are supplied
         if username is None or password is None:
