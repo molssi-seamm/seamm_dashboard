@@ -11,7 +11,7 @@ from app import authorize
 
 from flask_jwt_extended import (
     get_current_user,
-    jwt_optional
+    jwt_required
 )
 
 logger = logging.getLogger("__file__")
@@ -19,7 +19,7 @@ logger = logging.getLogger("__file__")
 __all__ = ["status"]
 
 
-@jwt_optional
+@jwt_required(optional=True)
 def status():
     """The status of the dashboard.
 

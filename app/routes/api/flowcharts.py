@@ -4,14 +4,14 @@ API calls for flowcharts
 
 from app.models import Flowchart, FlowchartSchema
 from flask import Response
-from flask_jwt_extended import jwt_optional
+from flask_jwt_extended import jwt_required
 
 from app import authorize
 
 __all__ = ["get_flowcharts", "get_flowchart", "get_cytoscape"]
 
 
-@jwt_optional
+@jwt_required(optional=True)
 def get_flowcharts(description=None, limit=None):
 
     # If limit is not set, set limit to all jobs in DB.
@@ -30,7 +30,7 @@ def get_flowcharts(description=None, limit=None):
     return flowcharts_schema.dump(flowcharts), 200
 
 
-@jwt_optional
+@jwt_required(optional=True)
 def get_flowchart(id):
     """
     Function for api endpoint api/flowcharts/{id}
@@ -51,7 +51,7 @@ def get_flowchart(id):
     return flowchart_schema.dump(flowchart), 200
 
 
-@jwt_optional
+@jwt_required(optional=True)
 def get_cytoscape(id, flowchartKeys=None):
     """
     Function for getting cytoscape elements for a flowchart.

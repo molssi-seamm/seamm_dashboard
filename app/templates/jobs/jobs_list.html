@@ -10,12 +10,12 @@
         {% if edit_project == true %}
           <a href="{{ edit_url }}"><button type="button" id="edit-job" class="btn btn-lg btn-primary float-left mx-1" title="Edit Project Description and Title" data-toggle="tooltip" data-placement="top"><i class="fas fa-edit"></i></button></a>
         {% else %}
-        <button type="button" id="edit-job" class="btn btn-lg btn-primary float-left mx-1" title="You do not have permission to edit this job" data-toggle="tooltip" data-placement="top" disabled><i class="fas fa-edit"></i></button>
+        <button type="button" id="edit-job" class="btn btn-lg btn-primary float-left mx-1" title="You do not have permission to edit this project." data-toggle="tooltip" data-placement="top" disabled><i class="fas fa-edit"></i></button>
         {% endif %}
         {% if manage_project == true %}
             <a href="{{ manage_url }}"><button type="button" id="edit-job" class="btn btn-lg btn-primary float-left mx-1" title="Manage User Access" data-toggle="tooltip" data-placement="top"><i class="fas fa-users-cog"></i></button></a>
           {% else %}
-          <button type="button" id="edit-job" class="btn btn-lg btn-primary float-left mx-1" title="You do not have permission to manage user access for this job." data-toggle="tooltip" data-placement="top" disabled><i class="fas fa-users-cog"></i></button>
+          <button type="button" id="edit-job" class="btn btn-lg btn-primary float-left mx-1" title="You do not have permission to manage user access for this project." data-toggle="tooltip" data-placement="top" disabled><i class="fas fa-users-cog"></i></button>
         {% endif %}
       </div>
   {% endif %}

@@ -7,8 +7,7 @@ from copy import deepcopy
 from flask import render_template, redirect, url_for, flash, Response, request
 
 from flask_jwt_extended import (
-    jwt_optional,
-    fresh_jwt_required,
+    jwt_required,
     jwt_required,
     get_current_user,
 )
@@ -247,7 +246,7 @@ def _process_group_form_data(form):
 
 
 @admin.route("/admin/manage_users")
-@jwt_optional
+@jwt_required(optional=True)
 def manage_users():
     if not authorize.has_role("admin"):
         return render_template("401.html")
@@ -255,7 +254,7 @@ def manage_users():
 
 
 @admin.route("/admin/manage_groups")
-@jwt_optional
+@jwt_required(optional=True)
 def manage_groups():
     if not authorize.has_role("admin", "group manager"):
         return render_template("401.html")
@@ -263,7 +262,7 @@ def manage_groups():
 
 
 @admin.route("/admin/create_group", methods=["GET", "POST"])
-@jwt_optional
+@jwt_required(optional=True)
 def create_group():
     if not authorize.has_role("admin", "group manager"):
         return render_template("401.html")
@@ -291,7 +290,7 @@ def create_group():
 
 
 @admin.route("/admin/manage_group/<group_id>", methods=["GET", "POST"])
-@jwt_optional
+@jwt_required(optional=True)
 def manage_group(group_id):
     # Permissions check
     if not authorize.has_role("admin", "group manager"):
@@ -363,7 +362,7 @@ def manage_group(group_id):
 
 
 @admin.route("/admin/create_user", methods=["GET", "POST"])
-@jwt_optional
+@jwt_required(optional=True)
 def create_user():
 
     if not authorize.has_role("admin"):
@@ -399,7 +398,7 @@ def create_user():
 
 
 @admin.route("/admin/manage_user/<user_id>", methods=["GET", "POST"])
-@jwt_optional
+@jwt_required(optional=True)
 def manage_user(user_id):
 
     # Permissions check
@@ -468,8 +467,7 @@ def manage_user(user_id):
 
 
 @admin.route("/admin/manage_user/<user_id>/delete", methods=["GET", "POST"])
-@jwt_required
-@fresh_jwt_required
+@jwt_required(fresh=True)
 def delete_user(user_id):
     # Permissions check
     if not authorize.has_role("admin"):
@@ -507,8 +505,7 @@ def delete_user(user_id):
 
 
 @admin.route("/admin/manage_group/<group_id>/delete", methods=["GET", "POST"])
-@jwt_required
-@fresh_jwt_required
+@jwt_required(fresh=True)
 def delete_group(group_id):
     # Permissions check
     if not authorize.has_role("admin", "group manager"):

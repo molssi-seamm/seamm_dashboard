@@ -10,7 +10,7 @@ from flask_jwt_extended import (
     create_refresh_token,
     set_access_cookies,
     set_refresh_cookies,
-    jwt_refresh_token_required,
+    jwt_required,
     get_jwt_identity,
     unset_jwt_cookies,
 )
@@ -71,7 +71,7 @@ def remove_auth_token():
     return resp, 200
 
 
-@jwt_refresh_token_required
+@jwt_required(refresh=True)
 def refresh_auth_token():
     """
     Route for refreshing the access token.

@@ -1,6 +1,6 @@
 from flask import request, render_template, flash, redirect, url_for
 
-from flask_jwt_extended import jwt_optional, get_current_user
+from flask_jwt_extended import jwt_required, get_current_user
 
 from app import db, authorize
 
@@ -18,7 +18,7 @@ def jobs_list():
 
 @jobs.route("/views/jobs/<id>")
 @jobs.route("/views//jobs/<id>")
-@jwt_optional
+@jwt_required(optional=True)
 def job_details(id):
     job = Job.query.get(id)
     
@@ -40,7 +40,7 @@ def job_details(id):
 
 
 @jobs.route("/jobs/<job_id>/edit", methods=["GET", "POST"])
-@jwt_optional
+@jwt_required(optional=True)
 def edit_job(job_id):
 
     job = Job.query.get(job_id)

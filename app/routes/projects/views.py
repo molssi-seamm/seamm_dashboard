@@ -1,7 +1,7 @@
 from copy import deepcopy
 
 from flask import render_template, url_for, request, flash, redirect
-from flask_jwt_extended import jwt_optional, get_current_user
+from flask_jwt_extended import jwt_required, get_current_user
 
 from wtforms import BooleanField
 
@@ -52,7 +52,7 @@ def project_list():
 
 @projects.route("/views/projects/<id>/jobs")
 @projects.route("/views//projects/<id>/jobs")
-@jwt_optional
+@jwt_required(optional=True)
 def project_jobs_list(id):
 
     project = Project.query.get(id)
@@ -76,7 +76,7 @@ def project_jobs_list(id):
 
 
 @projects.route("/projects/<project_id>/edit", methods=["GET", "POST"])
-@jwt_optional
+@jwt_required(optional=True)
 def edit_project(project_id):
 
     project = Project.query.get(project_id)
@@ -111,7 +111,7 @@ def edit_project(project_id):
 
 
 @projects.route("/projects/<project_id>/manage", methods=["GET", "POST"])
-@jwt_optional
+@jwt_required(optional=True)
 def manage_project(project_id):
 
     project = Project.query.get(project_id)
