@@ -7,6 +7,7 @@ on:
   push:
     branches:
       - "master"
+      - "gha"
   pull_request:
     branches:
       - "master"
@@ -68,7 +69,7 @@ jobs:
         export chrome_version=$(google-chrome --version | cut -d ' ' -f 3 | cut -d . -f 1)
         export chrome_version_max=$(($chrome_version+1))
         pip install "chromedriver-binary<=$chrome_version_max"
-        
+
     - name: Run tests
 
       # conda setup requires this special shell
