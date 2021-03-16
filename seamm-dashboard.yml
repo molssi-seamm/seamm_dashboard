@@ -9,7 +9,7 @@ dependencies:
   - pip:
     - email-validator
     - flask-authorize
-    - flask-jwt-extended
+    - flask-jwt-extended==4.0.2
     - configargparse
     - connexion[swagger-ui]
     - fasteners
