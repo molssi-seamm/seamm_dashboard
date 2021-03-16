@@ -28,10 +28,9 @@ dependencies:
     - python_dateutil
     - requests
     - selenium
-    - sqlalchemy
+    - sqlalchemy<1.4
     - wtforms
     # For testing:
-    - chromedriver-binary
     - pytest
     - pytest-selenium
     - pytest-flask
