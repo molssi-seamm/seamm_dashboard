@@ -1,8 +1,7 @@
-name: seamm-dashboard-new
+name: test
 channels:
   - defaults
 dependencies:
-  - python>=3.8
   # Nodejs needed from anaconda, not pip, to have npm
   - nodejs
   - pip
@@ -30,12 +29,7 @@ dependencies:
     - sqlalchemy
     - wtforms
     # For testing:
-    - chromedriver-binary==80.0.3987.106.0
     - pytest
     - pytest-selenium
     - pytest-flask
     - pytest-cov
-    # For development
-    - flake8
-    - twine
-    - yapf
