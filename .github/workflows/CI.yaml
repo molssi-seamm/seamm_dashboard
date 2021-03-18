@@ -63,8 +63,8 @@ jobs:
         conda list
     
     - name: Set google chrome alias for macOS
-      if: matrix.os == "macOS-latest"
-
+    
+      if: matrix.os == 'macOS-latest'
       shell: bash -l {0}
       run: |
         alias google-chrome='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'
