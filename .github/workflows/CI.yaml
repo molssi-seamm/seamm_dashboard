@@ -62,26 +62,29 @@ jobs:
         python -m pip install . --no-deps
         conda list
     
-    - name: Install chromedriver binary and runs all tests on ubuntu
-      if: matrix.os == 'ubuntu-latest'
+    - name: Set google chrome version for macOS
+
+      if: matrix.os == 'macOS-latest'
+      shell: bash -l {0}
+      run: |
+        shopt -s expand_aliases
+        alias google-chrome='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'
+    
+    - name: Install chromedriver binary
 
       shell: bash -l {0}
       run: |
-        google-chrome --version
         export chrome_version=$(google-chrome --version | cut -d ' ' -f 3 | cut -d . -f 1)
         export chrome_version_max=$(($chrome_version+1))
         pip install "chromedriver-binary<=$chrome_version_max"
-        pytest -v --cov=app app/tests/
 
-    - name: Run API tests only on macOS
-      if: matrix.os == 'macOS-latest'
+    - name: Run tests
 
       # conda setup requires this special shell
       shell: bash -l {0}
 
       run: |
-        # Only test api on macOS
-        pytest -v -k "test_api" 
+        pytest -v --cov=app app/tests/
 
     - name: CodeCov
       uses: codecov/codecov-action@v1
