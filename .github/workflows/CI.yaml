@@ -68,6 +68,7 @@ jobs:
       shell: bash -l {0}
       run: |
         google-chrome --version
+        export chrome_version=$(google-chrome --version | cut -d ' ' -f 3 | cut -d . -f 1)
         export chrome_version_max=$(($chrome_version+1))
         pip install "chromedriver-binary<=$chrome_version_max"
         pytest -v --cov=app app/tests/
