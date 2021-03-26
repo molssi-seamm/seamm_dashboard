@@ -155,6 +155,7 @@ class TestLiveServer:
 
         # chrome_driver.get_screenshot_as_file(F'{list_type}_screenshot.png')
 
+    @pytest.mark.xfail
     def test_job_report_file_tree(self, app, chrome_driver, project_directory):
         """
         Test to make sure file tree loads with correct number of elements.
