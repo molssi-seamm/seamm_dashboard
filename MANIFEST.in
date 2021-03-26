@@ -1,0 +1,6 @@
+include app/swagger.yml
+graft app/models
+graft app/routes
+graft app/static
+graft app/templates
+global-exclude *.pyc
