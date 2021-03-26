@@ -186,9 +186,11 @@ def create_app(config_name=None):
         role_names = ["user", "group manager", "admin"]
 
         for role_name in role_names:
-            role = Role(name=role_name)
-            db.session.add(role)
-            db.session.commit()
+            check = Role.query.filter_by(name=role_name).one_or_none()
+            if not check:
+                role = Role(name=role_name)
+                db.session.add(role)
+                db.session.commit()
 
 
     logger.info("")
