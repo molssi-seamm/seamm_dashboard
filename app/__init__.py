@@ -21,7 +21,7 @@ from .jwt_patch import flask_jwt_extended
 
 from flask_jwt_extended import get_current_user
 
-from config import config
+from .config import config
 from .template_filters import replace_empty
 from .setup_logging import setup_logging
 from .setup_argparsing import options
