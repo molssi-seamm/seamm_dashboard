@@ -1,5 +1,8 @@
 # -*- mode: gitignore; -*-
 
+# The built app for MacOS
+mac_app/*.app/
+
 ## emacs: https://github.com/github/gitignore/blob/master/Global/Emacs.gitignore
 *~
 \#*\#
