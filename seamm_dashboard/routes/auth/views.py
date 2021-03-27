@@ -13,17 +13,17 @@ from flask_jwt_extended import (
 
 from .forms import LoginForm, ConfirmLogin, UpdateAccountInfoForm
 
-from app import authorize, db
-from app.models import User, UserSchema
+from seamm_dashboard import authorize, db
+from seamm_dashboard.models import User, UserSchema
 
 from . import auth
 
-from app import jwt
-from app.models import User, UserProjectAssociation
-from app.routes.api.auth import create_tokens
+from seamm_dashboard import jwt
+from seamm_dashboard.models import User, UserProjectAssociation
+from seamm_dashboard.routes.api.auth import create_tokens
 
-from app.routes.admin.forms import _validate_email
-from app.routes.admin.views import _bind_user_projects_to_form
+from seamm_dashboard.routes.admin.forms import _validate_email
+from seamm_dashboard.routes.admin.views import _bind_user_projects_to_form
 
 logger = logging.getLogger(__name__)
 

@@ -9,7 +9,7 @@ import os
 from . import Flowchart, Job, Project
 from .util import process_flowchart, process_job, file_owner
 
-from app import db
+from seamm_dashboard import db
 
 logger = logging.getLogger(__name__)
 

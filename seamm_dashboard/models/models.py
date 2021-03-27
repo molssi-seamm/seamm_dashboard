@@ -8,12 +8,12 @@ from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from marshmallow_sqlalchemy.fields import Related, Nested
 
 # Patched flask authorize
-from app.flask_authorize_patch import (
+from seamm_dashboard.flask_authorize_patch import (
     AccessControlPermissionsMixin,
     generate_association_table,
 )
 
-from app import db, jwt
+from seamm_dashboard import db, jwt
 
 #############################
 #
@@ -44,7 +44,7 @@ class UserProjectAssociation(db.Model, UserProjectMixin):
         Change behavior of set attribute so that when a user gets permissions for a project,
         they get updated permissions for all jobs and flowcharts within the project.
         """
-        from app import db
+        from seamm_dashboard import db
 
         if name == "permissions":
             # See if there is an asociation between the group and project
@@ -98,7 +98,7 @@ class GroupProjectAssociation(db.Model, GroupProjectMixin):
         Change behavior of set attribute so that when a group gets permissions for a project,
         they get updated permissions for all jobs and flowcharts within the project.
         """
-        from app import db
+        from seamm_dashboard import db
 
         if name == "permissions":
             # See if there is an asociation between the group and project

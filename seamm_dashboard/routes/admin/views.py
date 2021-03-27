@@ -28,8 +28,8 @@ from wtforms import BooleanField
 
 from . import admin
 
-from app import db, authorize
-from app.models import (
+from seamm_dashboard import db, authorize
+from seamm_dashboard.models import (
     Role,
     Group,
     User,
@@ -37,7 +37,7 @@ from app.models import (
     GroupProjectAssociation,
     UserProjectAssociation,
 )
-from app.routes.api.users import _process_user_body
+from seamm_dashboard.routes.api.users import _process_user_body
 
 
 def _process_user_permissions(filled_form, user):

@@ -43,8 +43,8 @@ if __name__ == "__main__":
 
         entry_points={
             'console_scripts': [
-                'seamm_dashboard=app.results_dashboard:run',
-                'seamm-dashboard=app.results_dashboard:run',
+                'seamm_dashboard=seamm_dashboard.results_dashboard:run',
+                'seamm-dashboard=seamm_dashboard.results_dashboard:run',
             ],
         }
     )

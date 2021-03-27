@@ -1,6 +1,6 @@
-include app/swagger.yml
-graft app/models
-graft app/routes
-graft app/static
-graft app/templates
+include seamm_dashboard/swagger.yml
+graft seamm_dashboard/models
+graft seamm_dashboard/routes
+graft seamm_dashboard/static
+graft seamm_dashboard/templates
 global-exclude *.pyc

@@ -4,8 +4,8 @@ API endpoint for groups
 
 from flask_jwt_extended import jwt_required
 
-from app import authorize
-from app.models import Group, GroupSchema
+from seamm_dashboard import authorize
+from seamm_dashboard.models import Group, GroupSchema
 
 @jwt_required(optional=True)
 @authorize.has_role("admin", "group manager")

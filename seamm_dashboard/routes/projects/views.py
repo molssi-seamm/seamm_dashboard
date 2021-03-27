@@ -8,9 +8,9 @@ from wtforms import BooleanField
 from . import projects
 from .forms import EditProject, ManageProjectAccessForm
 
-from app.models import Project, User, UserProjectAssociation
+from seamm_dashboard.models import Project, User, UserProjectAssociation
 
-from app import authorize, db
+from seamm_dashboard import authorize, db
 
 
 def _bind_users_to_form(form, current_user, project_id):
