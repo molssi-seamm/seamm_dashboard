@@ -13,7 +13,7 @@ from pathlib import Path
 import os
 
 from . import User, Group, Role
-from app import db
+from seamm_dashboard import db
 
 logger = logging.getLogger(__name__)
 

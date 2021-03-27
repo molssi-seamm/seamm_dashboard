@@ -2,11 +2,11 @@
 API calls for flowcharts
 """
 
-from app.models import Flowchart, FlowchartSchema
+from seamm_dashboard.models import Flowchart, FlowchartSchema
 from flask import Response
 from flask_jwt_extended import jwt_required
 
-from app import authorize
+from seamm_dashboard import authorize
 
 __all__ = ["get_flowcharts", "get_flowchart", "get_cytoscape"]
 

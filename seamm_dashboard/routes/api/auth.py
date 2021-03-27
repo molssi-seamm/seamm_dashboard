@@ -15,9 +15,9 @@ from flask_jwt_extended import (
     unset_jwt_cookies,
 )
 
-from app.models import User, UserSchema
+from seamm_dashboard.models import User, UserSchema
 
-from app import jwt
+from seamm_dashboard import jwt
 
 __all__ = ["get_auth_token", "refresh_auth_token", "remove_auth_token"]
 

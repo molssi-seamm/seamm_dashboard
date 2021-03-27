@@ -2,12 +2,12 @@ from flask import request, render_template, flash, redirect, url_for
 
 from flask_jwt_extended import jwt_required, get_current_user
 
-from app import db, authorize
+from seamm_dashboard import db, authorize
 
 from . import jobs
 
-from app.routes.jobs.forms import EditJob
-from app.models import Job
+from seamm_dashboard.routes.jobs.forms import EditJob
+from seamm_dashboard.models import Job
 
 
 @jobs.route("/views/jobs/")

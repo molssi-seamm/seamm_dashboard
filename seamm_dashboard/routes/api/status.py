@@ -3,11 +3,11 @@ API calls for the status
 """
 import logging
 
-from app.models import Project, Job, Flowchart, RoleSchema
+from seamm_dashboard.models import Project, Job, Flowchart, RoleSchema
 
 from sqlalchemy import and_
 
-from app import authorize
+from seamm_dashboard import authorize
 
 from flask_jwt_extended import (
     get_current_user,

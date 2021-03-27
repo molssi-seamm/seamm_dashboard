@@ -6,8 +6,8 @@ from flask import Response
 from flask_jwt_extended import jwt_required
 from sqlalchemy import and_
 
-from app.models import Project, ProjectSchema, Job, JobSchema
-from app import authorize
+from seamm_dashboard.models import Project, ProjectSchema, Job, JobSchema
+from seamm_dashboard import authorize
 
 __all__ = ["get_projects", "get_project", "get_project_jobs"]
 

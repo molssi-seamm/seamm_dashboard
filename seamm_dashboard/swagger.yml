@@ -20,7 +20,7 @@ paths:
       summary: searches jobs database by id
       description: |
         Get jobs. By passing parameters you can get jobs fitting a certain criteria.
-      operationId: app.routes.api.get_job
+      operationId: seamm_dashboard.routes.api.get_job
       parameters:
       - name: id
         in: path
@@ -44,7 +44,7 @@ paths:
     put:
       tags:
       - admins
-      operationId: app.routes.api.update_job
+      operationId: seamm_dashboard.routes.api.update_job
       parameters:
       - name: id
         in: path
@@ -68,7 +68,7 @@ paths:
     delete:
       tags:
       - admins
-      operationId: app.routes.api.delete_job
+      operationId: seamm_dashboard.routes.api.delete_job
       parameters:
       - name: id
         in: path
@@ -90,7 +90,7 @@ paths:
       summary: returns json of files associated with a particular job
       description: |
         Get job files.
-      operationId: app.routes.api.get_job_files
+      operationId: seamm_dashboard.routes.api.get_job_files
       parameters:
       - name: id
         in: path
@@ -117,7 +117,7 @@ paths:
       summary: searches jobs database
       description: |
         Get jobs. By passing parameters you can get jobs fitting a certain criteria.
-      operationId: app.routes.api.get_jobs
+      operationId: seamm_dashboard.routes.api.get_jobs
       parameters:
       - name: createdSince
         in: query
@@ -162,7 +162,7 @@ paths:
       summary: submit a job
       description: |
         Submits a new job to the system
-      operationId: app.routes.api.add_job
+      operationId: seamm_dashboard.routes.api.add_job
       requestBody:
         description: The job being submitted.
         required: true
@@ -211,7 +211,7 @@ paths:
       summary: searches flowcharts database
       description: |
         Get flowcharts
-      operationId: app.routes.api.get_flowcharts
+      operationId: seamm_dashboard.routes.api.get_flowcharts
       parameters:
       - name: description
         in: query
@@ -246,7 +246,7 @@ paths:
       summary: searches database by flowchart id
       description: |
         Get flowchart by ID.
-      operationId: app.routes.api.get_flowchart
+      operationId: seamm_dashboard.routes.api.get_flowchart
       parameters:
       - name: id
         in: path
@@ -274,7 +274,7 @@ paths:
       summary: searches database by flowchart id
       description: |
         Get flowchart by ID.
-      operationId: app.routes.api.get_cytoscape
+      operationId: seamm_dashboard.routes.api.get_cytoscape
       parameters:
       - name: id
         in: path
@@ -302,7 +302,7 @@ paths:
       summary: searches projects database
       description: |
         Get projects
-      operationId: app.routes.api.get_projects
+      operationId: seamm_dashboard.routes.api.get_projects
       parameters:
       - name: description
         in: query
@@ -337,7 +337,7 @@ paths:
       summary: searches database by project id
       description: |
         Get project by ID.
-      operationId: app.routes.api.get_project
+      operationId: seamm_dashboard.routes.api.get_project
       parameters:
       - name: id
         in: path
@@ -365,7 +365,7 @@ paths:
       summary: retrieves jobs associated with a project
       description: |
         Get jobs associated with a project by project ID.
-      operationId: app.routes.api.get_project_jobs
+      operationId: seamm_dashboard.routes.api.get_project_jobs
       parameters:
       - name: id
         in: path
@@ -390,7 +390,7 @@ paths:
       - admin
       - managers
       summary: retrieves dashboard groups
-      operationId: app.routes.api.get_groups
+      operationId: seamm_dashboard.routes.api.get_groups
       responses:
         "200":
           description: users listed
@@ -402,7 +402,7 @@ paths:
       - admin
       - managers
       summary: retrieves dashboard groups
-      operationId: app.routes.api.get_roles
+      operationId: seamm_dashboard.routes.api.get_roles
       responses:
         "200":
           description: users listed
@@ -415,7 +415,7 @@ paths:
       summary: retrieves users of dashboard
       description: |
         Get jobs associated with a project by project ID.
-      operationId: app.routes.api.get_users
+      operationId: seamm_dashboard.routes.api.get_users
       responses:
         "200":
           description: users listed
@@ -427,7 +427,7 @@ paths:
       summary: create a user
       description: |
         Adds a new user to the dashboard
-      operationId: app.routes.api.add_user
+      operationId: seamm_dashboard.routes.api.add_user
       requestBody:
         description: The username and password of the new user.
         required: true
@@ -466,7 +466,7 @@ paths:
       description: |
         Return the status of the dashboard. Currently 'running' |
         but in the furtire may return other status strings.
-      operationId: app.routes.api.status
+      operationId: seamm_dashboard.routes.api.status
       responses:
         "200":
           description: the status
@@ -477,7 +477,7 @@ paths:
   /api/auth/token/remove:
     get:
       summary: remove auth token.
-      operationId: app.routes.api.remove_auth_token
+      operationId: seamm_dashboard.routes.api.remove_auth_token
       responses:
         "200":
           description: successfully logged out
@@ -490,7 +490,7 @@ paths:
       summary: post username and password and get a token for the current user
       description: |
         Return a token to be used for authentication
-      operationId: app.routes.api.get_auth_token
+      operationId: seamm_dashboard.routes.api.get_auth_token
       requestBody:
         description: The username and password of the new user.
         required: true
@@ -516,7 +516,7 @@ paths:
       summary: Refresh the access token
       description: |
         Return a token to be used for authentication. An old token will be
-      operationId: app.routes.api.refresh_auth_token
+      operationId: seamm_dashboard.routes.api.refresh_auth_token
       responses:
         "200":
           description: Token refreshed.

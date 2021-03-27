@@ -4,7 +4,7 @@ from wtforms.fields.html5 import EmailField
 
 from wtforms.validators import DataRequired, Length, EqualTo, Email
 
-from app.routes.admin.forms import _validate_email, _password_none_or_usual
+from seamm_dashboard.routes.admin.forms import _validate_email, _password_none_or_usual
 
 
 class LoginForm(FlaskForm):

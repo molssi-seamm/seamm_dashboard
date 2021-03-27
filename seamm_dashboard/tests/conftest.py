@@ -4,9 +4,9 @@ import os
 import shutil
 from dateutil import parser
 
-from app import create_app, db
-from app.models.util import process_flowchart
-from app.models import Job, Flowchart, Project, User, Role, UserJobAssociation
+from seamm_dashboard import create_app, db
+from seamm_dashboard.models.util import process_flowchart
+from seamm_dashboard.models import Job, Flowchart, Project, User, Role, UserJobAssociation
 from selenium import webdriver
 import chromedriver_binary  # Adds chromedriver binary to path
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from app import create_app
+from seamm_dashboard import create_app
 
 
 def run():

@@ -18,9 +18,9 @@ from sqlalchemy import and_
 from flask import send_from_directory, Response
 from flask_jwt_extended import jwt_required
 
-from app import db, datastore, authorize
-from app.models import User, Project, Job, JobSchema, Flowchart
-from app.models import FlowchartSchema
+from seamm_dashboard import db, datastore, authorize
+from seamm_dashboard.models import User, Project, Job, JobSchema, Flowchart
+from seamm_dashboard.models import FlowchartSchema
 
 logger = logging.getLogger("__file__")
 
