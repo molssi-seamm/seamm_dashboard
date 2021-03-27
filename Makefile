@@ -48,15 +48,12 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr htmlcov/
 	find . -name '.pytype' -exec rm -fr {} +
 
-lint: ## check style with yapf
-	yapf --diff --recursive  app
-	flake8  app
-
-flake: ## check the style with flake8
-	flake8  app
+lint: ## check style with black and flake8
+	black --check --diff .
+	flake8 .
 
 format: ## reformat with with yapf and isort
-	yapf --recursive --in-place  app
+	black .
 
 typing: ## check typing
 	pytype app_ff_util
