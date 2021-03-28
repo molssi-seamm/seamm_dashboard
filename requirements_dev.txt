@@ -1,7 +1,9 @@
 -r requirements_install.txt
 
 # For testing:
-chromedriver-binary==80.0.3987.106.0
+chromedriver-binary==89.0.4389.23
+flask-authorize
+flask-jwt-extended
 pytest
 pytest-selenium
 pytest-flask
