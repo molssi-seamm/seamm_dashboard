@@ -36,6 +36,6 @@ dependencies:
     - pytest-flask
     - pytest-cov
     # For development
+    - black
     - flake8
     - twine
-    - yapf

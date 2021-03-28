@@ -54,7 +54,7 @@ jobs:
       # conda setup requires this special shell
       shell: bash -l {0}
       run: |
-        cd app
+        cd seamm_dashboard
         cd static
         npm install
         cd ../../
@@ -69,7 +69,7 @@ jobs:
         export chrome_version=$(google-chrome --version | cut -d ' ' -f 3 | cut -d . -f 1)
         export chrome_version_max=$(($chrome_version+1))
         pip install "chromedriver-binary<=$chrome_version_max"
-        pytest -v --cov=app app/tests/
+        pytest -v --cov=seamm_dashboard seamm_dashboard/tests/
 
     - name: Run tests for API only for MacOS
       if: matrix.os == 'macOS-latest'
