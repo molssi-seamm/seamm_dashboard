@@ -56,7 +56,7 @@ format: ## reformat with with yapf and isort
 	black .
 
 typing: ## check typing
-	pytype app_ff_util
+	pytype $(MODULE)
 
 test: ## run tests quickly with the default Python
 	devtools/scripts/install_chromedriver.py
@@ -66,7 +66,7 @@ test-all: ## run tests on every Python version with tox
 	tox
 
 coverage: ## check code coverage quickly with the default Python
-	coverage run --source app -m pytest
+	coverage run --source seamm_dashboard -m pytest
 	coverage report -m
 	coverage html
 	$(BROWSER) htmlcov/index.html
@@ -85,7 +85,7 @@ environment: ## create the environment for running the dashboard
 	@echo '     make finish_dashboard'
 	@echo ''
 	@echo ''
-	@cd app/static && npm install
+	@cd seamm_dashboard/static && npm install
 	@echo ''
 	@echo 'To use the environment, type'
 	@echo '   conda activate seamm-dashboard'
@@ -93,15 +93,15 @@ environment: ## create the environment for running the dashboard
 finish_dashboard: ## finish create the environment for running the dashboard
 	@echo 'Installing the Javascript, which will also take a couple minutes!'
 	@echo ''
-	@cd app/static && npm install
+	@cd seamm_dashboard/static && npm install
 	@echo ''
 	@echo 'To use the environment, type'
 	@echo '   conda activate seamm-dashboard'
 
 docs: ## generate Sphinx HTML documentation, including API docs
-	rm -f docs/app.rst
+	rm -f docs/seamm_dashboard.rst
 	rm -f docs/modules.rst
-	sphinx-apidoc -o docs/ app
+	sphinx-apidoc -o docs/ seamm_dashboard
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
 	$(BROWSER) docs/_build/html/index.html
