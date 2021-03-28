@@ -80,7 +80,7 @@ class TestLiveServer:
             expected_values = "1 0 1 0 0".split()
 
         chrome_driver.get(self.base_url)
-        chrome_driver.get_screenshot_as_file(f'main_{logged_in}.png')
+        # chrome_driver.get_screenshot_as_file(f'main_{logged_in}.png')
         ui_view = chrome_driver.find_element_by_id("ui-view")
         displayed_values = ui_view.find_elements_by_class_name("text-value")
 
@@ -395,7 +395,7 @@ class TestLiveServer:
             "users"
         ).find_elements_by_tag_name("tr")
 
-        chrome_driver.get_screenshot_as_file(f'user_table.png')
+        # chrome_driver.get_screenshot_as_file(f'user_table.png')
 
         assert len(table_rows) == 5
 
@@ -407,12 +407,12 @@ class TestLiveServer:
         # Try to access admin views - manage_users page
         chrome_driver.get(f"{self.base_url}/admin/manage_user/1")
 
-        chrome_driver.get_screenshot_as_file(f'updated_user.png')
+        # chrome_driver.get_screenshot_as_file(f'updated_user.png')
 
         edit_button = chrome_driver.find_elements_by_css_selector('#user-information-button .btn')[0]
         edit_button.click()
 
-        chrome_driver.get_screenshot_as_file(f'updated_user_after_after_click.png')
+        # chrome_driver.get_screenshot_as_file(f'updated_user_after_after_click.png')
 
         # with open('page_source.html', 'w+') as f:
         #    f.write(chrome_driver.page_source)
