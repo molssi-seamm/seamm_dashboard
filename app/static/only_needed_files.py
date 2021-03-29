@@ -34,6 +34,9 @@ if __name__ == "__main__":
 
             if full_path not in matches:
                 os.remove(full_path)
+
+    
+    os.remove("files.out")
             
         
 
