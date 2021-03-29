@@ -57,6 +57,9 @@ jobs:
         cd app
         cd static
         npm install
+        du -hs node_modules
+        python only_needed_files.py
+        du -hs node_modules
         cd ../../
         python -m pip install . --no-deps
         conda list
