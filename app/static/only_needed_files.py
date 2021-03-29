@@ -6,6 +6,7 @@ import re
 import subprocess
 
 import os
+import shutil
 
 if __name__ == "__main__":
     full_path = os.path.abspath(os.path.join("..", "templates/"))
@@ -35,7 +36,15 @@ if __name__ == "__main__":
             if full_path not in matches:
                 os.remove(full_path)
 
-    
+    # Second pass to delete empty folders
+    tree = os.walk("node_modules", topdown=False)
+    for dirpath, dirname, filename in tree:
+        for name in dirname:
+            folder_path = os.path.join(dirpath, name)
+
+            if not os.listdir(folder_path):
+                shutil.rmtree(folder_path)
+        
     os.remove("files.out")
             
         
