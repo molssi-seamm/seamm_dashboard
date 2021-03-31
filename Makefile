@@ -1,4 +1,5 @@
-.PHONY: clean clean-test clean-pyc clean-build docs help environment
+MODULE := seamm_dashboard
+.PHONY: clean clean-test clean-pyc clean-build docs help environment tags
 .DEFAULT_GOAL := help
 define BROWSER_PYSCRIPT
 import os, webbrowser, sys
@@ -123,3 +124,7 @@ install: uninstall ## install the package to the active Python's site-packages
 
 uninstall: clean ## uninstall the package
 	pip uninstall --yes seamm-dashboard
+
+tags:
+	rm -f TAGS
+	find $(MODULE) -type f -name '*.py' -print0 | xargs -0 etags -a	
