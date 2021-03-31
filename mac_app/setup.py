@@ -7,32 +7,32 @@ Usage:
 
 from setuptools import setup
 
-APP = ['SEAMM Dashboard.py']
-APP_NAME = 'SEAMM Dashboard'
+APP = ["SEAMM Dashboard.py"]
+APP_NAME = "SEAMM Dashboard"
 DATA_FILES = []
 OPTIONS = {
-    'argv_emulation': False,
-    'iconfile': 'icons.icns',
+    "argv_emulation": False,
+    "iconfile": "icons.icns",
     # 'packages': ['numpy', 'pandas', 'Pmw'],
-    'plist': {
-        'CFBundleName': APP_NAME,
-        'CFBundleDisplayName': APP_NAME,
-        'CFBundleGetInfoString': "SEAMM Dashb",
-        'CFBundleIdentifier': "org.molssi.osx.seamm_dashboard",
-        'CFBundleVersion': "1.0",
-        'CFBundleShortVersionString': "1.0",
-        'NSHumanReadableCopyright': (
+    "plist": {
+        "CFBundleName": APP_NAME,
+        "CFBundleDisplayName": APP_NAME,
+        "CFBundleGetInfoString": "SEAMM Dashb",
+        "CFBundleIdentifier": "org.molssi.osx.seamm_dashboard",
+        "CFBundleVersion": "1.0",
+        "CFBundleShortVersionString": "1.0",
+        "NSHumanReadableCopyright": (
             u"Copyright © 2021, MOLSSI/Virginia Tech, All Rights Reserved"
         ),
-        'PyRuntimeLocations': [
-            '@executable_path/../conda-env/lib/libpython3.9.dylib',
-        ]
-    }
+        "PyRuntimeLocations": [
+            "@executable_path/../conda-env/lib/libpython3.9.dylib",
+        ],
+    },
 }
 
 setup(
     app=APP,
     data_files=DATA_FILES,
-    options={'py2app': OPTIONS},
-    setup_requires=['py2app'],
+    options={"py2app": OPTIONS},
+    setup_requires=["py2app"],
 )

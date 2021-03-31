@@ -561,7 +561,7 @@ parser.add_argument(
     ),
 )
 
-## Mail arguments - for flask mail
+# Mail arguments - for flask mail
 # https://pythonhosted.org/Flask-Mail/
 parser.add_argument(
     "--mail-server", default=configargparse.SUPPRESS, help=("" "default=localhost")

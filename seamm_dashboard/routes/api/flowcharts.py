@@ -73,7 +73,7 @@ def get_cytoscape(id, flowchartKeys=None):
 
     for node_number, node in enumerate(important_stuff["nodes"]):
         url = "#"
-        ## Build elements for cytoscape
+        # Build elements for cytoscape
         elements.append(
             {
                 "data": {

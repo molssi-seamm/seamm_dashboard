@@ -14,12 +14,11 @@ from flask_jwt_extended import (
 from .forms import LoginForm, ConfirmLogin, UpdateAccountInfoForm
 
 from seamm_dashboard import authorize, db
-from seamm_dashboard.models import User, UserSchema
+from seamm_dashboard.models import User, UserSchema, UserProjectAssociation
 
 from . import auth
 
 from seamm_dashboard import jwt
-from seamm_dashboard.models import User, UserProjectAssociation
 from seamm_dashboard.routes.api.auth import create_tokens
 
 from seamm_dashboard.routes.admin.forms import _validate_email
@@ -140,7 +139,8 @@ def my_account():
 @auth.route("/logout")
 def logout():
     """
-    Direct to blank page which sets local storage to log out all other tabs and redirects to main
+    Direct to blank page which sets local storage to log out all other tabs and
+    redirects to main
     """
     flash("You have been logged out.")
     response = make_response(render_template("logout.html"))

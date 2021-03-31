@@ -1,3 +1,4 @@
+import types
 import six
 
 from sqlalchemy import Column, ForeignKey, Integer, or_

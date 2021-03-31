@@ -20,9 +20,11 @@ __all__ = ["add_user", "get_users"]
 
 
 def _process_user_body(request_data, original_user_data=None):
-    """This function is a private internal function to process user data to get it in a format which can be added to the database.
+    """This function is a private internal function to process user data to get it in a
+    format which can be added to the database.
 
-    Takes request data in json and converts to user object. Returns 400 status if not valid.
+    Takes request data in json and converts to user object. Returns 400 status if not
+    valid.
     """
 
     username = request_data["username"]
@@ -55,8 +57,9 @@ def _process_user_body(request_data, original_user_data=None):
         user.roles = []
         user.groups = []
 
-        # Check if username exists. First we check if the name is in the database. If the name is in the database,
-        # this may be an update, so check if the supplied username is equal to the original user info.
+        # Check if username exists. First we check if the name is in the database. If
+        # the name is in the database, this may be an update, so check if the supplied
+        # username is equal to the original user info.
         if (
             User.query.filter_by(username=username).first() is not None
             and user.username != username

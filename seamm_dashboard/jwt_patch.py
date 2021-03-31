@@ -1,9 +1,11 @@
 """
-A patch so that we only need csrf tokens from flask-jwt-extended with specified routes.
+A patch so that we only need csrf tokens from flask-jwt-extended with specified
+routes.
 
 This allows two things:
     1. Using jwts on all routes to identify users
-    2. Using csrf tokens from the JWT on API routes, while front-end views use CSRF tokens which are part of flask-wtforms
+    2. Using csrf tokens from the JWT on API routes, while front-end views use CSRF
+       tokens which are part of flask-wtforms
 """
 
 

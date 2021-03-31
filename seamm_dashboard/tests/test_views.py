@@ -70,7 +70,8 @@ class TestLiveServer:
 
         if logged_in:
             self.log_in(chrome_driver)
-            # Should have three finished jobs, 1 flowchart, and 1 project when logged in.
+            # Should have three finished jobs, 1 flowchart, and 1 project when
+            # logged in.
             expected_values = "3 0 3 1 1".split()
 
         else:
@@ -168,7 +169,6 @@ class TestLiveServer:
 
         # Set up samples for comparison - we need the location of the job
         # which is in a temporary directory
-        dir_path = os.path.dirname(os.path.realpath(__file__))
         test_dir = os.path.realpath(os.path.join(project_directory, "Job_000001"))
 
         num_files = len(os.listdir(test_dir))
@@ -283,14 +283,14 @@ class TestLiveServer:
             file_contents_split
         ), "initial load failed."
 
-        ## Update file on disk
+        # Update file on disk
         with open(test_file, "a+") as f:
             f.write("Appending this line")
 
-        ## Update expected text
+        # Update expected text
         file_contents_split += "Appending this line".split()
 
-        ## Click refresh button
+        # Click refresh button
         refresh_button = chrome_driver.find_element_by_id("refresh")
         refresh_button.click()
         time.sleep(0.25)

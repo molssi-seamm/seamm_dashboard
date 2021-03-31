@@ -1,4 +1,4 @@
-from .models import (
+from .models import (  # noqa: F401
     Job,
     Flowchart,
     Project,
@@ -11,7 +11,7 @@ from .models import (
     GroupProjectAssociation,
     GroupFlowchartAssociation,
 )
-from .models import (
+from .models import (  # noqa: F401
     JobSchema,
     FlowchartSchema,
     ProjectSchema,
@@ -19,4 +19,4 @@ from .models import (
     GroupSchema,
     RoleSchema,
 )
-from .import_jobs import import_jobs
+from .import_jobs import import_jobs  # noqa: F401

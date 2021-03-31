@@ -14,7 +14,8 @@ import pytest
 def test_delete_job(admin_client, project_directory):
     """Check delete method of api/jobs/{jobID}
 
-    This is currently XFAIL. With jobs being a primary key in association tables, this is more complicated to delete
+    This is currently XFAIL. With jobs being a primary key in association tables,
+    this is more complicated to delete
     """
 
     csrf_token = admin_client[1]
@@ -36,7 +37,6 @@ def test_delete_job(admin_client, project_directory):
 def test_get_users(admin_client):
     """Check get method of api/users on admin client"""
 
-    csrf_token = admin_client[1]
     admin_client = admin_client[0]
 
     response = admin_client.get("api/users")

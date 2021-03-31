@@ -1,7 +1,6 @@
 import os
 import logging
 import logging.handlers
-from datetime import datetime
 
 
 def setup_logging(datastore, options):
