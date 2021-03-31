@@ -1,5 +1,5 @@
 MODULE := seamm_dashboard
-.PHONY: clean clean-test clean-pyc clean-build docs help environment tags
+.PHONY: clean clean-test clean-pyc clean-build docs help environment tags update-nodejs
 .DEFAULT_GOAL := help
 define BROWSER_PYSCRIPT
 import os, webbrowser, sys
@@ -50,11 +50,11 @@ clean-test: ## remove test and coverage artifacts
 	find . -name '.pytype' -exec rm -fr {} +
 
 lint: ## check style with black and flake8
-	black --check --diff .
-	flake8 .
+	black --check --diff *.py devtools mac_app/*.py $(MODULE)
+	flake8 *.py devtools mac_app/*.py $(MODULE)
 
 format: ## reformat with with yapf and isort
-	black .
+	black *.py devtools mac_app/*.py $(MODULE)
 
 typing: ## check typing
 	pytype $(MODULE)
@@ -95,6 +95,8 @@ finish_dashboard: ## finish create the environment for running the dashboard
 	@echo 'Installing the Javascript, which will also take a couple minutes!'
 	@echo ''
 	@cd seamm_dashboard/static && npm install
+	@ rm -f seamm_dashboard/static/package-lock.json
+	@cd seamm_dashboard/static && python only_needed_files.py
 	@echo ''
 	@echo 'To use the environment, type'
 	@echo '   conda activate seamm-dashboard'
@@ -119,11 +121,28 @@ dist: clean ## builds source and wheel package
 	python setup.py bdist_wheel
 	ls -l dist
 
-install: uninstall ## install the package to the active Python's site-packages
+install: uninstall nodejs ## install the package to the active Python's site-packages
 	python setup.py install
 
 uninstall: clean ## uninstall the package
 	pip uninstall --yes seamm-dashboard
+
+nodejs: seamm_dashboard/static/node_modules ## install the node.js files if they are missing
+
+seamm_dashboard/static/node_modules:
+	@echo 'Installing the Javascript, which will take a couple minutes!'
+	@echo ''
+	@cd seamm_dashboard/static && npm install
+	@ rm -f seamm_dashboard/static/package-lock.json
+	@cd seamm_dashboard/static && python only_needed_files.py
+
+update-nodejs: ## reinstall the node.js files
+	@rm -fr seamm_dashboard/static/node_module
+	@echo 'Reinstalling the Javascript, which will take a couple minutes!'
+	@echo ''
+	@cd seamm_dashboard/static && npm install
+	@ rm -f seamm_dashboard/static/package-lock.json
+	@cd seamm_dashboard/static && python only_needed_files.py
 
 tags:
 	rm -f TAGS

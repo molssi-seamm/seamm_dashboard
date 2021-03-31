@@ -15,7 +15,9 @@ from seamm_dashboard.models import (
     UserJobAssociation,
 )
 from selenium import webdriver
-import chromedriver_binary  # Adds chromedriver binary to path
+
+# Adds chromedriver binary to path:
+import chromedriver_binary  # noqa: F401
 
 
 def _get_cookie_from_response(response, cookie_name):

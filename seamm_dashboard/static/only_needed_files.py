@@ -44,11 +44,5 @@ if __name__ == "__main__":
 
             if not os.listdir(folder_path):
                 shutil.rmtree(folder_path)
-        
+
     os.remove("files.out")
-            
-        
-
-
-
-

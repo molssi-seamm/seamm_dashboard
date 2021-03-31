@@ -41,8 +41,9 @@ class UserFlowchartAssociation(db.Model, UserFlowchartMixin):
 class UserProjectAssociation(db.Model, UserProjectMixin):
     def __setattr__(self, name, value):
         """
-        Change behavior of set attribute so that when a user gets permissions for a project,
-        they get updated permissions for all jobs and flowcharts within the project.
+        Change behavior of set attribute so that when a user gets permissions for a
+        project, they get updated permissions for all jobs and flowcharts within the
+        project.
         """
         from seamm_dashboard import db
 
@@ -95,8 +96,9 @@ class GroupJobAssociation(db.Model, GroupJobMixin):
 class GroupProjectAssociation(db.Model, GroupProjectMixin):
     def __setattr__(self, name, value):
         """
-        Change behavior of set attribute so that when a group gets permissions for a project,
-        they get updated permissions for all jobs and flowcharts within the project.
+        Change behavior of set attribute so that when a group gets permissions for a
+        project, they get updated permissions for all jobs and flowcharts within the
+        project.
         """
         from seamm_dashboard import db
 

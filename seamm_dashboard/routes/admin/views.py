@@ -216,7 +216,7 @@ def _process_group_form_data(form):
         db.session.add(assoc)
         db.session.commit()
 
-    ## Set owned project permissions
+    # Set owned project permissions
     owned_projects = Project.query.filter_by(group_id=group.id)
     for project in owned_projects:
         # Zero permissions
@@ -341,7 +341,8 @@ def manage_group(group_id):
             if Group.query.filter(Group.name == form.group_name.data).first():
                 form.group_name.validators.append(_validate_group)
 
-        # use validate instead of validate_on_submit so we can add our own validators (lines above)
+        # use validate instead of validate_on_submit so we can add our own validators
+        # (lines above)
         if form.validate():
 
             _process_group_form_data(form)
@@ -380,7 +381,8 @@ def create_user():
 
         if isinstance(processed_form, Response):
             flash(
-                f"Creating the user failed because of problems with the input data. Please check the inputs and try again."
+                "Creating the user failed because of problems with the input data. "
+                "Please check the inputs and try again."
             )
             return redirect(url_for("admin.create_user"))
 
@@ -447,7 +449,8 @@ def manage_user(user_id):
             if User.query.filter(User.email == form.email.data).first():
                 form.email.validators.append(_validate_email)
 
-        # use validate instead of validate_on_submit so we can add our own validators (lines above)
+        # use validate instead of validate_on_submit so we can add our own validators
+        # (lines above)
         if form.validate():
 
             user = _process_user_body(form.data, original_user_data=user)
@@ -475,7 +478,7 @@ def delete_user(user_id):
     user_remove = User.query.filter(User.id == user_id).one()
 
     if user_remove.id == get_current_user().id:
-        flash(f"You cannot remove your own account from the dashboard.")
+        flash("You cannot remove your own account from the dashboard.")
         return render_template("admin/manage_users.html")
 
     form = DeleteUserForm()

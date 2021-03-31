@@ -23,7 +23,8 @@ class ConfirmLogin(FlaskForm):
 
 class UpdateAccountInfoForm(FlaskForm):
     """
-    A form a user uses to update their own information. Users cannot change their username.
+    A form a user uses to update their own information. Users cannot change their
+    username.
     """
 
     password2 = PasswordField("Confirm password", validators=[_password_none_or_usual])

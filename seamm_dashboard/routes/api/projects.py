@@ -54,7 +54,8 @@ def get_project(id):
 @jwt_required(optional=True)
 def get_project_jobs(id):
     """
-    Function for api endpoint api/projects/{id}/jobs. Get jobs associated with a project.
+    Function for api endpoint api/projects/{id}/jobs. Get jobs associated with a
+    project.
 
     Parameters
     ----------

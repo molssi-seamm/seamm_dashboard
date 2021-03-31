@@ -7,7 +7,7 @@ from wtforms import (
     BooleanField,
 )
 from wtforms.fields.html5 import EmailField
-from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo, Email
+from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
 from wtforms import ValidationError
 from seamm_dashboard.models import User, Group
 
@@ -15,16 +15,17 @@ from seamm_dashboard.models import User, Group
 def _validate_group(self, field):
     if Group.query.filter(Group.name == field.data).first():
         raise ValidationError(
-            f"Group name '{field.data}' already in use. Please pick a different group name."
+            f"Group name '{field.data}' already in use. Please pick a different group "
+            "name."
         )
 
 
 def _validate_user_delete(self, field):
-    raise ValidationError(f"Input username does not match user ID.")
+    raise ValidationError("Input username does not match user ID.")
 
 
 def _validate_group_delete(self, field):
-    raise ValidationError(f"Input group name does not match group ID.")
+    raise ValidationError("Input group name does not match group ID.")
 
 
 def _validate_username(self, field):
@@ -37,7 +38,8 @@ def _validate_username(self, field):
 def _validate_email(self, field):
     if User.query.filter(User.email == field.data).first():
         raise ValidationError(
-            f"Email address {field.data} already in use. Please pick a different email address."
+            f"Email address {field.data} already in use. Please pick a different email "
+            "address."
         )
 
 

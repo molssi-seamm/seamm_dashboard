@@ -52,9 +52,11 @@ def get_jobs(createdSince=None, createdBefore=None, limit=None):
     Parameters
     ----------
     createdSince: str
-        Return jobs created after this date. Must be in format M-D-YYYY where M all numbers are integers.
+        Return jobs created after this date. Must be in format M-D-YYYY where M all
+        numbers are integers.
     createdBefore:str
-        Return jobs created before this date. Must be in format M-D-YYYY where M all numbers are integers.
+        Return jobs created before this date. Must be in format M-D-YYYY where M all
+        numbers are integers.
     limit: int
         The maximum number of jobs to return.
 
@@ -288,7 +290,7 @@ def get_job(id):
         return Response(status=404)
 
     if not authorize.read(job):
-        return Response(f"You are not authorized to view this content.", status=401)
+        return Response("You are not authorized to view this content.", status=401)
 
     job_schema = JobSchema(many=False)
     return job_schema.dump(job), 200
@@ -337,7 +339,8 @@ def delete_job(id):
     """
     Function for delete method of api endpoint api/jobs/{id}
 
-    This api route removes the job from the DB and deletes the associated job files from disk
+    This api route removes the job from the DB and deletes the associated job files
+    from disk
 
     Parameters
     ----------
@@ -372,7 +375,8 @@ def delete_job(id):
 @jwt_required(optional=True)
 def get_job_files(id, file_path=None):
     """
-    Function for get method of api endpoint api/jobs/{id}/files. If the file_path parameter is used, this endpoint will send the file which is indicated by the path.
+    Function for get method of api endpoint api/jobs/{id}/files. If the file_path
+    parameter is used, this endpoint will send the file which is indicated by the path.
 
     Parameters
     ----------
