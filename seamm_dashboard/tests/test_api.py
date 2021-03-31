@@ -115,4 +115,3 @@ def test_get_project_not_found(client):
     response = client.get("api/projects/3")
 
     assert response.status_code == 404
-

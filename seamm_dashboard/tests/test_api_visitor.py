@@ -2,6 +2,7 @@
 Tests for a visitor
 """
 
+
 def test_get_jobs(visitor_client):
     """API endpoint api/jobs"""
     auth_client = visitor_client[0]

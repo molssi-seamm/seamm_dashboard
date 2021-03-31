@@ -6,7 +6,14 @@ from dateutil import parser
 
 from seamm_dashboard import create_app, db
 from seamm_dashboard.models.util import process_flowchart
-from seamm_dashboard.models import Job, Flowchart, Project, User, Role, UserJobAssociation
+from seamm_dashboard.models import (
+    Job,
+    Flowchart,
+    Project,
+    User,
+    Role,
+    UserJobAssociation,
+)
 from selenium import webdriver
 import chromedriver_binary  # Adds chromedriver binary to path
 
@@ -66,7 +73,9 @@ def app(project_directory):
     user_role = Role.query.filter_by(name="user").one_or_none()
 
     # Create a sample user.
-    test_user = User(username="sample_user", password="sample_password", roles=[user_role])
+    test_user = User(
+        username="sample_user", password="sample_password", roles=[user_role]
+    )
     test_admin = User(username="admin_user", password="iamadmin", roles=[admin_role])
 
     # Fill in some data
@@ -123,13 +132,15 @@ def app(project_directory):
 
     # Add visitor and give read access to a job
     visitor = User(username="visitor", password="visitor", id=10)
-    a = UserJobAssociation(permissions=["read"], resource_id=job2.id, entity_id=visitor.id)
+    a = UserJobAssociation(
+        permissions=["read"], resource_id=job2.id, entity_id=visitor.id
+    )
     a.job = job1
     visitor.special_jobs.append(a)
     db.session.add(a)
     db.session.add(visitor)
-    #assert False, job1.special_users.all()
-    #db.session.commit()
+    # assert False, job1.special_users.all()
+    # db.session.commit()
 
     flowchart = Flowchart(**flowchart_data)
     db.session.add(test_user)
@@ -175,6 +186,7 @@ def auth_client(client):
     yield auth_client, csrf_token
 
     auth_client.get("api/auth/token/remove", follow_redirects=True)
+
 
 @pytest.fixture(scope="module")
 def visitor_client(client):

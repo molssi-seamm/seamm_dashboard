@@ -15,7 +15,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 
 from flask_authorize import Authorize
-from .flask_authorize_patch import Authorizer
 
 from .jwt_patch import flask_jwt_extended
 
@@ -148,7 +147,6 @@ def create_app(config_name=None):
 
         app.register_error_handler(404, errors.not_found)
 
-
     # init
     mail.init_app(app)
     cors.init_app(app)
@@ -182,7 +180,8 @@ def create_app(config_name=None):
 
     # Add some default roles to the dashboard
     with app.app_context():
-        from .models import Role, User, Job, Project, Group
+        from .models import Role
+
         role_names = ["user", "group manager", "admin"]
 
         for role_name in role_names:
@@ -191,7 +190,6 @@ def create_app(config_name=None):
                 role = Role(name=role_name)
                 db.session.add(role)
                 db.session.commit()
-
 
     logger.info("")
     logger.info("Final configuration:")
@@ -209,9 +207,9 @@ def create_app(config_name=None):
             n_projects, n_added_projects, n_jobs, n_added_jobs = import_jobs(
                 os.path.join(options.datastore, "projects")
             )
-                
+
             db.session.commit()
-            
+
         t1 = time.perf_counter()
         logger.info(
             "Checked {} jobs and {} projects in {:.2f} s.".format(

@@ -8,7 +8,6 @@ from flask import render_template, redirect, url_for, flash, Response, request
 
 from flask_jwt_extended import (
     jwt_required,
-    jwt_required,
     get_current_user,
 )
 

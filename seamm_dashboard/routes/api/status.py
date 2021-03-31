@@ -9,10 +9,7 @@ from sqlalchemy import and_
 
 from seamm_dashboard import authorize
 
-from flask_jwt_extended import (
-    get_current_user,
-    jwt_required
-)
+from flask_jwt_extended import get_current_user, jwt_required
 
 logger = logging.getLogger("__file__")
 
