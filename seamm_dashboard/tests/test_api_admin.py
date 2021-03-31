@@ -8,12 +8,13 @@ import json
 
 import pytest
 
+
 @pytest.mark.skip
 @pytest.mark.xfail
 def test_delete_job(admin_client, project_directory):
     """Check delete method of api/jobs/{jobID}
 
-        This is currently XFAIL. With jobs being a primary key in association tables, this is more complicated to delete
+    This is currently XFAIL. With jobs being a primary key in association tables, this is more complicated to delete
     """
 
     csrf_token = admin_client[1]
@@ -55,7 +56,7 @@ def test_add_user(admin_client):
     new_user = {
         "username": "waffles",
         "password": "waffles!",
-        "roles": ["group manager"]
+        "roles": ["group manager"],
     }
 
     response = admin_client.post(

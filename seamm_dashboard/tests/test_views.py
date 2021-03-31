@@ -409,7 +409,9 @@ class TestLiveServer:
 
         # chrome_driver.get_screenshot_as_file(f'updated_user.png')
 
-        edit_button = chrome_driver.find_elements_by_css_selector('#user-information-button .btn')[0]
+        edit_button = chrome_driver.find_elements_by_css_selector(
+            "#user-information-button .btn"
+        )[0]
         edit_button.click()
 
         # chrome_driver.get_screenshot_as_file(f'updated_user_after_after_click.png')
@@ -426,12 +428,10 @@ class TestLiveServer:
         email_field = chrome_driver.find_element_by_id("email")
         email_field.send_keys("changed_address@email.com")
 
-        #chrome_driver.get_screenshot_as_file(f'updated_user.png')
+        # chrome_driver.get_screenshot_as_file(f'updated_user.png')
 
         button = chrome_driver.find_element_by_id("submit")
         button.click()
 
         alert = chrome_driver.find_element_by_class_name("alert-success")
-        #chrome_driver.get_screenshot_as_file(f'user_table.png')
-
-
+        # chrome_driver.get_screenshot_as_file(f'user_table.png')

@@ -7,7 +7,14 @@ from flask import Response
 from flask_jwt_extended import jwt_required
 
 from seamm_dashboard import db, authorize
-from seamm_dashboard.models import User, UserSchema, Role, RoleSchema, Group, GroupSchema
+from seamm_dashboard.models import (
+    User,
+    UserSchema,
+    Role,
+    RoleSchema,
+    Group,
+    GroupSchema,
+)
 
 __all__ = ["add_user", "get_users"]
 

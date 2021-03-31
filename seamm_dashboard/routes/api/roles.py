@@ -7,6 +7,7 @@ from flask_jwt_extended import jwt_required
 from seamm_dashboard import authorize
 from seamm_dashboard.models import Role, RoleSchema
 
+
 @jwt_required(optional=True)
 @authorize.has_role("admin", "group manager")
 def get_roles():

@@ -21,10 +21,10 @@ def jobs_list():
 @jwt_required(optional=True)
 def job_details(id):
     job = Job.query.get(id)
-    
+
     if not authorize.read(job):
         return render_template("401.html")
-    
+
     edit_job = authorize.update(job)
 
     own_string = "You do not own this job."
@@ -36,7 +36,13 @@ def job_details(id):
     base_url = url_for("main.index")
     edit_url = base_url + f"jobs/{id}/edit"
 
-    return render_template("jobs/job_report.html", edit_job=edit_job, job=job, edit_url=edit_url, own_string=own_string)
+    return render_template(
+        "jobs/job_report.html",
+        edit_job=edit_job,
+        job=job,
+        edit_url=edit_url,
+        own_string=own_string,
+    )
 
 
 @jobs.route("/jobs/<job_id>/edit", methods=["GET", "POST"])
@@ -61,9 +67,11 @@ def edit_job(job_id):
         flash("Job updated successfully.", "successs")
 
         return redirect(job_url)
-    
+
     elif request.method == "GET":
         form.name.data = job.title
         form.notes.data = job.description
-            
-    return render_template("jobs/edit_job.html", title=f"Edit Job {job_id}", form=form, back_url=job_url)
+
+    return render_template(
+        "jobs/edit_job.html", title=f"Edit Job {job_id}", form=form, back_url=job_url
+    )

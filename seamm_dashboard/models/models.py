@@ -55,7 +55,7 @@ class UserProjectAssociation(db.Model, UserProjectMixin):
                     assoc = UserJobAssociation.query.filter_by(
                         entity_id=self.entity_id, resource_id=job.id
                     ).one_or_none()
-                    
+
                     if assoc:
                         assoc.permissions = value
                     else:
