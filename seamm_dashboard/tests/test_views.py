@@ -389,7 +389,8 @@ class TestLiveServer:
         button = chrome_driver.find_element_by_id("submit")
         button.click()
 
-        alert = chrome_driver.find_element_by_class_name("alert-success")
+        # Check that alert is found. If not found will result in error.
+        chrome_driver.find_element_by_class_name("alert-success")
 
         table_rows = chrome_driver.find_element_by_id(
             "users"
@@ -433,5 +434,5 @@ class TestLiveServer:
         button = chrome_driver.find_element_by_id("submit")
         button.click()
 
-        alert = chrome_driver.find_element_by_class_name("alert-success")
+        chrome_driver.find_element_by_class_name("alert-success")
         # chrome_driver.get_screenshot_as_file(f'user_table.png')
