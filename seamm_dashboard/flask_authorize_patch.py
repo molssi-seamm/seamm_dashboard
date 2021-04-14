@@ -14,6 +14,7 @@ from flask_authorize.plugin import (
     user_is_allowed,
     has_permission,
     user_has_role,
+    user_in_group,
 )
 
 from flask import current_app
