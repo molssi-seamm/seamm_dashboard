@@ -6,16 +6,17 @@ dependencies:
   - nodejs
   - pip
   - pip:
+    - email-validator
     - flask-authorize
-    - flask-jwt-extended==4.0.2
-    - email_validator
+    - flask-jwt-extended>=4.1.0
     - configargparse
     - connexion[swagger-ui]
     - fasteners
     - flask
-    - flask-bootstrap4
+    - flask_bootstrap
     - flask_cors
     - flask_debugtoolbar
+    - flask_login
     - flask_mail
     - flask_marshmallow
     - flask_moment
@@ -26,10 +27,15 @@ dependencies:
     - python_dateutil
     - requests
     - selenium
-    - sqlalchemy<1.4
+    - sqlalchemy
     - wtforms
+    - flask-authorize
     # For testing:
     - pytest
     - pytest-selenium
     - pytest-flask
     - pytest-cov
+    # For development
+    - black
+    - flake8
+    - twine

@@ -9,7 +9,7 @@ dependencies:
   - pip:
     - email-validator
     - flask-authorize
-    - flask-jwt-extended==4.0.2
+    - flask-jwt-extended>=4.1.0
     - configargparse
     - connexion[swagger-ui]
     - fasteners
@@ -28,8 +28,9 @@ dependencies:
     - python_dateutil
     - requests
     - selenium
-    - sqlalchemy<1.4
+    - sqlalchemy
     - wtforms
+    - flask-authorize
     # For testing:
     - pytest
     - pytest-selenium

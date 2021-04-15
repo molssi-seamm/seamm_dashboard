@@ -22,25 +22,21 @@ from flask import current_app
 import flask_jwt_extended
 
 
-def _decode_jwt_from_cookies(request_type):
-    if request_type == "access":
-        cookie_key = config.access_cookie_name
-        csrf_header_key = config.access_csrf_header_name
-        csrf_field_key = config.access_csrf_field_name
-    else:
+def _decode_jwt_from_cookies(refresh):
+    if refresh:
         cookie_key = config.refresh_cookie_name
         csrf_header_key = config.refresh_csrf_header_name
         csrf_field_key = config.refresh_csrf_field_name
+    else:
+        cookie_key = config.access_cookie_name
+        csrf_header_key = config.access_csrf_header_name
+        csrf_field_key = config.access_csrf_field_name
 
     encoded_token = request.cookies.get(cookie_key)
     if not encoded_token:
         raise NoAuthorizationError('Missing cookie "{}"'.format(cookie_key))
 
-    if (
-        config.csrf_protect
-        and request.method in config.csrf_request_methods
-        and current_app.config["JWT_CSRF_ACCESS_PATH"] in request.url
-    ):
+    if config.csrf_protect and request.method in config.csrf_request_methods and current_app.config["JWT_CSRF_ACCESS_PATH"] in request.url:
         csrf_value = request.headers.get(csrf_header_key, None)
         if not csrf_value and config.csrf_check_form:
             csrf_value = request.form.get(csrf_field_key, None)
