@@ -6,6 +6,8 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from marshmallow_sqlalchemy.fields import Related, Nested
+from marshmallow.fields import Pluck
+
 
 # Patched flask authorize
 from seamm_dashboard.flask_authorize_patch import (
@@ -364,12 +366,29 @@ class JobSchema(SQLAlchemyAutoSchema):
     )
 
 
+class RoleSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        include_fk = True
+        include_relationships = True
+        model = Role
+
+
+# Temporarily create so that it exists for UserSchema
+class GroupSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = Group
+
+
 class UserSchema(SQLAlchemyAutoSchema):
     class Meta:
         include_fk = True
         include_relationships = True
         model = User
         exclude = ("password_hash",)
+
+    roles = Pluck(RoleSchema, field_name="name", many=True)
+
+    groups = Pluck(GroupSchema, field_name="name", many=True)
 
 
 class GroupSchema(SQLAlchemyAutoSchema):
@@ -387,10 +406,3 @@ class GroupSchema(SQLAlchemyAutoSchema):
             many=True,
         )
     )
-
-
-class RoleSchema(SQLAlchemyAutoSchema):
-    class Meta:
-        include_fk = True
-        include_relationships = True
-        model = Role
