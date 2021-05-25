@@ -15,10 +15,10 @@ import urllib.parse
 
 from marshmallow import ValidationError
 from sqlalchemy import and_
-from flask import send_from_directory, Response
+from flask import send_from_directory, Response, current_app
 from flask_jwt_extended import jwt_required
 
-from seamm_dashboard import db, datastore, authorize
+from seamm_dashboard import datastore, authorize
 from seamm_dashboard.models import User, Project, Job, JobSchema, Flowchart
 from seamm_dashboard.models import FlowchartSchema
 
@@ -163,7 +163,7 @@ def add_job(body):
 
     # Get the project
     project_name = body.pop("project")
-    project = db.session.query(Project).filter_by(name=project_name).one_or_none()
+    project = current_app.db.query(Project).filter_by(name=project_name).one_or_none()
     if project is None:
         return "There is no project '{}'".format(project_name), 403
 
@@ -171,7 +171,7 @@ def add_job(body):
 
     # Get the user...
     username = body.pop("username")
-    user = db.session.query(User).filter_by(username=username).one_or_none()
+    user = current_app.db.query(User).filter_by(username=username).one_or_none()
     if user is None:
         return "User '{}' is not registered".format(username), 403
     user_id = user.id
@@ -194,25 +194,25 @@ def add_job(body):
     # Validate and deserialize the flowchart data
     flowchart_schema = FlowchartSchema(many=False)
     try:
-        flowchart_schema.load(flowchart_data, session=db.session)
+        flowchart_schema.load(flowchart_data, session=current_app.db)
     except ValidationError as err:
         return err.messages, 422
 
     # See if it already in the db, if not, add it
     flowchart_is_new = False
     flowchart = (
-        db.session.query(Flowchart).filter_by(id=flowchart_data["id"]).one_or_none()
+        current_app.db.query(Flowchart).filter_by(id=flowchart_data["id"]).one_or_none()
     )
     if flowchart:
         if project not in flowchart.projects:
             flowchart.projects.append(project)
-            db.session.commit()
+            current_app.db.commit()
 
     else:
         flowchart = Flowchart(**flowchart_data)
         flowchart.projects.append(project)
-        db.session.add(flowchart)
-        db.session.commit()
+        current_app.db.add(flowchart)
+        current_app.db.commit()
         flowchart_is_new = True
     flowchart_id = flowchart.id
 
@@ -222,7 +222,7 @@ def add_job(body):
 
     job_schema = JobSchema(many=False)
     try:
-        job_schema.load(body, session=db.session)
+        job_schema.load(body, session=current_app.db)
     except ValidationError as err:
         logger.error("ValidationError (job): {}".format(err.messages))
         logger.info("   valid data: {}".format(err.valid_data))
@@ -242,10 +242,10 @@ def add_job(body):
     job.path = str(directory)
 
     # Finally add the job to the database.
-    db.session.add(job)
+    current_app.db.add(job)
     job.projects.append(project)
 
-    db.session.commit()
+    current_app.db.commit()
 
     path = directory / "flowchart.flow"
     with path.open("w") as fd:
@@ -253,7 +253,7 @@ def add_job(body):
     if flowchart_is_new:
         flowchart.path = str(path)
 
-    db.session.commit()
+    current_app.db.commit()
 
     # Write the json data file for the job
     data = {
@@ -328,7 +328,7 @@ def update_job(id, body):
                 value = None
         setattr(job, key, value)
 
-    db.session.commit()
+    current_app.db.commit()
 
     return Response(status=201)
 
@@ -366,8 +366,8 @@ def delete_job(id):
             shutil.rmtree(job_path)
 
         # Remove job info from DB
-        db.session.delete(job)
-        db.session.commit()
+        current_app.db.delete(job)
+        current_app.db.commit()
 
         return Response(status=200)
 

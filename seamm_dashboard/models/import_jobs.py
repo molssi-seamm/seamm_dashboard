@@ -7,10 +7,10 @@ import logging
 import os
 import sqlite3
 
+from flask import current_app
+
 from . import Flowchart, Job, Project
 from .util import process_flowchart, process_job, file_owner
-
-from seamm_dashboard import db
 
 logger = logging.getLogger(__name__)
 
@@ -90,18 +90,18 @@ def add_flowchart(flowchart_path, project):
     flowchart_info = process_flowchart(flowchart_path)
 
     flowchart = (
-        db.session.query(Flowchart).filter_by(id=flowchart_info["id"]).one_or_none()
+        current_app.db.query(Flowchart).filter_by(id=flowchart_info["id"]).one_or_none()
     )
 
     if flowchart is None:
         user, group = file_owner(flowchart_path)
         flowchart = Flowchart(owner_id=user, group_id=group, **flowchart_info)
         flowchart.projects.append(project)
-        db.session.add(flowchart)
-        db.session.commit()
+        current_app.db.add(flowchart)
+        current_app.db.commit()
     elif project not in flowchart.projects:
         flowchart.projects.append(project)
-        db.session.commit()
+        current_app.db.commit()
 
     return flowchart
 
@@ -128,7 +128,7 @@ def add_job(job_path, job_name, project):
         flowchart_path = job_info.pop("flowchart_path")
 
         # Check if job is in DB
-        found = db.session.query(Job).filter_by(path=job_info["path"]).one_or_none()
+        found = current_app.db.query(Job).filter_by(path=job_info["path"]).one_or_none()
 
         if found is None:
             user, group = file_owner(job_path)
@@ -137,8 +137,8 @@ def add_job(job_path, job_name, project):
 
             add_flowchart(flowchart_path, project)
 
-            db.session.add(job)
-            db.session.commit()
+            current_app.db.add(job)
+            current_app.db.commit()
             return job, True
         else:
             return found, False
@@ -156,7 +156,7 @@ def add_project(project_path, project_name):
 
     # Check if in DB
     found = (
-        db.session.query(Project)
+        current_app.db.query(Project)
         .filter_by(name=project_name, path=project_path)
         .one_or_none()
     )
@@ -166,8 +166,8 @@ def add_project(project_path, project_name):
         project = Project(
             path=project_path, name=project_name, owner_id=user, group_id=group
         )
-        db.session.add(project)
-        db.session.commit()
+        current_app.db.add(project)
+        current_app.db.commit()
         return project, True
     else:
         return found, False

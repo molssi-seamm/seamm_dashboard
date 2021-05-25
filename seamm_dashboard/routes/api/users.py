@@ -3,10 +3,10 @@ API calls for users (creating, logging in, logging out)
 
 """
 
-from flask import Response
+from flask import Response, current_app
 from flask_jwt_extended import jwt_required
 
-from seamm_dashboard import db, authorize
+from seamm_dashboard import authorize
 from seamm_dashboard.models import (
     User,
     UserSchema,
@@ -117,8 +117,8 @@ def add_user(body):
     if isinstance(get_data, Response):
         return get_data
 
-    db.session.add(get_data)
-    db.session.commit()
+    current_app.db.add(get_data)
+    current_app.db.commit()
 
     return get_data.id, 201
 

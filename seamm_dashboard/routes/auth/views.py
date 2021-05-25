@@ -1,6 +1,14 @@
 import logging
 
-from flask import render_template, flash, make_response, request, redirect, url_for
+from flask import (
+    render_template,
+    flash,
+    make_response,
+    request,
+    redirect,
+    url_for,
+    current_app,
+)
 
 from flask_jwt_extended import (
     set_access_cookies,
@@ -13,7 +21,7 @@ from flask_jwt_extended import (
 
 from .forms import LoginForm, ConfirmLogin, UpdateAccountInfoForm
 
-from seamm_dashboard import authorize, db
+from seamm_dashboard import authorize
 from seamm_dashboard.models import User, UserSchema, UserProjectAssociation
 
 from . import auth
@@ -123,8 +131,8 @@ def my_account():
             if form.password:
                 current_user.password = form.password.data
 
-            db.session.add(current_user)
-            db.session.commit()
+            current_app.db.add(current_user)
+            current_app.db.commit()
 
             flash("Your account has been updated.")
 

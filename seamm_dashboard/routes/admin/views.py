@@ -4,7 +4,15 @@ Admin views
 
 from copy import deepcopy
 
-from flask import render_template, redirect, url_for, flash, Response, request
+from flask import (
+    render_template,
+    redirect,
+    url_for,
+    flash,
+    Response,
+    request,
+    current_app,
+)
 
 from flask_jwt_extended import (
     jwt_required,
@@ -27,7 +35,7 @@ from wtforms import BooleanField
 
 from . import admin
 
-from seamm_dashboard import db, authorize
+from seamm_dashboard import authorize
 from seamm_dashboard.models import (
     Role,
     Group,
@@ -75,8 +83,8 @@ def _process_user_permissions(filled_form, user):
         else:
             assoc.permissions = permission
 
-        db.session.add(assoc)
-        db.session.commit()
+        current_app.db.add(assoc)
+        current_app.db.commit()
 
 
 def _bind_user_projects_to_form(form, projects, user=None, new=True):
@@ -179,8 +187,8 @@ def _process_group_form_data(form):
     else:
         group.users = users
 
-    db.session.add(group)
-    db.session.commit()
+    current_app.db.add(group)
+    current_app.db.commit()
 
     permissions_dict = {}
 
@@ -213,8 +221,8 @@ def _process_group_form_data(form):
         else:
             assoc.permissions = permission
 
-        db.session.add(assoc)
-        db.session.commit()
+        current_app.db.add(assoc)
+        current_app.db.commit()
 
     # Set owned project permissions
     owned_projects = Project.query.filter_by(group_id=group.id)
@@ -223,8 +231,8 @@ def _process_group_form_data(form):
         perm = project.permissions
         perm["group"] = []
         project.set_permissions(perm)
-        db.session.add(project)
-        db.session.commit()
+        current_app.db.add(project)
+        current_app.db.commit()
 
     ownedproject_keys = [
         x for x in form.data.keys() if "ownedproject" in x if form.data[x] is True
@@ -240,8 +248,8 @@ def _process_group_form_data(form):
         perm = deepcopy(project.permissions)
         perm["group"].append(permission)
         project.set_permissions(perm)
-        db.session.add(project)
-        db.session.commit()
+        current_app.db.add(project)
+        current_app.db.commit()
 
 
 @admin.route("/admin/manage_users")
@@ -347,7 +355,7 @@ def manage_group(group_id):
 
             _process_group_form_data(form)
 
-            db.session.commit()
+            current_app.db.commit()
             flash(f"The group {form.data['group_name']} has been successfully updated.")
             return render_template("admin/manage_groups.html")
 
@@ -387,8 +395,8 @@ def create_user():
             return redirect(url_for("admin.create_user"))
 
         else:
-            db.session.add(processed_form)
-            db.session.commit()
+            current_app.db.add(processed_form)
+            current_app.db.commit()
 
             _process_user_permissions(form, processed_form)
 
@@ -454,8 +462,8 @@ def manage_user(user_id):
         if form.validate():
 
             user = _process_user_body(form.data, original_user_data=user)
-            db.session.add(user)
-            db.session.commit()
+            current_app.db.add(user)
+            current_app.db.commit()
             flash(f"The user {form.data['username']} has been successfully updated.")
             return render_template("admin/manage_users.html")
 
@@ -497,8 +505,8 @@ def delete_user(user_id):
             flash("The input username did not match the requested user.")
 
         if form.validate():
-            db.session.delete(specified_user)
-            db.session.commit()
+            current_app.db.delete(specified_user)
+            current_app.db.commit()
             flash(f"User {specified_user.username} removed from the dashboard.")
 
             return render_template("admin/manage_users.html")
@@ -524,8 +532,8 @@ def delete_group(group_id):
             flash("The input group name did not match the requested group.")
 
         if form.validate():
-            db.session.delete(specified_group)
-            db.session.commit()
+            current_app.db.delete(specified_group)
+            current_app.db.commit()
             flash(f"Group {specified_group.name} removed from the dashboard.")
 
             return render_template("admin/manage_groups.html")

@@ -4,7 +4,9 @@ import os
 import shutil
 from dateutil import parser
 
-from seamm_dashboard import create_app, db
+from flask import current_app
+
+from seamm_dashboard import create_app
 from seamm_dashboard.models.util import process_flowchart
 from seamm_dashboard.models import (
     Job,
@@ -139,22 +141,20 @@ def app(project_directory):
     )
     a.job = job1
     visitor.special_jobs.append(a)
-    db.session.add(a)
-    db.session.add(visitor)
-    # assert False, job1.special_users.all()
-    # db.session.commit()
+    current_app.db.add(a)
+    current_app.db.add(visitor)
 
     flowchart = Flowchart(**flowchart_data)
-    db.session.add(test_user)
-    db.session.add(admin_role)
-    db.session.add(manager_role)
-    db.session.add(test_admin)
-    db.session.add(project)
-    db.session.add(job1)
-    db.session.add(job2)
-    db.session.add(job3)
-    db.session.add(flowchart)
-    db.session.commit()
+    current_app.db.add(test_user)
+    current_app.db.add(admin_role)
+    current_app.db.add(manager_role)
+    current_app.db.add(test_admin)
+    current_app.db.add(project)
+    current_app.db.add(job1)
+    current_app.db.add(job2)
+    current_app.db.add(job3)
+    current_app.db.add(flowchart)
+    current_app.db.commit()
 
     yield flask_app
 

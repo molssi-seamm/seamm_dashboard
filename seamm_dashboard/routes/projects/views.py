@@ -1,6 +1,6 @@
 from copy import deepcopy
 
-from flask import render_template, url_for, request, flash, redirect
+from flask import render_template, url_for, request, flash, redirect, current_app
 from flask_jwt_extended import jwt_required, get_current_user
 
 from wtforms import BooleanField
@@ -10,7 +10,7 @@ from .forms import EditProject, ManageProjectAccessForm
 
 from seamm_dashboard.models import Project, User, UserProjectAssociation
 
-from seamm_dashboard import authorize, db
+from seamm_dashboard import authorize
 
 
 def _bind_users_to_form(form, current_user, project_id):
@@ -93,7 +93,7 @@ def edit_project(project_id):
     if form.validate_on_submit():
         project.name = form.name.data
         project.description = form.notes.data
-        db.session.commit()
+        current_app.db.commit()
         flash("Project updated successfully.", "successs")
 
         return redirect(project_url)
@@ -177,8 +177,8 @@ def manage_project(project_id):
                 else:
                     assoc.permissions = permissions
 
-                db.session.add(assoc)
-                db.session.commit()
+                current_app.db.add(assoc)
+                current_app.db.commit()
 
             flash(f"Permissions for {project.name} successfully updated.")
             return redirect(project_url)

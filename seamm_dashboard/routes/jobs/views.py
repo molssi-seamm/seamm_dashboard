@@ -1,8 +1,8 @@
-from flask import request, render_template, flash, redirect, url_for
+from flask import request, render_template, flash, redirect, url_for, current_app
 
 from flask_jwt_extended import jwt_required, get_current_user
 
-from seamm_dashboard import db, authorize
+from seamm_dashboard import authorize
 
 from . import jobs
 
@@ -63,7 +63,7 @@ def edit_job(job_id):
     if form.validate_on_submit():
         job.title = form.name.data
         job.description = form.notes.data
-        db.session.commit()
+        current_app.db.commit()
         flash("Job updated successfully.", "successs")
 
         return redirect(job_url)

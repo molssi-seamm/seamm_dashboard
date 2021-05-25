@@ -11,15 +11,18 @@ from flask_bootstrap import Bootstrap
 from flask_cors import CORS
 from flask_mail import Mail
 from flask_moment import Moment
-from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 
 from flask_authorize import Authorize
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import scoped_session, sessionmaker
 
 from .jwt_patch import flask_jwt_extended
 
 from flask_jwt_extended import get_current_user
 
+from .models import Base, User
 from .config import config
 from .template_filters import replace_empty
 from .setup_logging import setup_logging
@@ -65,8 +68,20 @@ authorize = Authorize(current_user=get_current_user)
 moment = Moment()
 toolbar = DebugToolbarExtension()
 
-db = SQLAlchemy()
 ma = Marshmallow()
+
+
+@jwt.user_lookup_loader
+def user_loader_callback(jwt_header, jwt_payload):
+    """Function for app, to return user object"""
+
+    if jwt_header:
+        username = jwt_payload["sub"]["username"]
+        user = User.query.filter_by(username=username).one_or_none()
+        return user
+    else:
+        # return None / null
+        return None
 
 
 def create_app(config_name=None):
@@ -122,30 +137,37 @@ def create_app(config_name=None):
 
     conn_app.add_api("swagger.yml")
 
-    db.init_app(app)
-    with app.app_context():
-        if options.initialize:
-            logger.info("Removing all previous jobs from the database.")
-            db.drop_all()
-        db.create_all()
+    engine = create_engine(app.config["SQLALCHEMY_DATABASE_URI"], convert_unicode=True)
+    db_session = scoped_session(
+        sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    )
 
-        from .routes.auth import auth as auth_blueprint
-        from .routes.main import main as main_blueprint
-        from .routes.jobs import jobs as jobs_blueprint
-        from .routes.flowcharts import flowcharts as flowchart_blueprint
-        from .routes.projects import projects as project_blueprint
-        from .routes.admin import admin as admin_blueprint
+    if options.initialize:
+        logger.info("Removing all previous jobs from the database.")
+        Base.metadata.drop_all(engine)
 
-        from .routes.main import errors
+    Base.metadata.create_all(engine)
+    Base.query = db_session.query_property()
 
-        app.register_blueprint(auth_blueprint)
-        app.register_blueprint(main_blueprint)
-        app.register_blueprint(jobs_blueprint)
-        app.register_blueprint(flowchart_blueprint)
-        app.register_blueprint(project_blueprint)
-        app.register_blueprint(admin_blueprint)
+    app.db = db_session
 
-        app.register_error_handler(404, errors.not_found)
+    from .routes.auth import auth as auth_blueprint
+    from .routes.main import main as main_blueprint
+    from .routes.jobs import jobs as jobs_blueprint
+    from .routes.flowcharts import flowcharts as flowchart_blueprint
+    from .routes.projects import projects as project_blueprint
+    from .routes.admin import admin as admin_blueprint
+
+    from .routes.main import errors
+
+    app.register_blueprint(auth_blueprint)
+    app.register_blueprint(main_blueprint)
+    app.register_blueprint(jobs_blueprint)
+    app.register_blueprint(flowchart_blueprint)
+    app.register_blueprint(project_blueprint)
+    app.register_blueprint(admin_blueprint)
+
+    app.register_error_handler(404, errors.not_found)
 
     # init
     mail.init_app(app)
@@ -179,17 +201,16 @@ def create_app(config_name=None):
     app.config["JWT_CSRF_ACCESS_PATH"] = "/api/"
 
     # Add some default roles to the dashboard
-    with app.app_context():
-        from .models import Role
+    from .models import Role
 
-        role_names = ["user", "group manager", "admin"]
+    role_names = ["user", "group manager", "admin"]
 
-        for role_name in role_names:
-            check = Role.query.filter_by(name=role_name).one_or_none()
-            if not check:
-                role = Role(name=role_name)
-                db.session.add(role)
-                db.session.commit()
+    for role_name in role_names:
+        check = Role.query.filter_by(name=role_name).one_or_none()
+        if not check:
+            role = Role(name=role_name)
+            db_session.add(role)
+            db_session.commit()
 
     logger.info("")
     logger.info("Final configuration:")
@@ -208,7 +229,7 @@ def create_app(config_name=None):
                 os.path.join(options.datastore, "projects")
             )
 
-            db.session.commit()
+            db_session.commit()
 
         t1 = time.perf_counter()
         logger.info(
@@ -222,5 +243,9 @@ def create_app(config_name=None):
             )
 
     logger.info(f"{app.url_map}")
+
+    @app.teardown_appcontext
+    def shutdown_session(exception=None):
+        db_session.remove()
 
     return app

@@ -13,7 +13,7 @@ from pathlib import Path
 import os
 
 from . import User, Group, Role
-from seamm_dashboard import db
+from flask import current_app
 
 logger = logging.getLogger(__name__)
 
@@ -148,27 +148,29 @@ def file_owner(path):
     if item.exists():
         # Get the group first
         name = item.group()
-        group = db.session.query(Group).filter_by(name=name).one_or_none()
+        group = current_app.db.query(Group).filter_by(name=name).one_or_none()
         if group is None:
             group = Group(name=name)
-            db.session.add(group)
-            db.session.commit()
+            current_app.db.add(group)
+            current_app.db.commit()
 
         # and now the user
         name = item.owner()
-        user = db.session.query(User).filter_by(username=name).one_or_none()
+        user = current_app.db.query(User).filter_by(username=name).one_or_none()
         if user is None:
-            admin_role = db.session.query(Role).filter_by(name="admin").one_or_none()
+            admin_role = (
+                current_app.db.query(Role).filter_by(name="admin").one_or_none()
+            )
 
             if admin_role is None:
                 admin_role = Role(name="admin")
 
             user = User(username=name, password="default", roles=[admin_role])
             user.groups.append(group)
-            db.session.add(user)
-            db.session.add(admin_role)
-            db.session.add(group)
-            db.session.commit()
+            current_app.db.add(user)
+            current_app.db.add(admin_role)
+            current_app.db.add(group)
+            current_app.db.commit()
         return user.id, group.id
     else:
         return None

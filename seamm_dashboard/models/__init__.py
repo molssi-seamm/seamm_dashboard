@@ -1,4 +1,5 @@
 from .models import (  # noqa: F401
+    Base,
     Job,
     Flowchart,
     Project,

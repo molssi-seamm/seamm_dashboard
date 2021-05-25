@@ -41,7 +41,7 @@ class DevelopmentConfig(BaseConfig):
     WORDPRESS_DOMAIN = "http://localhost:8888"
     API_DOMAIN = "http://localhost:5000"
     SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(
-        _basedir, "data", "projects", "molssi_jobstore.db"
+        _basedir, "..", "data", "seamm.db"
     )
 
 
