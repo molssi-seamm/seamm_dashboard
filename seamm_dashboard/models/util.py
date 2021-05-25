@@ -13,7 +13,6 @@ from pathlib import Path
 import os
 
 from . import User, Group, Role
-from flask import current_app
 
 logger = logging.getLogger(__name__)
 
@@ -129,7 +128,7 @@ def process_job(job_path):
     return job_info
 
 
-def file_owner(path):
+def file_owner(path, db):
     """Return the User object for the owner of a file or directory.
 
     The User is created if it does not exist.
@@ -148,29 +147,27 @@ def file_owner(path):
     if item.exists():
         # Get the group first
         name = item.group()
-        group = current_app.db.query(Group).filter_by(name=name).one_or_none()
+        group = db.query(Group).filter_by(name=name).one_or_none()
         if group is None:
             group = Group(name=name)
-            current_app.db.add(group)
-            current_app.db.commit()
+            db.add(group)
+            db.commit()
 
         # and now the user
         name = item.owner()
-        user = current_app.db.query(User).filter_by(username=name).one_or_none()
+        user = db.query(User).filter_by(username=name).one_or_none()
         if user is None:
-            admin_role = (
-                current_app.db.query(Role).filter_by(name="admin").one_or_none()
-            )
+            admin_role = db.query(Role).filter_by(name="admin").one_or_none()
 
             if admin_role is None:
                 admin_role = Role(name="admin")
 
             user = User(username=name, password="default", roles=[admin_role])
             user.groups.append(group)
-            current_app.db.add(user)
-            current_app.db.add(admin_role)
-            current_app.db.add(group)
-            current_app.db.commit()
+            db.add(user)
+            db.add(admin_role)
+            db.add(group)
+            db.commit()
         return user.id, group.id
     else:
         return None

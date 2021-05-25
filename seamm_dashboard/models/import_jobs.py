@@ -7,7 +7,8 @@ import logging
 import os
 import sqlite3
 
-from flask import current_app
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, scoped_session
 
 from . import Flowchart, Job, Project
 from .util import process_flowchart, process_job, file_owner
@@ -15,7 +16,7 @@ from .util import process_flowchart, process_job, file_owner
 logger = logging.getLogger(__name__)
 
 
-def import_jobs(location):
+def import_jobs(location, database_location, permissions):
     """Import all the projects and jobs at <location>.
 
     <location> should be the path to the 'projects' directory in a datastore.
@@ -32,6 +33,10 @@ def import_jobs(location):
     (n_projects, n_jobs) : int, integer
         The number of projects and jobs added to the database.
     """
+
+    engine = create_engine(database_location)
+    db = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
+
     n_projects = 0
     n_added_projects = 0
     n_jobs = 0
@@ -43,7 +48,9 @@ def import_jobs(location):
             n_projects += 1
             project_name = os.path.basename(potential_project)
             logger.debug("Adding project {}".format(project_name))
-            project, added = add_project(potential_project, project_name)
+            project, added = add_project(
+                potential_project, project_name, db, permissions
+            )
             if added:
                 n_added_projects += 1
 
@@ -55,7 +62,9 @@ def import_jobs(location):
                     job_name = os.path.basename(potential_job)
                     logger.debug("       job {}".format(job_name))
                     try:
-                        job, added = add_job(potential_job, job_name, project)
+                        job, added = add_job(
+                            potential_job, job_name, project, db, permissions
+                        )
                     except sqlite3.IntegrityError as e:
                         logger.warning("Adding job {} failed: {}".format(job_name, e))
                     if job is None:
@@ -65,10 +74,12 @@ def import_jobs(location):
                         if added:
                             n_added_jobs += 1
 
+    db.close()
+
     return (n_projects, n_added_projects, n_jobs, n_added_jobs)
 
 
-def add_flowchart(flowchart_path, project):
+def add_flowchart(flowchart_path, project, db, permissions):
     """Parse flowchart and add to data store if nedded.
 
     Analyze a flowchart and add to the database if it doesn't already exist. In
@@ -89,24 +100,24 @@ def add_flowchart(flowchart_path, project):
     # Analyze the flowchart given the path
     flowchart_info = process_flowchart(flowchart_path)
 
-    flowchart = (
-        current_app.db.query(Flowchart).filter_by(id=flowchart_info["id"]).one_or_none()
-    )
+    flowchart = db.query(Flowchart).filter_by(id=flowchart_info["id"]).one_or_none()
 
     if flowchart is None:
-        user, group = file_owner(flowchart_path)
-        flowchart = Flowchart(owner_id=user, group_id=group, **flowchart_info)
+        user, group = file_owner(flowchart_path, db)
+        flowchart = Flowchart(
+            owner_id=user, group_id=group, permissions=permissions, **flowchart_info
+        )
         flowchart.projects.append(project)
-        current_app.db.add(flowchart)
-        current_app.db.commit()
+        db.add(flowchart)
+        db.commit()
     elif project not in flowchart.projects:
         flowchart.projects.append(project)
-        current_app.db.commit()
+        db.commit()
 
     return flowchart
 
 
-def add_job(job_path, job_name, project):
+def add_job(job_path, job_name, project, db, permissions):
     """Add a job to the datastore. A unique job is based on directory location.
 
     If job_path does not have a .flow file, it is skipped and not added to the
@@ -128,17 +139,19 @@ def add_job(job_path, job_name, project):
         flowchart_path = job_info.pop("flowchart_path")
 
         # Check if job is in DB
-        found = current_app.db.query(Job).filter_by(path=job_info["path"]).one_or_none()
+        found = db.query(Job).filter_by(path=job_info["path"]).one_or_none()
 
         if found is None:
-            user, group = file_owner(job_path)
-            job = Job(owner_id=user, group_id=group, **job_info)
+            user, group = file_owner(job_path, db)
+            job = Job(
+                owner_id=user, group_id=group, permissions=permissions, **job_info
+            )
             job.projects.append(project)
 
-            add_flowchart(flowchart_path, project)
+            add_flowchart(flowchart_path, project, db, permissions)
 
-            current_app.db.add(job)
-            current_app.db.commit()
+            db.add(job)
+            db.commit()
             return job, True
         else:
             return found, False
@@ -149,25 +162,27 @@ def add_job(job_path, job_name, project):
         return None, False
 
 
-def add_project(project_path, project_name):
+def add_project(project_path, project_name, db, permissions):
     """
     Add a project to datastore.
     """
 
     # Check if in DB
     found = (
-        current_app.db.query(Project)
-        .filter_by(name=project_name, path=project_path)
-        .one_or_none()
+        db.query(Project).filter_by(name=project_name, path=project_path).one_or_none()
     )
 
     if found is None:
-        user, group = file_owner(project_path)
+        user, group = file_owner(project_path, db)
         project = Project(
-            path=project_path, name=project_name, owner_id=user, group_id=group
+            path=project_path,
+            name=project_name,
+            owner_id=user,
+            group_id=group,
+            permissions=permissions,
         )
-        current_app.db.add(project)
-        current_app.db.commit()
+        db.add(project)
+        db.commit()
         return project, True
     else:
         return found, False

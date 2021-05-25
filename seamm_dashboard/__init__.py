@@ -224,12 +224,13 @@ def create_app(config_name=None):
         from .models.import_jobs import import_jobs
 
         t0 = time.perf_counter()
-        with app.app_context():
-            n_projects, n_added_projects, n_jobs, n_added_jobs = import_jobs(
-                os.path.join(options.datastore, "projects")
-            )
+        n_projects, n_added_projects, n_jobs, n_added_jobs = import_jobs(
+            os.path.join(options.datastore, "projects"),
+            app.config["SQLALCHEMY_DATABASE_URI"],
+            app.config["AUTHORIZE_DEFAULT_PERMISSIONS"],
+        )
 
-            db_session.commit()
+        db_session.commit()
 
         t1 = time.perf_counter()
         logger.info(
