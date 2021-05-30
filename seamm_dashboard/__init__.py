@@ -8,8 +8,6 @@ import configargparse
 # from flask_admin import Admin
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_bootstrap import Bootstrap
-from flask_cors import CORS
-from flask_mail import Mail
 from flask_moment import Moment
 from flask_marshmallow import Marshmallow
 
@@ -56,10 +54,6 @@ if "debug" in options:
         )
     os.environ["FLASK_DEBUG"] = options.debug
 
-# continue the setup
-mail = Mail()
-cors = CORS()
-
 bootstrap = Bootstrap()
 
 jwt = flask_jwt_extended.JWTManager()
@@ -69,7 +63,6 @@ moment = Moment()
 toolbar = DebugToolbarExtension()
 
 ma = Marshmallow()
-
 
 @jwt.user_lookup_loader
 def user_loader_callback(jwt_header, jwt_payload):
@@ -149,6 +142,7 @@ def create_app(config_name=None):
     Base.metadata.create_all(engine)
     Base.query = db_session.query_property()
 
+    # Bind a session to the app
     app.db = db_session
 
     from .routes.auth import auth as auth_blueprint
@@ -170,8 +164,6 @@ def create_app(config_name=None):
     app.register_error_handler(404, errors.not_found)
 
     # init
-    mail.init_app(app)
-    cors.init_app(app)
     bootstrap.init_app(app)
     authorize.init_app(app)
     jwt.init_app(app)
