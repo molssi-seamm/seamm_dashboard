@@ -449,4 +449,4 @@ def get_job_files(id, file_path=None):
     else:
         unencoded_path = urllib.parse.unquote(file_path)
         directory, file_name = os.path.split(unencoded_path)
-        return send_from_directory(directory, filename=file_name, as_attachment=True)
+        return send_from_directory(directory, path=file_name, as_attachment=True)
