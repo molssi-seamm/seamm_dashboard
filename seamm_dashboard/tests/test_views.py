@@ -222,11 +222,15 @@ class TestLiveServer:
             EC.presence_of_element_located((By.ID, test_file_id))
         )
         job_link.click()
-
-        time.sleep(0.25)
-
+        
+        time.sleep(1.25)
+        
         # When clicked, file text should be displayed in the div.
-        displayed_text = chrome_driver.find_element_by_id("file-content").text
+        displayed_text = WebDriverWait(chrome_driver, 20).until(
+            EC.presence_of_element_located((By.ID, "file-content"))
+        ).text
+        
+        #displayed_text = chrome_driver.find_element_by_id("file-content").text
 
         displayed_text_list = displayed_text.split()
 
