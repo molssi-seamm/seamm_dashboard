@@ -9,6 +9,15 @@ import os
 import shutil
 
 if __name__ == "__main__":
+
+    # manual addition of files which are needed but not picked up by the regex below.
+    needed_but_unlisted = [
+        os.path.join(
+            "node_modules", "jstree", "dist", "themes", "default", "throbber.gif"
+        ),
+        os.path.join("node_modules", "jstree", "dist", "themes", "default", "32px.png"),
+    ]
+
     full_path = os.path.abspath(os.path.join("..", "templates/"))
 
     bashCommand = f"grep -r {full_path} -e node_modules"
@@ -26,6 +35,10 @@ if __name__ == "__main__":
     matches = pattern.findall(data)
 
     matches = list(set(matches))
+
+    matches.extend(needed_but_unlisted)
+
+    # assert False, matches
 
     tree = os.walk("node_modules")
 
