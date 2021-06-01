@@ -1,6 +1,6 @@
-import os
 import logging
 import logging.handlers
+from pathlib import Path
 
 
 def setup_logging(datastore, options):
@@ -30,13 +30,13 @@ def setup_logging(datastore, options):
     """
 
     # Make sure the logs folder exists (avoid FileNotFoundError)
-    log_dir = options.log_dir.replace("%datastore%", datastore)
+    log_dir = Path(options["log_dir"].replace("%datastore%", datastore)).expanduser()
 
-    if not os.path.isdir(log_dir):
-        os.makedirs(log_dir)
+    if not log_dir.is_dir():
+        log_dir.mkdir()
 
     # Set up logging to a file (overwriting)
-    log_filename = os.path.join(log_dir, "dashboard.log")
+    log_file = log_dir / "dashboard.log"
 
     # Get root logger
     logger = logging.getLogger()
@@ -44,27 +44,25 @@ def setup_logging(datastore, options):
 
     # Create a handler that writes INFO messages or higher to sys.stderr
     console_handler = logging.StreamHandler()
-    console_handler.setLevel(options.console_log_level)
+    console_handler.setLevel(options["console_log_level"])
     console_formatter = logging.Formatter("%(name)s:%(levelname)s:%(message)s")
     console_handler.setFormatter(console_formatter)
     logger.addHandler(console_handler)
 
     # And one to log in files
     file_handler = logging.handlers.TimedRotatingFileHandler(
-        log_filename, when="W6", backupCount=4
+        str(log_file), when="W6", backupCount=4
     )
-    file_handler.setLevel(options.log_level)
+    file_handler.setLevel(options["log_level"])
     file_formatter = logging.Formatter("%(asctime)s %(name)s:%(levelname)s:%(message)s")
     file_handler.setFormatter(file_formatter)
     logger.addHandler(file_handler)
 
     new_logger = logging.getLogger("dashboard")
     new_logger.info(
-        "Logging to the console at level {}.".format(options.console_log_level)
+        "Logging to the console at level {}.".format(options["console_log_level"])
     )
-    new_logger.info(
-        "Logging to {} at level {}.".format(log_filename, options.log_level)
-    )
+    new_logger.info("Logging to {} at level {}.".format(log_file, options["log_level"]))
 
     # Demo usage
     # logger = logging.getLogger(__name__)
