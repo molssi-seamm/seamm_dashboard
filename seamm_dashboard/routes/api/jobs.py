@@ -18,7 +18,7 @@ from sqlalchemy import and_
 from flask import send_from_directory, Response
 from flask_jwt_extended import jwt_required
 
-from seamm_dashboard import db, datastore, authorize
+from seamm_dashboard import db, datastore, authorize, options
 from seamm_dashboard.models import User, Project, Job, JobSchema, Flowchart
 from seamm_dashboard.models import FlowchartSchema
 
@@ -96,6 +96,8 @@ def get_job_id(filename):
     only one job at a time can access the file, so that the job
     ids are unique and monotonically increasing.
     """
+
+    filename = os.path.expanduser(filename)
 
     lock_file = filename + ".lock"
     lock = fasteners.InterProcessLock(lock_file)
@@ -185,10 +187,9 @@ def add_job(body):
     flowchart_text = body.pop("flowchart")
     flowchart_data = {
         "id": hashlib.md5(flowchart_text.encode("utf-8")).hexdigest(),
-        "owner": user_id,
-        "group": group_id,
-        "text": flowchart_text,
-        "json": "\n".join(flowchart_text.splitlines()[2:]),
+        "owner_id": user_id,
+        "group_id": group_id,
+        "description": "No description given.",
     }
 
     # Validate and deserialize the flowchart data
@@ -196,6 +197,8 @@ def add_job(body):
     try:
         flowchart_schema.load(flowchart_data, session=db.session)
     except ValidationError as err:
+        logger.error("ValidationError (flowchart): {}".format(err.messages))
+        logger.info("   valid data: {}".format(err.valid_data))
         return err.messages, 422
 
     # See if it already in the db, if not, add it
@@ -209,16 +212,19 @@ def add_job(body):
             db.session.commit()
 
     else:
-        flowchart = Flowchart(**flowchart_data)
+        flowchart = Flowchart(
+            **flowchart_data,
+            text=flowchart_text,
+            json="\n".join(flowchart_text.splitlines()[2:]),
+        )
         flowchart.projects.append(project)
         db.session.add(flowchart)
         db.session.commit()
         flowchart_is_new = True
-    flowchart_id = flowchart.id
 
     # Validate and deserialize the job data
     body["status"] = "Submitted"
-    body["flowchart_id"] = flowchart_id
+    body["flowchart_id"] = flowchart.id
 
     job_schema = JobSchema(many=False)
     try:
@@ -228,14 +234,23 @@ def add_job(body):
         logger.info("   valid data: {}".format(err.valid_data))
         return err.messages, 422
 
+    # Need objects, not ids?
+    # body["flowchart_id"] = flowchart
+    body["owner"] = user
+    body["group"] = user.groups[0]
+
     job = Job(**body)
 
     # Get the unique ID for the job...
-    job_id_file = os.path.join(datastore, "job.id")
+
+    if options["job_id_file"] is None:
+        job_id_file = os.path.join(datastore, "job.id")
+    else:
+        job_id_file = options["job_id_file"]
     job.id = get_job_id(job_id_file)
 
     # And the path
-    project_path = Path(datastore) / "projects" / project_name
+    project_path = Path(datastore).expanduser() / "projects" / project_name
     directory = project_path / "Job_{:06d}".format(job.id)
     print("Writing job files to " + str(directory))
     directory.mkdir(parents=True, exist_ok=True)
@@ -449,4 +464,4 @@ def get_job_files(id, file_path=None):
     else:
         unencoded_path = urllib.parse.unquote(file_path)
         directory, file_name = os.path.split(unencoded_path)
-        return send_from_directory(directory, filename=file_name, as_attachment=True)
+        return send_from_directory(directory, path=file_name, as_attachment=True)
