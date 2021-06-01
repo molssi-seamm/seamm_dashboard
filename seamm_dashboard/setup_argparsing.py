@@ -1,52 +1,35 @@
-import configargparse
+import argparse
 
-parser = configargparse.get_argument_parser(
-    name="dashboard",
-    auto_env_var_prefix="",
-    default_config_files=[
-        "/etc/seamm/seamm-dashboard.ini",
-        "/etc/seamm/seamm.ini",
-        "~/.seamm/seamm-dashboard.ini",
-        "~/.seamm/seamm.ini",
-    ],
+import seamm_util
+
+parser = seamm_util.seamm_parser()
+
+# Options for the dashboard
+parser.add_argument_group(
+    "SEAMM",
+    "dashboard options",
+    "The options for the dashboard",
 )
 
 parser.add_argument(
-    "--dashboard-configfile",
-    is_config_file=True,
-    default=None,
-    help="a configuration file to override others",
-)
-
-# Where the datastore is located (from seamm.ini)
-parser.add_argument(
-    "--datastore",
-    dest="datastore",
-    default=".",
-    action="store",
-    env_var="SEAMM_DATASTORE",
-    help="The datastore (directory).",
-)
-parser.add_argument(
+    "SEAMM",
     "--initialize",
+    group="dashboard options",
     action="store_true",
     help="initialize, or reinitialize, from the job files",
 )
 parser.add_argument(
-    "--no-check", action="store_true", help="do not check that jobs are in the database"
-)
-
-# Options for the dashboard
-parser.add_argument(
-    "--log-level",
-    default="INFO",
-    choices=["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG", "NOTSET"],
-    type=str.upper,
-    help="the logging level for the dashboard",
+    "SEAMM",
+    "--no-check",
+    group="dashboard options",
+    action="store_true",
+    help="do not check that jobs are in the database",
 )
 
 parser.add_argument(
+    "SEAMM",
     "--console-log-level",
+    group="dashboard options",
     default="INFO",
     choices=["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG", "NOTSET"],
     type=str.upper,
@@ -54,10 +37,11 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--log_dir",
-    default="%datastore%/logs",
+    group="dashboard options",
+    default="${root}/logs",
     action="store",
-    env_var="SEAMM_LOGDIR",
     help="The directory for logging",
 )
 
@@ -65,10 +49,17 @@ parser.add_argument(
 # and will be added to the Flask configuration.
 
 # Flask options
+parser.add_argument_group(
+    "SEAMM",
+    "flask options",
+    "The options for Flask",
+)
+
 parser.add_argument(
+    "SEAMM",
     "--env",
-    default=configargparse.SUPPRESS,
-    env_var="FLASK_ENV",
+    group="flask options",
+    default=argparse.SUPPRESS,
     help=(
         "What environment the app is running in. Flask and extensions may "
         "enable behaviors based on the environment, such as enabling debug "
@@ -83,9 +74,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--debug",
-    default=configargparse.SUPPRESS,
-    env_var="FLASK_DEBUG",
+    group="flask options",
+    default=argparse.SUPPRESS,
     help=(
         "Whether debug mode is enabled. When using flask run to start the "
         "development server, an interactive debugger will be shown for "
@@ -102,8 +94,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--testing",
-    default=configargparse.SUPPRESS,
+    group="flask options",
+    default=argparse.SUPPRESS,
     help=(
         "Enable testing mode. Exceptions are propagated rather than handled "
         "by the the app’s error handlers. Extensions may also change their "
@@ -115,8 +109,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--propagate-exceptions",
-    default=configargparse.SUPPRESS,
+    group="flask options",
+    default=argparse.SUPPRESS,
     help=(
         "Exceptions are re-raised rather than being handled by the app’s "
         "error handlers. If not set, this is implicitly true if TESTING or "
@@ -127,8 +123,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--preserve-context-on-exception",
-    default=configargparse.SUPPRESS,
+    group="flask options",
+    default=argparse.SUPPRESS,
     help=(
         "Don't pop the request context when an exception occurs. If not set, "
         "this is true if DEBUG is true. This allows debuggers to introspect "
@@ -140,8 +138,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--trap-http-exceptions",
-    default=configargparse.SUPPRESS,
+    group="flask options",
+    default=argparse.SUPPRESS,
     help=(
         "If there is no handler for an HTTPException-type exception, re-raise "
         "it to be handled by the interactive debugger instead of returning it "
@@ -152,8 +152,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--trap-bad-request-errors",
-    default=configargparse.SUPPRESS,
+    group="flask options",
+    default=argparse.SUPPRESS,
     help=(
         "Trying to access a key that doesn’t exist from request dicts like "
         "args and form will return a 400 Bad Request error page. Enable this "
@@ -166,8 +168,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--secret-key",
-    default=configargparse.SUPPRESS,
+    group="flask options",
+    default=argparse.SUPPRESS,
     help=(
         "A secret key that will be used for securely signing the session "
         "cookie and can be used for any other security related needs by "
@@ -186,8 +190,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--jwt-secret-key",
-    default=configargparse.SUPPRESS,
+    group="flask options",
+    default=argparse.SUPPRESS,
     help=(
         """
         A secret key for the JWT token.
@@ -196,8 +202,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--session-cookie-name",
-    default=configargparse.SUPPRESS,
+    group="flask options",
+    default=argparse.SUPPRESS,
     help=(
         "The name of the session cookie. Can be changed in case you already "
         "have a cookie with the same name."
@@ -207,8 +215,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--session-cookie-domain",
-    default=configargparse.SUPPRESS,
+    group="flask options",
+    default=argparse.SUPPRESS,
     help=(
         "The domain match rule that the session cookie will be valid for. If "
         "not set, the cookie will be valid for all subdomains of SERVER_NAME. "
@@ -219,8 +229,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--session-cookie-path",
-    default=configargparse.SUPPRESS,
+    group="flask options",
+    default=argparse.SUPPRESS,
     help=(
         "The path that the session cookie will be valid for. If not set, the "
         "cookie will be valid underneath APPLICATION_ROOT or / if that is not "
@@ -231,8 +243,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--session-cookie-secure",
-    default=configargparse.SUPPRESS,
+    group="flask options",
+    default=argparse.SUPPRESS,
     help=(
         "Browsers will only send cookies with requests over HTTPS if the "
         "cookie is marked “secure”. The application must be served over HTTPS "
@@ -243,7 +257,9 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--session-cookie-samesite",
+    group="flask options",
     default="Lax",
     help=(
         "Restrict how cookies are sent with requests from external sites. Can "
@@ -254,8 +270,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--permanent-session-lifetime",
-    default=configargparse.SUPPRESS,
+    group="flask options",
+    default=argparse.SUPPRESS,
     help=(
         "If session.permanent is true, the cookie’s expiration will be set "
         "this number of seconds in the future. Can either be a "
@@ -269,8 +287,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--session-refresh-each-request",
-    default=configargparse.SUPPRESS,
+    group="flask options",
+    default=argparse.SUPPRESS,
     help=(
         "Control whether the cookie is sent with every response when "
         "session.permanent is true. Sending the cookie every time (the "
@@ -282,8 +302,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--use-x-sendfile",
-    default=configargparse.SUPPRESS,
+    group="flask options",
+    default=argparse.SUPPRESS,
     help=(
         "When serving files, set the X-Sendfile header instead of serving the "
         "data with Flask. Some web servers, such as Apache, recognize this "
@@ -295,8 +317,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--send-file-max-age-default",
-    default=configargparse.SUPPRESS,
+    group="flask options",
+    default=argparse.SUPPRESS,
     help=(
         "When serving files, set the cache control max age to this number of "
         "seconds. Can either be a datetime.timedelta or an int. Override this "
@@ -308,8 +332,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--server-name",
-    default=configargparse.SUPPRESS,
+    group="flask options",
+    default=argparse.SUPPRESS,
     help=(
         "Inform the application what host and port it is bound to. Required "
         "for subdomain route matching support."
@@ -328,8 +354,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--application-root",
-    default=configargparse.SUPPRESS,
+    group="flask options",
+    default=argparse.SUPPRESS,
     help=(
         "Inform the application what path it is mounted under by the "
         "application / web server. This is used for generating URLs outside "
@@ -345,8 +373,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--preferred-url-scheme",
-    default=configargparse.SUPPRESS,
+    group="flask options",
+    default=argparse.SUPPRESS,
     help=(
         "Use this scheme for generating external URLs when not in a request "
         "context."
@@ -356,8 +386,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--max-content-length",
-    default=configargparse.SUPPRESS,
+    group="flask options",
+    default=argparse.SUPPRESS,
     help=(
         "Don't read more than this many bytes from the incoming request data. "
         "If not set and the request does not specify a CONTENT_LENGTH, no "
@@ -368,8 +400,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--json-as-ascii",
-    default=configargparse.SUPPRESS,
+    group="flask options",
+    default=argparse.SUPPRESS,
     help=(
         "Serialize objects to ASCII-encoded JSON. If this is disabled, the "
         "JSON will be returned as a Unicode string, or encoded as UTF-8 by "
@@ -381,8 +415,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--json-sort-keys",
-    default=configargparse.SUPPRESS,
+    group="flask options",
+    default=argparse.SUPPRESS,
     help=(
         "Sort the keys of JSON objects alphabetically. This is useful for "
         "caching because it ensures the data is serialized the same way no "
@@ -395,8 +431,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--jsonify-prettyprint-regular",
-    default=configargparse.SUPPRESS,
+    group="flask options",
+    default=argparse.SUPPRESS,
     help=(
         "jsonify responses will be output with newlines, spaces, and "
         "indentation for easier reading by humans. Always enabled in debug "
@@ -407,14 +445,18 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--jsonify-mimetype",
-    default=configargparse.SUPPRESS,
+    group="flask options",
+    default=argparse.SUPPRESS,
     help=("The mimetype of jsonify responses." "\n" "default='application/json'"),
 )
 
 parser.add_argument(
+    "SEAMM",
     "--templates-auto-reload",
-    default=configargparse.SUPPRESS,
+    group="flask options",
+    default=argparse.SUPPRESS,
     help=(
         "Reload templates when they are changed. If not set, it will be "
         "enabled in debug mode."
@@ -424,8 +466,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--explain-template-loading",
-    default=configargparse.SUPPRESS,
+    group="flask options",
+    default=argparse.SUPPRESS,
     help=(
         "Log debugging information tracing how a template file was loaded. "
         "This can be useful to figure out why a template was not loaded or "
@@ -436,8 +480,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--max-cookie-size",
-    default=configargparse.SUPPRESS,
+    group="flask options",
+    default=argparse.SUPPRESS,
     help=(
         "Warn if cookie headers are larger than this many bytes. Defaults to "
         "4093. Larger cookies may be silently ignored by browsers. Set to 0 "
@@ -447,9 +493,18 @@ parser.add_argument(
     ),
 )
 
+# SQLAlchemy options
+parser.add_argument_group(
+    "SEAMM",
+    "sqlalchemy options",
+    "The SQLAlchemy options for the dashboard",
+)
+
 parser.add_argument(
+    "SEAMM",
     "--sqlalchemy-database-uri",
-    default="sqlite:///%datastore%/seamm.db",
+    group="sqlalchemy options",
+    default="sqlite:////Users/psaxe/SEAMM/Jobs/seamm.db",
     help=(
         "The database URI that should be used for the connection. Examples:"
         "\n"
@@ -460,8 +515,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--sqlalchemy-binds",
-    default=configargparse.SUPPRESS,
+    group="sqlalchemy options",
+    default=argparse.SUPPRESS,
     help=(
         "A dictionary that maps bind keys to SQLAlchemy connection URIs. For "
         "more information about binds see Multiple Databases with Binds."
@@ -469,8 +526,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--sqlalchemy-echo",
-    default=configargparse.SUPPRESS,
+    group="sqlalchemy options",
+    default=argparse.SUPPRESS,
     help=(
         "If set to True SQLAlchemy will log all the statements issued to "
         "stderr which can be useful for debugging."
@@ -478,8 +537,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--sqlalchemy-record-queries",
-    default=configargparse.SUPPRESS,
+    group="sqlalchemy options",
+    default=argparse.SUPPRESS,
     help=(
         "Can be used to explicitly disable or enable query recording. Query "
         "recording automatically happens in debug or testing mode. See "
@@ -488,7 +549,9 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--sqlalchemy-track-modifications",
+    group="sqlalchemy options",
     default=False,
     help=(
         "If set to True, Flask-SQLAlchemy will track modifications of objects "
@@ -501,17 +564,28 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--sqlalchemy-engine-options",
-    default=configargparse.SUPPRESS,
+    group="sqlalchemy options",
+    default=argparse.SUPPRESS,
     help=(
         "A dictionary of keyword args to send to create_engine(). See also "
         "engine_options to SQLAlchemy."
     ),
 )
 
+# Bootstrap options
+parser.add_argument_group(
+    "SEAMM",
+    "bootstrap options",
+    "The Bootstrap options for the dashboard",
+)
+
 parser.add_argument(
+    "SEAMM",
     "--bootstrap-use-minified",
-    default=configargparse.SUPPRESS,
+    group="bootstrap options",
+    default=argparse.SUPPRESS,
     help=(
         "Whether or not to use the minified versions of the css/js files."
         "\n"
@@ -520,8 +594,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--bootstrap-serve-local",
-    default=configargparse.SUPPRESS,
+    group="bootstrap options",
+    default=argparse.SUPPRESS,
     help=(
         "If True, Bootstrap resources will be served from the local app "
         "instance every time. See CDN support for details."
@@ -531,8 +607,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--bootstrap-local-subdomain",
-    default=configargparse.SUPPRESS,
+    group="bootstrap options",
+    default=argparse.SUPPRESS,
     help=(
         "Passes a subdomain parameter to the generated Blueprint. Useful "
         "when serving assets locally from a different subdomain."
@@ -540,8 +618,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--bootstrap-cdn-force-ssl",
-    default=configargparse.SUPPRESS,
+    group="bootstrap options",
+    default=argparse.SUPPRESS,
     help=(
         "If a CDN resource url starts with //, prepend 'https:' to it."
         "\n"
@@ -550,8 +630,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "SEAMM",
     "--bootstrap-querystring-revving",
-    default=configargparse.SUPPRESS,
+    group="bootstrap options",
+    default=argparse.SUPPRESS,
     help=(
         "If True, will append a querystring with the current version to all "
         "static resources served locally. This ensures that upon upgrading "
@@ -563,65 +645,115 @@ parser.add_argument(
 
 # Mail arguments - for flask mail
 # https://pythonhosted.org/Flask-Mail/
-parser.add_argument(
-    "--mail-server", default=configargparse.SUPPRESS, help=("" "default=localhost")
+parser.add_argument_group(
+    "SEAMM",
+    "mail options",
+    "The FlaskMail options for the dashboard",
 )
 
 parser.add_argument(
-    "--mail-port", default=configargparse.SUPPRESS, help=("" "default=25")
+    "SEAMM",
+    "--mail-server",
+    group="mail options",
+    default=argparse.SUPPRESS,
+    help="default=localhost",
 )
 
 parser.add_argument(
-    "--mail-use-TLS", default=configargparse.SUPPRESS, help=("" "default=False")
+    "SEAMM",
+    "--mail-port",
+    group="mail options",
+    default=argparse.SUPPRESS,
+    help=("" "default=25"),
 )
 
 parser.add_argument(
-    "--mail-use-SSL", default=configargparse.SUPPRESS, help=("" "default=False")
+    "SEAMM",
+    "--mail-use-TLS",
+    group="mail options",
+    default=argparse.SUPPRESS,
+    help=("" "default=False"),
 )
 
 parser.add_argument(
-    "--mail-debug", default=configargparse.SUPPRESS, help=("", "default=app.debug")
+    "SEAMM",
+    "--mail-use-SSL",
+    group="mail options",
+    default=argparse.SUPPRESS,
+    help=("" "default=False"),
 )
 
 parser.add_argument(
-    "--mail-username", default=configargparse.SUPPRESS, help=("" "default=None")
+    "SEAMM",
+    "--mail-debug",
+    group="mail options",
+    default=argparse.SUPPRESS,
+    help=("", "default=app.debug"),
 )
 
 parser.add_argument(
-    "--mail-password", default=configargparse.SUPPRESS, help=("" "default=None")
+    "SEAMM",
+    "--mail-username",
+    group="mail options",
+    default=argparse.SUPPRESS,
+    help=("" "default=None"),
 )
 
 parser.add_argument(
-    "--mail-default-sender", default=configargparse.SUPPRESS, help=("" "default=None")
+    "SEAMM",
+    "--mail-password",
+    group="mail options",
+    default=argparse.SUPPRESS,
+    help=("" "default=None"),
 )
 
 parser.add_argument(
-    "--mail-max-emails", default=configargparse.SUPPRESS, help=("" "default=None")
+    "SEAMM",
+    "--mail-default-sender",
+    group="mail options",
+    default=argparse.SUPPRESS,
+    help=("" "default=None"),
 )
 
 parser.add_argument(
+    "SEAMM",
+    "--mail-max-emails",
+    group="mail options",
+    default=argparse.SUPPRESS,
+    help=("" "default=None"),
+)
+
+parser.add_argument(
+    "SEAMM",
     "--mail-suppress-send",
-    default=configargparse.SUPPRESS,
-    help=("" "defulat=app.testing"),
+    group="mail options",
+    default=argparse.SUPPRESS,
+    help=("" "default=app.testing"),
 )
 
 parser.add_argument(
+    "SEAMM",
     "--mail-ascii-attachments",
-    default=configargparse.SUPPRESS,
+    group="mail options",
+    default=argparse.SUPPRESS,
     help=("" "default=False"),
 )
 
 parser.add_argument(
-    "--mail-ascii-attachments",
-    default=configargparse.SUPPRESS,
-    help=("" "default=False"),
+    "SEAMM",
+    "--mail-subject-prefix",
+    group="mail options",
+    default=argparse.SUPPRESS,
+    help=(""),
 )
 
-parser.add_argument("--mail-subject-prefix", default=configargparse.SUPPRESS, help=(""))
+parser.add_argument(
+    "SEAMM", "--mail-sender", group="mail options", default=argparse.SUPPRESS, help=("")
+)
 
-parser.add_argument("--mail-sender", default=configargparse.SUPPRESS, help=(""))
-
-options, unknown_options = parser.parse_known_args()
+# And handle the command-line arguments and ini file options.
+parser.parse_args()
+options = parser.get_options("SEAMM")
 
 if __name__ == "__main__":
     import pprint
