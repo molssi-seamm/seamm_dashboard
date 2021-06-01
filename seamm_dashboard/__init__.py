@@ -3,7 +3,6 @@ import os
 import time
 
 import connexion
-import configargparse
 
 # from flask_admin import Admin
 from flask_debugtoolbar import DebugToolbarExtension
@@ -23,10 +22,10 @@ from flask_jwt_extended import get_current_user
 from .config import config
 from .template_filters import replace_empty
 from .setup_logging import setup_logging
-from .setup_argparsing import options
+from .setup_argparsing import options, parser
 
 # Setup the logging, now that we know where the datastore is
-datastore = options.datastore
+datastore = options["datastore"]
 setup_logging(datastore, options)
 logger = logging.getLogger("dashboard")
 
@@ -35,23 +34,23 @@ logger = logging.getLogger("dashboard")
 # set the correct environment variables. Carefully!
 
 if "env" in options:
-    if "FLASK_ENV" in os.environ and options.env != os.environ["FLASK_ENV"]:
+    if "FLASK_ENV" in os.environ and options["env"] != os.environ["FLASK_ENV"]:
         logger.warning(
             (
                 "The environment variable FLASK_ENV is being overidden by "
                 "the configuration option 'env' ({})"
-            ).format(options.env)
+            ).format(options["env"])
         )
-    os.environ["FLASK_ENV"] = options.env
+    os.environ["FLASK_ENV"] = options["env"]
 if "debug" in options:
-    if "FLASK_DEBUG" in os.environ and options.debug != os.environ["FLASK_DEBUG"]:
+    if "FLASK_DEBUG" in os.environ and options["debug"] != os.environ["FLASK_DEBUG"]:
         logger.warning(
             (
                 "The environment variable FLASK_DEBUG is being overidden by "
                 "the configuration option 'debug' ({})"
-            ).format(options.debug)
+            ).format(options["debug"])
         )
-    os.environ["FLASK_DEBUG"] = options.debug
+    os.environ["FLASK_DEBUG"] = options["debug"]
 
 # continue the setup
 mail = Mail()
@@ -81,21 +80,23 @@ def create_app(config_name=None):
         logger.info("Configuring from configuration " + config_name)
         app.config.from_object(config[config_name])
 
-        options.initialize = False
-        options.no_check = True
+        options["initialize"] = False
+        options["no_check"] = True
     else:
         # Report where options come from
-        parser = configargparse.get_argument_parser("dashboard")
+        # parser = configargparse.get_argument_parser("dashboard")
         logger.info("Where options are set:")
         logger.info(60 * "-")
-        for line in parser.format_values().splitlines():
-            logger.info(line)
+        for section, tmp in parser.get_options().items():
+            origin = parser.get_origins(section)
+            for key, value in tmp.items():
+                logger.info(f"{key:<19} {origin[key]:<15} {value}")
 
         # Now set the options!
         logger.info("")
         logger.info("Configuration:")
         logger.info(60 * "-")
-        for key, value in vars(options).items():
+        for key, value in options.items():
             if key not in (
                 "env",
                 "debug",
@@ -124,7 +125,7 @@ def create_app(config_name=None):
 
     db.init_app(app)
     with app.app_context():
-        if options.initialize:
+        if options["initialize"]:
             logger.info("Removing all previous jobs from the database.")
             db.drop_all()
         db.create_all()
@@ -198,14 +199,14 @@ def create_app(config_name=None):
         logger.info("\t{:>30s} = {}".format(key, value))
     logger.info("")
 
-    if not options.no_check:
+    if not options["no_check"]:
         # Ugly but avoids circular import.
         from .models.import_jobs import import_jobs
 
         t0 = time.perf_counter()
         with app.app_context():
             n_projects, n_added_projects, n_jobs, n_added_jobs = import_jobs(
-                os.path.join(options.datastore, "projects")
+                os.path.join(os.path.expanduser(options["datastore"]), "projects")
             )
 
             db.session.commit()
