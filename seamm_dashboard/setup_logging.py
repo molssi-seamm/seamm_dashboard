@@ -33,7 +33,7 @@ def setup_logging(datastore, options):
     log_dir = Path(options["log_dir"].replace("%datastore%", datastore)).expanduser()
 
     if not log_dir.is_dir():
-        log_dir.mkdir()
+        log_dir.mkdir(parents=True, exist_ok=True)
 
     # Set up logging to a file (overwriting)
     log_file = log_dir / "dashboard.log"
