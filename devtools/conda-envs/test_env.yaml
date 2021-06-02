@@ -9,7 +9,6 @@ dependencies:
     - email-validator
     - flask-authorize
     - flask-jwt-extended>=4.1.0
-    - configargparse
     - connexion[swagger-ui]
     - fasteners
     - flask
@@ -26,6 +25,7 @@ dependencies:
     - marshmallow_sqlalchemy
     - python_dateutil
     - requests
+    - seamm-util
     - selenium
     - sqlalchemy
     - wtforms

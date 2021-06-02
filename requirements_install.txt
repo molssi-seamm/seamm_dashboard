@@ -1,4 +1,3 @@
-configargparse
 connexion[swagger-ui]
 flask
 flask_bootstrap
@@ -14,6 +13,7 @@ marshmallow
 marshmallow_sqlalchemy
 python_dateutil
 requests
+seamm_util
 selenium
 sqlalchemy
 wtforms
