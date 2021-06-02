@@ -1,4 +1,5 @@
 import argparse
+import sys
 
 import seamm_util
 
@@ -752,7 +753,11 @@ parser.add_argument(
 )
 
 # And handle the command-line arguments and ini file options.
-parser.parse_args()
+# Working around pytest :-(
+if "pytest" in sys.argv[0]:
+    parser.parse_args([])
+else:
+    parser.parse_args()
 options = parser.get_options("SEAMM")
 
 if __name__ == "__main__":
