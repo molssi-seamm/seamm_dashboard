@@ -10,7 +10,6 @@ dependencies:
     - email-validator
     - flask-authorize
     - flask-jwt-extended>=4.1.0
-    - configargparse
     - connexion[swagger-ui]
     - fasteners
     - flask
@@ -36,6 +35,7 @@ dependencies:
     - pytest-selenium
     - pytest-flask
     - pytest-cov
+    - pytest-mock
     # For development
     - black
     - flake8
