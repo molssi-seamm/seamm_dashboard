@@ -304,6 +304,10 @@ var contentFunctions = {
         "load" : [loadStructure, "href"],
         "resize": "structure",
     },
+    "cif": {
+        "load" : [loadStructure, "href"],
+        "resize": "structure",
+    },
     "pdb": {
         "load" : [loadStructure, "href"],
         "resize": "structure",

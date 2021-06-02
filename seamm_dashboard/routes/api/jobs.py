@@ -41,6 +41,7 @@ file_icons = {
     "folder": "far fa-folder-open",
     "pdb": "fas fa-cubes",
     "mmcif": "fas fa-cubes",
+    "cif": "fas fa-cubes",
 }
 
 
