@@ -35,6 +35,7 @@ dependencies:
     - pytest-selenium
     - pytest-flask
     - pytest-cov
+    - pytest-mock
     # For development
     - black
     - flake8
