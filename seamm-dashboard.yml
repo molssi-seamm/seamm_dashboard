@@ -26,6 +26,7 @@ dependencies:
     - marshmallow_sqlalchemy
     - python_dateutil
     - requests
+    - seamm-util
     - selenium
     - sqlalchemy
     - wtforms
