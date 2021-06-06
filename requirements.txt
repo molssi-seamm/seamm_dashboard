@@ -1,5 +1,8 @@
 connexion[swagger-ui]==2.7.0
+email-validator
 flask==1.1.2
+flask-authorize
+flask-jwt-extended>=4.1.0
 flask_bootstrap==3.3.7.1
 flask_cors==3.0.8
 flask_debugtoolbar==0.11.0
