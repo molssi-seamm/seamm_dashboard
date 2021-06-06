@@ -505,7 +505,7 @@ parser.add_argument(
     "SEAMM",
     "--sqlalchemy-database-uri",
     group="sqlalchemy options",
-    default="sqlite:////Users/psaxe/SEAMM/Jobs/seamm.db",
+    default="sqlite:////${datastore}/seamm.db",
     help=(
         "The database URI that should be used for the connection. Examples:"
         "\n"
