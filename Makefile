@@ -50,11 +50,11 @@ clean-test: ## remove test and coverage artifacts
 	find . -name '.pytype' -exec rm -fr {} +
 
 lint: ## check style with black and flake8
-	black --check --diff *.py devtools mac_app/*.py $(MODULE)
-	flake8 *.py devtools mac_app/*.py $(MODULE)
+	black --check --diff devtools mac_app/*.py $(MODULE)
+	flake8 devtools mac_app/*.py $(MODULE)
 
 format: ## reformat with with yapf and isort
-	black *.py devtools mac_app/*.py $(MODULE)
+	black devtools mac_app/*.py $(MODULE)
 
 typing: ## check typing
 	pytype $(MODULE)
