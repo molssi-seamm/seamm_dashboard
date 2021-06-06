@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""seamm-dashboard
+The Web Dashboard for SEAMM (Simulation Environment for Atomistic and Molecular Simulations).
+"""
 import setuptools
 import versioneer
 
@@ -12,7 +18,7 @@ if __name__ == "__main__":
         name="seamm-dashboard",
         version=versioneer.get_version(),
         cmdclass=versioneer.get_cmdclass(),
-        description="MolSSI SEAMM Dashboard",
+        description=__doc__.splitlines()[1],
         author="Jessica Nash",
         author_email="janash@vt.edu",
         url="https://github.com/molssi-seamm/seamm_dashboard.git",
