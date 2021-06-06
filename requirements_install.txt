@@ -1,5 +1,6 @@
 connexion[swagger-ui]
 email-validator
+fasteners
 flask
 flask-authorize
 flask-jwt-extended>=4.1.0
