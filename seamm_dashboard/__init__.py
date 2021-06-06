@@ -24,6 +24,17 @@ from .template_filters import replace_empty
 from .setup_logging import setup_logging
 from .setup_argparsing import options, parser
 
+
+# Handle versioneer
+from ._version import get_versions
+
+__author__ = """Jessica Nash"""
+__email__ = "janash@vt.edu"
+versions = get_versions()
+__version__ = versions["version"]
+__git_revision__ = versions["full-revisionid"]
+del get_versions, versions
+
 # Setup the logging, now that we know where the datastore is
 datastore = options["datastore"]
 setup_logging(datastore, options)

@@ -1,4 +1,5 @@
 import setuptools
+import versioneer
 
 with open("requirements_install.txt") as fd:
     requirements = fd.read()
@@ -9,7 +10,8 @@ if __name__ == "__main__":
 
     setuptools.setup(
         name="seamm-dashboard",
-        version="0.1.0",
+        version=versioneer.get_version(),
+        cmdclass=versioneer.get_cmdclass(),
         description="MolSSI SEAMM Dashboard",
         author="Jessica Nash",
         author_email="janash@vt.edu",
