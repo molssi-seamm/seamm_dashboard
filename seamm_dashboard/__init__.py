@@ -260,16 +260,33 @@ def create_app(config_name=None):
             db.session.add(group)
             db.session.commit()
 
+        # Add a default project if it does not exist.
+
+        from .models import Project
+
+        # Ensure that the directory exists
+        projects = datastore / "projects"
+        default = projects / "default"
+        default.mkdir(parents=True, exist_ok=True)
+
+        # Check if in DB
+        if (
+            db.session.query(Project).filter_by(name="default", path=str(default))
+            .one_or_none()
+        ) is None:
+            # Note this relies on the courrent user's id and group from above.
+            project = Project(
+                path=str(default), name="default", owner_id=user.id, group_id=group.id
+            )
+            db.session.add(project)
+            db.session.commit()
+        
     logger.info("")
     logger.info("Final configuration:")
     logger.info(60 * "-")
     for key, value in app.config.items():
         logger.info("\t{:>30s} = {}".format(key, value))
     logger.info("")
-
-    # Ensure that the projects directory exists.
-    projects = datastore / "projects"
-    projects.mkdir(parents=True, exist_ok=True)
 
     if not options["no_check"]:
         # Ugly but avoids circular import.
