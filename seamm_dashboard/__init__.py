@@ -1,5 +1,6 @@
 import logging
 import os
+from pathlib import Path
 import time
 
 import connexion
@@ -35,9 +36,12 @@ __version__ = versions["version"]
 __git_revision__ = versions["full-revisionid"]
 del get_versions, versions
 
+# Ensure that the projects directory exists.
+datastore = Path(options["datastore"]).expanduser().resolve()
+datastore.mkdir(parents=True, exist_ok=True)
+
 # Setup the logging, now that we know where the datastore is
-datastore = options["datastore"]
-setup_logging(datastore, options)
+setup_logging(str(datastore), options)
 logger = logging.getLogger("dashboard")
 
 # Two of the Flask options cannot be reset, and should (apparently) be
@@ -119,7 +123,7 @@ def create_app(config_name=None):
             ):
                 key = key.upper()
                 if isinstance(value, str):
-                    value = value.replace("%datastore%", datastore)
+                    value = value.replace("%datastore%", str(datastore))
                 logger.info("\t{:>30s} = {}".format(key, value))
                 app.config[key] = value
 
@@ -203,12 +207,69 @@ def create_app(config_name=None):
                 db.session.add(role)
                 db.session.commit()
 
+        # Add an admin group and user if not present
+        from .models import Group
+
+        name = "admin"
+        group = db.session.query(Group).filter_by(name=name).one_or_none()
+        if group is None:
+            group = Group(name=name)
+            db.session.add(group)
+            db.session.commit()
+
+        from .models import User
+
+        name = "admin"
+        user = db.session.query(User).filter_by(username=name).one_or_none()
+        if user is None:
+            admin_role = db.session.query(Role).filter_by(name="admin").one_or_none()
+
+            if admin_role is None:
+                admin_role = Role(name="admin")
+
+            user = User(username=name, password="admin", roles=[admin_role])
+            user.groups.append(group)
+            db.session.add(user)
+            db.session.add(admin_role)
+            db.session.add(group)
+            db.session.commit()
+
+        # And the current user also
+        item = Path.home()
+        # Get the group first
+        name = item.group()
+        group = db.session.query(Group).filter_by(name=name).one_or_none()
+        if group is None:
+            group = Group(name=name)
+            db.session.add(group)
+            db.session.commit()
+
+        # and now the user
+        name = item.owner()
+        user = db.session.query(User).filter_by(username=name).one_or_none()
+        if user is None:
+            admin_role = db.session.query(Role).filter_by(name="admin").one_or_none()
+
+            if admin_role is None:
+                admin_role = Role(name="admin")
+
+            user = User(username=name, password="default", roles=[admin_role])
+            user.groups.append(group)
+            db.session.add(user)
+            db.session.add(admin_role)
+            db.session.add(group)
+            db.session.commit()
+
     logger.info("")
     logger.info("Final configuration:")
     logger.info(60 * "-")
     for key, value in app.config.items():
         logger.info("\t{:>30s} = {}".format(key, value))
     logger.info("")
+
+    # Ensure that the projects directory exists.
+    projects = datastore / "projects"
+    projects.mkdir(parents=True, exist_ok=True)
 
     if not options["no_check"]:
         # Ugly but avoids circular import.
@@ -217,7 +278,7 @@ def create_app(config_name=None):
         t0 = time.perf_counter()
         with app.app_context():
             n_projects, n_added_projects, n_jobs, n_added_jobs = import_jobs(
-                os.path.join(os.path.expanduser(options["datastore"]), "projects")
+                str(projects)
             )
 
             db.session.commit()
