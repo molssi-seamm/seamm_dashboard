@@ -271,7 +271,8 @@ def create_app(config_name=None):
 
         # Check if in DB
         if (
-            db.session.query(Project).filter_by(name="default", path=str(default))
+            db.session.query(Project)
+            .filter_by(name="default", path=str(default))
             .one_or_none()
         ) is None:
             # Note this relies on the courrent user's id and group from above.
@@ -280,7 +281,7 @@ def create_app(config_name=None):
             )
             db.session.add(project)
             db.session.commit()
-        
+
     logger.info("")
     logger.info("Final configuration:")
     logger.info(60 * "-")
