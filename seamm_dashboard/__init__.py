@@ -37,11 +37,12 @@ __git_revision__ = versions["full-revisionid"]
 del get_versions, versions
 
 # Ensure that the projects directory exists.
-datastore = Path(options["datastore"]).expanduser().resolve()
-datastore.mkdir(parents=True, exist_ok=True)
+datastore_path = Path(options["datastore"]).expanduser().resolve()
+datastore = str(datastore_path)
+datastore_path.mkdir(parents=True, exist_ok=True)
 
 # Setup the logging, now that we know where the datastore is
-setup_logging(str(datastore), options)
+setup_logging(datastore, options)
 logger = logging.getLogger("dashboard")
 
 # Two of the Flask options cannot be reset, and should (apparently) be
@@ -123,7 +124,7 @@ def create_app(config_name=None):
             ):
                 key = key.upper()
                 if isinstance(value, str):
-                    value = value.replace("%datastore%", str(datastore))
+                    value = value.replace("%datastore%", datastore)
                 logger.info("\t{:>30s} = {}".format(key, value))
                 app.config[key] = value
 
@@ -265,7 +266,7 @@ def create_app(config_name=None):
         from .models import Project
 
         # Ensure that the directory exists
-        projects = datastore / "projects"
+        projects = datastore_path / "projects"
         default = projects / "default"
         default.mkdir(parents=True, exist_ok=True)
 
