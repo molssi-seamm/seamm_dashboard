@@ -149,7 +149,7 @@ def test_get_project(auth_client):
 
     auth_client = auth_client[0]
 
-    response = auth_client.get("api/projects/1")
+    response = auth_client.get("api/projects/2")
 
     assert response.status_code == 200
 
@@ -159,7 +159,7 @@ def test_get_project_jobs(auth_client):
 
     auth_client = auth_client[0]
 
-    response = auth_client.get("api/projects/1/jobs")
+    response = auth_client.get("api/projects/2/jobs")
 
     assert response.status_code == 200
 

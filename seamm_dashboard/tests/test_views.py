@@ -398,7 +398,7 @@ class TestLiveServer:
 
         # chrome_driver.get_screenshot_as_file(f'user_table.png')
 
-        assert len(table_rows) == 5
+        assert len(table_rows) == 7
 
     def test_admin_edit_user(self, app, chrome_driver):
 

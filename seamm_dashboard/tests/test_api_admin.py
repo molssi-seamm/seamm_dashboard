@@ -41,9 +41,13 @@ def test_get_users(admin_client):
 
     response = admin_client.get("api/users")
 
+    names = []
+    for r in response.json:
+        names.append(r["username"])
+
     assert response.status_code == 200
 
-    assert len(response.json) == 3
+    assert len(response.json) == 5, names
 
 
 def test_add_user(admin_client):
