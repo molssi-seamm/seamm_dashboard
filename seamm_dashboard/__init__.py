@@ -1,5 +1,6 @@
 import logging
 import os
+from pathlib import Path
 import time
 
 import connexion
@@ -24,8 +25,23 @@ from .template_filters import replace_empty
 from .setup_logging import setup_logging
 from .setup_argparsing import options, parser
 
+
+# Handle versioneer
+from ._version import get_versions
+
+__author__ = """Jessica Nash"""
+__email__ = "janash@vt.edu"
+versions = get_versions()
+__version__ = versions["version"]
+__git_revision__ = versions["full-revisionid"]
+del get_versions, versions
+
+# Ensure that the projects directory exists.
+datastore_path = Path(options["datastore"]).expanduser().resolve()
+datastore = str(datastore_path)
+datastore_path.mkdir(parents=True, exist_ok=True)
+
 # Setup the logging, now that we know where the datastore is
-datastore = options["datastore"]
 setup_logging(datastore, options)
 logger = logging.getLogger("dashboard")
 
@@ -192,6 +208,81 @@ def create_app(config_name=None):
                 db.session.add(role)
                 db.session.commit()
 
+        # Add an admin group and user if not present
+        from .models import Group
+
+        name = "admin"
+        group = db.session.query(Group).filter_by(name=name).one_or_none()
+        if group is None:
+            group = Group(name=name)
+            db.session.add(group)
+            db.session.commit()
+
+        from .models import User
+
+        name = "admin"
+        user = db.session.query(User).filter_by(username=name).one_or_none()
+        if user is None:
+            admin_role = db.session.query(Role).filter_by(name="admin").one_or_none()
+
+            if admin_role is None:
+                admin_role = Role(name="admin")
+
+            user = User(username=name, password="admin", roles=[admin_role])
+            user.groups.append(group)
+            db.session.add(user)
+            db.session.add(admin_role)
+            db.session.add(group)
+            db.session.commit()
+
+        # And the current user also
+        item = Path.home()
+        # Get the group first
+        name = item.group()
+        group = db.session.query(Group).filter_by(name=name).one_or_none()
+        if group is None:
+            group = Group(name=name)
+            db.session.add(group)
+            db.session.commit()
+
+        # and now the user
+        name = item.owner()
+        user = db.session.query(User).filter_by(username=name).one_or_none()
+        if user is None:
+            admin_role = db.session.query(Role).filter_by(name="admin").one_or_none()
+
+            if admin_role is None:
+                admin_role = Role(name="admin")
+
+            user = User(username=name, password="default", roles=[admin_role])
+            user.groups.append(group)
+            db.session.add(user)
+            db.session.add(admin_role)
+            db.session.add(group)
+            db.session.commit()
+
+        # Add a default project if it does not exist.
+
+        from .models import Project
+
+        # Ensure that the directory exists
+        projects = datastore_path / "projects"
+        default = projects / "default"
+        default.mkdir(parents=True, exist_ok=True)
+
+        # Check if in DB
+        if (
+            db.session.query(Project)
+            .filter_by(name="default", path=str(default))
+            .one_or_none()
+        ) is None:
+            # Note this relies on the courrent user's id and group from above.
+            project = Project(
+                path=str(default), name="default", owner_id=user.id, group_id=group.id
+            )
+            db.session.add(project)
+            db.session.commit()
+
     logger.info("")
     logger.info("Final configuration:")
     logger.info(60 * "-")
@@ -206,7 +297,7 @@ def create_app(config_name=None):
         t0 = time.perf_counter()
         with app.app_context():
             n_projects, n_added_projects, n_jobs, n_added_jobs = import_jobs(
-                os.path.join(os.path.expanduser(options["datastore"]), "projects")
+                str(projects)
             )
 
             db.session.commit()

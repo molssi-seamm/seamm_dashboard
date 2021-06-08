@@ -1,4 +1,5 @@
 import argparse
+from pathlib import Path
 import sys
 
 import seamm_util
@@ -505,7 +506,7 @@ parser.add_argument(
     "SEAMM",
     "--sqlalchemy-database-uri",
     group="sqlalchemy options",
-    default="sqlite:////Users/psaxe/SEAMM/Jobs/seamm.db",
+    default="",
     help=(
         "The database URI that should be used for the connection. Examples:"
         "\n"
@@ -759,6 +760,11 @@ if "pytest" in sys.argv[0]:
 else:
     parser.parse_args()
 options = parser.get_options("SEAMM")
+
+# Fix the database uri
+if "sqlalchemy_database_uri" in options and options["sqlalchemy_database_uri"] == "":
+    path = Path(options["datastore"]).expanduser().resolve() / "seamm.db"
+    options["sqlalchemy_database_uri"] = f"sqlite:///{str(path)}"
 
 if __name__ == "__main__":
     import pprint

@@ -50,11 +50,11 @@ clean-test: ## remove test and coverage artifacts
 	find . -name '.pytype' -exec rm -fr {} +
 
 lint: ## check style with black and flake8
-	black --check --diff *.py devtools mac_app/*.py $(MODULE)
-	flake8 *.py devtools mac_app/*.py $(MODULE)
+	black --check --diff devtools mac_app/*.py $(MODULE)
+	flake8 devtools mac_app/*.py $(MODULE)
 
 format: ## reformat with with yapf and isort
-	black *.py devtools mac_app/*.py $(MODULE)
+	black devtools mac_app/*.py $(MODULE)
 
 typing: ## check typing
 	pytype $(MODULE)
@@ -111,6 +111,10 @@ docs: ## generate Sphinx HTML documentation, including API docs
 
 servedocs: docs ## compile the docs watching for changes
 	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
+
+test-release: clean ## package and upload a release to test PyPi
+	python setup.py sdist bdist_wheel
+	twine upload --repository testpypi dist/*
 
 release: clean ## package and upload a release
 	python setup.py sdist bdist_wheel

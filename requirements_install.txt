@@ -1,5 +1,9 @@
 connexion[swagger-ui]
+email-validator
+fasteners
 flask
+flask-authorize
+flask-jwt-extended>=4.1.0
 flask_bootstrap
 flask_cors
 flask_debugtoolbar

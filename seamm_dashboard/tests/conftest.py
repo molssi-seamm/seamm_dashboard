@@ -65,7 +65,7 @@ def app(project_directory):
     app_context.push()
 
     # Create a sample project
-    test_project = {"name": "MyProject", "path": test_project_path, "owner_id": 1}
+    test_project = {"name": "MyProject", "path": test_project_path, "owner_id": 3}
 
     project = Project(**test_project)
 
@@ -87,7 +87,7 @@ def app(project_directory):
         "path": os.path.realpath(os.path.join(test_project_path, "Job_000001")),
         "submitted": parser.parse("2016-08-29T09:12:33.001000+00:00"),
         "projects": [project],
-        "owner_id": 1,
+        "owner_id": 3,
         "status": "finished",
     }
 
@@ -98,7 +98,7 @@ def app(project_directory):
         "path": os.path.realpath(os.path.join(test_project_path, "Job_000002")),
         "submitted": parser.parse("2017-08-29T09:12:33.001000+00:00"),
         "projects": [project],
-        "owner_id": 1,
+        "owner_id": 3,
         "status": "finished",
     }
 
@@ -109,7 +109,7 @@ def app(project_directory):
         "path": "/Users/username/seamm/projects",
         "submitted": parser.parse("2019-08-29T09:12:33.001000+00:00"),
         "projects": [project],
-        "owner_id": 1,
+        "owner_id": 3,
         "status": "finished",
     }
 
@@ -121,7 +121,7 @@ def app(project_directory):
 
     # Make the ID easier
     flowchart_data["id"] = "ABCD"
-    flowchart_data["owner_id"] = 1
+    flowchart_data["owner_id"] = 3
 
     # Save the fake data to the db
     job1 = Job(**job1_data)

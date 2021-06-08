@@ -1,3 +1,6 @@
+include requirements*
+include versioneer.py
+
 include seamm_dashboard/swagger.yml
 graft seamm_dashboard/models
 graft seamm_dashboard/routes
