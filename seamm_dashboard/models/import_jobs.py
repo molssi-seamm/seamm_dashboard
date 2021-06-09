@@ -55,7 +55,7 @@ def import_jobs(location):
                     job_name = os.path.basename(potential_job)
                     logger.debug("       job {}".format(job_name))
                     try:
-                        job, added = add_job(potential_job, job_name, project)
+                        job, added = add_job(potential_job, job_name, [project])
                     except sqlite3.IntegrityError as e:
                         logger.warning("Adding job {} failed: {}".format(job_name, e))
                     if job is None:
@@ -106,7 +106,7 @@ def add_flowchart(flowchart_path, project):
     return flowchart
 
 
-def add_job(job_path, job_name, project):
+def add_job(job_path, job_name, projects):
     """Add a job to the datastore. A unique job is based on directory location.
 
     If job_path does not have a .flow file, it is skipped and not added to the
@@ -118,7 +118,7 @@ def add_job(job_path, job_name, project):
         The directory containing the job to be added to the datastore.
     job_name : str
         The text name of the job, usually 'Job_xxxxxx'
-    project : models.Project
+    project : list of models.Project
         The Project object in the database
     """
 
@@ -133,7 +133,9 @@ def add_job(job_path, job_name, project):
         if found is None:
             user, group = file_owner(job_path)
             job = Job(owner_id=user, group_id=group, **job_info)
-            job.projects.append(project)
+
+            for project in projects:
+                job.projects.append(project)
 
             add_flowchart(flowchart_path, project)
 

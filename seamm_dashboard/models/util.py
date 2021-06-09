@@ -64,6 +64,30 @@ def process_flowchart(flowchart_path):
     return flowchart_info
 
 
+def _read_job_data(job_data):
+    """Function for reading job data from job_data.json"""
+
+    job_info = {"description": ""}
+
+    if "title" in job_data:
+        job_info["title"] = job_data["title"]
+    if "state" in job_data:
+        job_info["status"] = job_data["state"]
+    else:
+        job_info["status"] = "unknown"
+    if "start time" in job_data:
+        job_info["submitted"] = datetime.strptime(job_data["start time"], time_format)
+        job_info["started"] = datetime.strptime(job_data["start time"], time_format)
+    if "end time" in job_data:
+        job_info["finished"] = datetime.strptime(job_data["end time"], time_format)
+    if "working directory" in job_data:
+        job_info["path"] = job_data["working directory"]
+    if "job id" in job_data:
+        job_info["id"] = job_data["job id"]
+
+    return job_info
+
+
 def process_job(job_path):
     """Process path for adding job to datastore.
 
@@ -99,20 +123,8 @@ def process_job(job_path):
         try:
             with open(data_file, "r") as fd:
                 data = json.load(fd)
+            job_info = _read_job_data(data)
 
-            if "title" in data:
-                job_info["title"] = data["title"]
-            if "state" in data:
-                job_info["status"] = data["state"]
-            else:
-                job_info["status"] = "unknown"
-            if "start time" in data:
-                job_info["submitted"] = datetime.strptime(
-                    data["start time"], time_format
-                )
-                job_info["started"] = datetime.strptime(data["start time"], time_format)
-            if "end time" in data:
-                job_info["finished"] = datetime.strptime(data["end time"], time_format)
         except Exception as e:
             logger.warning("Encountered error reading job {}".format(job_path))
             logger.warning("Error: {}".format(e))
@@ -120,11 +132,6 @@ def process_job(job_path):
     job_info["flowchart_id"] = flowchart_info["id"]
     job_info["path"] = os.path.abspath(job_path)
     job_info["flowchart_path"] = flowchart_info["path"]
-
-    # Attempt to read job ID from file path
-    dir_name = os.path.basename(job_path)
-    job_id = dir_name.split("_")[1].lstrip("0")
-    job_info["id"] = int(job_id)
 
     return job_info
 
