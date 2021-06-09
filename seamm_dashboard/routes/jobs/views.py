@@ -1,13 +1,21 @@
+import json
+
 from flask import request, render_template, flash, redirect, url_for
 
 from flask_jwt_extended import jwt_required, get_current_user
 
+from seamm_dashboard.models import Project, Job
 from seamm_dashboard import db, authorize
+
+from seamm_dashboard.models.util import process_job
+from seamm_dashboard.models.import_jobs import add_job
 
 from . import jobs
 
-from seamm_dashboard.routes.jobs.forms import EditJob
+from seamm_dashboard.routes.jobs.forms import EditJob, ImportJob
 from seamm_dashboard.models import Job
+
+from werkzeug.utils import secure_filename
 
 
 @jobs.route("/views/jobs/")
@@ -75,3 +83,36 @@ def edit_job(job_id):
     return render_template(
         "jobs/edit_job.html", title=f"Edit Job {job_id}", form=form, back_url=job_url
     )
+
+
+@jobs.route("/jobs/import", methods=["GET", "POST"])
+@jwt_required()
+def import_job():
+    form = ImportJob()
+
+    if form.validate_on_submit():
+        data = json.load(form.outfile.data.stream)
+
+        filename = secure_filename(form.outfile.data.filename)
+        working_directory = data["working directory"]
+
+        job_info = process_job(working_directory)
+
+        projects = data["projects"]
+
+        project_objs = []
+        for project in projects:
+            query_project = Project.query.filter_by(name=project).one_or_none()
+
+            # Create project if it doesn't exist
+            if not query_project:
+                query_project = Project(name=project)
+                db.session.add(new_project)
+                db.session.commit()
+
+            project_objs.append(query_project)
+
+        add_job(working_directory, job_info["title"], project_objs)
+        flash(f"Job {job_info['id']} added to database.")
+
+    return render_template("jobs/import_job.html", form=form)
