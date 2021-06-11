@@ -12,5 +12,4 @@ class EditJob(FlaskForm):
 class ImportJob(FlaskForm):
     outfile = FileField("job_data.json File")
     title = StringField("Job Title")
-    notes = TextAreaField("Job Description")
     submit = SubmitField("Import Job")
