@@ -93,10 +93,12 @@ def import_job():
     if form.validate_on_submit():
         data = json.load(form.outfile.data.stream)
 
-        filename = secure_filename(form.outfile.data.filename)
         working_directory = data["working directory"]
 
         job_info = process_job(working_directory)
+
+        if form.title.data:
+            job_info["title"] = form.title.data
 
         projects = data["projects"]
 
@@ -107,12 +109,13 @@ def import_job():
             # Create project if it doesn't exist
             if not query_project:
                 query_project = Project(name=project)
-                db.session.add(new_project)
+                db.session.add(query_project)
                 db.session.commit()
 
             project_objs.append(query_project)
 
         add_job(working_directory, job_info["title"], project_objs)
-        flash(f"Job {job_info['id']} added to database.")
+        flash(f"Job {job_info['id']} successfully added to database.")
+        return redirect(url_for("main.index"))
 
     return render_template("jobs/import_job.html", form=form)

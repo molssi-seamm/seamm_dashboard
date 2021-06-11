@@ -124,6 +124,9 @@ def add_job(job_path, job_name, projects):
 
     job_info = process_job(job_path)
 
+    if job_name:
+        job_info["title"] = job_name
+
     if job_info:
         flowchart_path = job_info.pop("flowchart_path")
 
