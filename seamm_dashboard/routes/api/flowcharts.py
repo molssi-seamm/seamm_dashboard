@@ -8,6 +8,8 @@ from flask_jwt_extended import jwt_required
 
 from seamm_dashboard import authorize
 
+import json
+
 __all__ = ["get_flowcharts", "get_flowchart", "get_cytoscape"]
 
 
@@ -67,7 +69,9 @@ def get_cytoscape(id, flowchartKeys=None):
 
     important_stuff = {}
     important_stuff = flowchart.json
-    # description = important_stuff['nodes'][0]['attributes']['_description']
+
+    if isinstance(important_stuff, str):
+        important_stuff = json.loads(flowchart.json)
 
     elements = []
 
