@@ -5,7 +5,7 @@ import logging
 
 from seamm_dashboard.models import Project, Job, Flowchart, RoleSchema
 
-from sqlalchemy import and_
+from sqlalchemy import and_, func
 
 from flask_jwt_extended import get_current_user, jwt_required
 
@@ -49,13 +49,13 @@ def status():
     # Get information about jobs, projects, flowcharts
     num_jobs = Job.query.filter(Job.authorized("read")).count()
     num_jobs_running = Job.query.filter(
-        and_(Job.status == "running", Job.authorized("read"))
+        and_(func.lower(Job.status) == "running", Job.authorized("read"))
     ).count()
     num_jobs_finished = Job.query.filter(
-        and_(Job.status == "finished", Job.authorized("read"))
+        and_(func.lower(Job.status) == "finished", Job.authorized("read"))
     ).count()
     num_jobs_queued = Job.query.filter(
-        and_(Job.status == "running", Job.authorized("submitted"))
+        and_(func.lower(Job.status) == "running", Job.authorized("submitted"))
     ).count()
     num_flowcharts = Flowchart.query.filter(Flowchart.authorized("read")).count()
     num_projects = Project.query.filter(Project.authorized("read")).count()
