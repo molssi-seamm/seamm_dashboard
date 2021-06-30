@@ -144,10 +144,10 @@ function loadStructure(URL) {
             canvas.remove()}
 
         // Figure out the file extension and load the file
-        var fileExtension = URL.split(".");
+        let fileExtension = URL.split(".");
         fileExtension = fileExtension[fileExtension.length - 1]
-        var stage = new NGL.Stage("structure", {backgroundColor: "white"} );
-        
+        let stage = new NGL.Stage("structure", {backgroundColor: "white"} );
+
         if (representation == "default") {
             stage.loadFile(URL, {defaultRepresentation: true, ext: fileExtension });
         }
@@ -195,85 +195,53 @@ function loadStructure(URL) {
     `)
 
     // Initial stage load
-    var myStage;
+    let myStage;
     myStage = loadStage(URL);
 
-    // All the button behavior
-    $(document).on("click", "#default-rep", {'URL': URL, 'rep': 'default'},
-        function(event){ 
-        event.preventDefault();
-        myStage = loadStage(event.data.URL, event.data.rep);
-        });
+    // Add behavior for representation buttons.
+    let representations = {
+                    "#default-rep": "default",
+                    "#licorice-rep": "licorice", 
+                    "#cartoon-rep": "cartoon", 
+                    "#ball-stick-rep": "ball+stick", 
+                    "#surface-rep": "surace", 
+                    "#spacefill-rep":"spacefill"
+                }
     
-    $(document).on("click", "#licorice-rep", {'URL': URL, 'rep': 'licorice'},
+    for (let key in representations){
+
+        let rep = representations[key]
+        $(document).on("click", `${key}`, {'URL': URL, 'rep': rep},
         function(event){ 
         event.preventDefault();
         myStage = loadStage(event.data.URL, event.data.rep);
         });
-
-    $(document).on("click", "#cartoon-rep", {'URL': URL, 'rep': 'cartoon'},
-        function(event){ 
-        event.preventDefault();
-        myStage = loadStage(event.data.URL, event.data.rep);
-        });
-
-    $(document).on("click", "#ball-stick-rep", {'URL': URL, 'rep': 'ball+stick'}, 
-        function(event){ 
-            event.preventDefault();
-            myStage = loadStage(event.data.URL, event.data.rep)
-            });
-    
-    $(document).on("click", "#surface-rep", {'URL': URL, 'rep': 'surface'}, 
-        function(event){ 
-            event.preventDefault();
-            myStage = loadStage(event.data.URL, event.data.rep)
-        } );
-
-    $(document).on("click", "#spacefill-rep", {'URL': URL, 'rep': 'spacefill'}, 
-        function(event){ 
-            event.preventDefault();
-            myStage = loadStage(event.data.URL, event.data.rep)
-        } );
+    }
 
     // Export image buttons
-    $(document).on("click", "#normal", {'stage': myStage}, 
-    function(event){ 
-        event.preventDefault();
-        myStage.makeImage( {
-            factor: 1,
-            antialias: true,
-            trim: false,
-            transparent: true,
-        } ).then( function( blob ){
-            NGL.download( blob, "molecule-view.png" );
-        } );
-    } );
+    let qualities = {
+        "normal": 1,
+        "high": 5,
+        "ultra-high": 10,
+    }
 
-    $(document).on("click", "#high", {'stage': myStage}, 
-    function(event){ 
-        event.preventDefault();
-        myStage.makeImage( {
-            factor: 5,
-            antialias: true,
-            trim: false,
-            transparent: true,
-        } ).then( function( blob ){
-            NGL.download( blob, "molecule-view-high.png" );
-        } );
-    } );
+    for (let key in qualities){
+        // Remove previous behavior
+        $(document).off("click", `#${key}`)
 
-    $(document).on("click", "#ultra-high", {'stage': myStage}, 
-    function(event){ 
-        event.preventDefault();
-        myStage.makeImage( {
-            factor: 10,
-            antialias: true,
-            trim: false,
-            transparent: true,
-        } ).then( function( blob ){
-            NGL.download( blob, "molecule-view-ultra-high.png" );
-        } );
-    } );
+        $(document).on("click", `#${key}`, {'stage': myStage}, 
+            function(event){ 
+                event.preventDefault();
+                myStage.makeImage( {
+                    factor: qualities[key],
+                    antialias: true,
+                    trim: false,
+                    transparent: true,
+                } ).then( function( blob ){
+                    NGL.download( blob, `molecule-view-${key}.png` );
+                } );
+            } );
+    }
 }
 
 function toggleDivs(divList, divToShow = null) {
