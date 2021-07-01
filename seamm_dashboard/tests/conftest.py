@@ -12,7 +12,7 @@ from seamm_dashboard.models import (
     Project,
     User,
     Role,
-    UserJobAssociation,
+    UserProjectAssociation,
 )
 from selenium import webdriver
 
@@ -65,11 +65,16 @@ def app(project_directory):
     app_context.push()
 
     # Create a sample project
-    test_project = {"name": "MyProject", "path": test_project_path, "owner_id": 3}
+    test_project = {
+        "name": "MyProject",
+        "path": test_project_path,
+        "owner_id": 3,
+        "id": 100,
+    }
 
     project = Project(**test_project)
 
-    # Create some sample role
+    # Create some sample roles
     admin_role = Role.query.filter_by(name="admin").one_or_none()
     manager_role = Role.query.filter_by(name="group manager").one_or_none()
     user_role = Role.query.filter_by(name="user").one_or_none()
@@ -129,20 +134,17 @@ def app(project_directory):
 
     # Add job3 and readable for world.
     job3 = Job(**job3_data)
-
     job3.permissions = {"other": ["read"]}
 
-    # Add visitor and give read access to a job
+    # Add visitor and give read access to a project
     visitor = User(username="visitor", password="visitor", id=10)
-    a = UserJobAssociation(
-        permissions=["read"], resource_id=job2.id, entity_id=visitor.id
+    a = UserProjectAssociation(
+        permissions=["read"], resource_id=project.id, entity_id=visitor.id
     )
     a.job = job1
-    visitor.special_jobs.append(a)
+    visitor.special_projects.append(a)
     db.session.add(a)
     db.session.add(visitor)
-    # assert False, job1.special_users.all()
-    # db.session.commit()
 
     flowchart = Flowchart(**flowchart_data)
     db.session.add(test_user)

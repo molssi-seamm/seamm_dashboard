@@ -5,11 +5,8 @@ from .models import (  # noqa: F401
     User,
     Group,
     Role,
-    UserJobAssociation,
-    GroupJobAssociation,
     UserProjectAssociation,
     GroupProjectAssociation,
-    GroupFlowchartAssociation,
 )
 from .models import (  # noqa: F401
     JobSchema,

@@ -22,128 +22,15 @@ from seamm_dashboard import db, jwt
 #############################
 
 # Authentication Mapping Tables for Access Control
-UserJobMixin = generate_association_table("User", "Job")
-UserFlowchartMixin = generate_association_table("User", "Flowchart")
 UserProjectMixin = generate_association_table("User", "Project")
-GroupJobMixin = generate_association_table("Group", "Job")
 GroupProjectMixin = generate_association_table("Group", "Project")
-GroupFlowchartMixin = generate_association_table("Group", "Flowchart")
-
-
-class UserJobAssociation(db.Model, UserJobMixin):
-    pass
-
-
-class UserFlowchartAssociation(db.Model, UserFlowchartMixin):
-    pass
 
 
 class UserProjectAssociation(db.Model, UserProjectMixin):
-    def __setattr__(self, name, value):
-        """
-        Change behavior of set attribute so that when a user gets permissions for a
-        project, they get updated permissions for all jobs and flowcharts within the
-        project.
-        """
-        from seamm_dashboard import db
-
-        if name == "permissions":
-            # See if there is an asociation between the group and project
-            project = Project.query.filter_by(id=self.resource_id).one()
-
-            if project.jobs:
-                for job in project.jobs:
-                    assoc = UserJobAssociation.query.filter_by(
-                        entity_id=self.entity_id, resource_id=job.id
-                    ).one_or_none()
-
-                    if assoc:
-                        assoc.permissions = value
-                    else:
-                        assoc = UserJobAssociation(
-                            entity_id=self.entity_id,
-                            resource_id=job.id,
-                            permissions=value,
-                        )
-
-                    db.session.add(assoc)
-                    db.session.commit()
-
-            if project.flowcharts:
-                for flowchart in project.flowcharts:
-                    assoc = UserFlowchartAssociation.query.filter_by(
-                        entity_id=self.entity_id, resource_id=flowchart.id
-                    ).one_or_none()
-                    if assoc:
-                        assoc.permissions = value
-                    else:
-                        assoc = UserFlowchartAssociation(
-                            entity_id=self.entity_id,
-                            resource_id=flowchart.id,
-                            permissions=value,
-                        )
-
-                    db.session.add(assoc)
-                    db.session.commit()
-
-        super().__setattr__(name, value)
-
-
-class GroupJobAssociation(db.Model, GroupJobMixin):
     pass
 
 
 class GroupProjectAssociation(db.Model, GroupProjectMixin):
-    def __setattr__(self, name, value):
-        """
-        Change behavior of set attribute so that when a group gets permissions for a
-        project, they get updated permissions for all jobs and flowcharts within the
-        project.
-        """
-        from seamm_dashboard import db
-
-        if name == "permissions":
-            # See if there is an asociation between the group and project
-            project = Project.query.filter_by(id=self.resource_id).one()
-
-            if project.jobs:
-                for job in project.jobs:
-                    assoc = GroupJobAssociation.query.filter_by(
-                        entity_id=self.entity_id, resource_id=job.id
-                    ).one_or_none()
-                    if assoc:
-                        assoc.permissions = value
-                    else:
-                        assoc = GroupJobAssociation(
-                            entity_id=self.entity_id,
-                            resource_id=job.id,
-                            permissions=value,
-                        )
-
-                    db.session.add(assoc)
-                    db.session.commit()
-
-            if project.flowcharts:
-                for flowchart in project.flowcharts:
-                    assoc = GroupFlowchartAssociation.query.filter_by(
-                        entity_id=self.entity_id, resource_id=flowchart.id
-                    ).one_or_none()
-                    if assoc:
-                        assoc.permissions = value
-                    else:
-                        assoc = GroupFlowchartAssociation(
-                            entity_id=self.entity_id,
-                            resource_id=flowchart.id,
-                            permissions=value,
-                        )
-
-                    db.session.add(assoc)
-                    db.session.commit()
-
-        super().__setattr__(name, value)
-
-
-class GroupFlowchartAssociation(db.Model, GroupFlowchartMixin):
     pass
 
 
