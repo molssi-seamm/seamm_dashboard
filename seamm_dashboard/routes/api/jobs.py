@@ -60,7 +60,6 @@ def get_jobs(createdSince=None, createdBefore=None, limit=None):
         numbers are integers.
     limit: int
         The maximum number of jobs to return.
-
     """
 
     # Handle dates
@@ -81,13 +80,28 @@ def get_jobs(createdSince=None, createdBefore=None, limit=None):
         limit = Job.query.count()
 
     jobs = Job.query.filter(
-        and_(Job.submitted > createdSince, Job.submitted < createdBefore),
-        Job.authorized("read"),
+        and_(Job.submitted > createdSince, Job.submitted < createdBefore)
     ).limit(limit)
+
+    # After we get the jobs, we need to know which jobs belong to projects which the user
+    # can read. This might be a performance issue on a larger DB, but I think we can do this
+    # check here.
+
+    authorized_jobs = []
+    for job in jobs:
+        if authorize.read(job):
+            authorized_jobs.append(job)
+        else:
+            for project in job.projects:
+                if authorize.read(project):
+                    authorized_jobs.append(job)
+                    # We can exit the loop if we have found one
+                    # project which grants read permission
+                    break
 
     jobs_schema = JobSchema(many=True)
 
-    return jobs_schema.dump(jobs), 200
+    return jobs_schema.dump(authorized_jobs), 200
 
 
 def get_job_id(filename):
@@ -305,7 +319,13 @@ def get_job(id):
     if job is None:
         return Response(status=404)
 
-    if not authorize.read(job):
+    authorized = False
+    for project in job.projects:
+        if authorize.read(project):
+            authorized = True
+            break
+
+    if not authorized:
         return Response("You are not authorized to view this content.", status=401)
 
     job_schema = JobSchema(many=False)

@@ -22,14 +22,24 @@ def get_flowcharts(description=None, limit=None):
 
     if description is not None:
         flowcharts = Flowchart.query.filter(
-            Flowchart.description.contains(description), Flowchart.authorized("read")
+            Flowchart.description.contains(description)
         ).limit(limit)
     else:
-        flowcharts = Flowchart.query.filter(Flowchart.authorized("read")).limit(limit)
+        flowcharts = Flowchart.query.limit(limit)
+
+    authorized_flowcharts = []
+    for flowchart in flowcharts:
+        if authorize.read(flowchart):
+            authorized_flowcharts.append(flowchart)
+        else:
+            for project in flowchart.projects:
+                if authorize.read(project):
+                    authorized_flowcharts.append(flowchart)
+                    break
 
     flowcharts_schema = FlowchartSchema(many=True)
 
-    return flowcharts_schema.dump(flowcharts), 200
+    return flowcharts_schema.dump(authorized_flowcharts), 200
 
 
 @jwt_required(optional=True)
@@ -46,7 +56,17 @@ def get_flowchart(id):
     if flowchart is None:
         return Response(status=404)
 
-    if not authorize.read(flowchart):
+    authorized = False
+    if authorize.read(flowchart):
+        authorized = True
+
+    if not authorized:
+        for project in flowchart.projects:
+            if authorize.read(project):
+                authorized = True
+                break
+
+    if not authorized:
         return Response(status=401)
 
     flowchart_schema = FlowchartSchema(many=False)
@@ -64,7 +84,17 @@ def get_cytoscape(id, flowchartKeys=None):
     if flowchart is None:
         return Response(status=404)
 
-    if not authorize.read(flowchart):
+    authorized = False
+
+    if authorize.read(flowchart):
+        authorized = True
+    if not authorized:
+        for project in flowchart.projects:
+            if authorize.read(project):
+                authorized = True
+                break
+
+    if not authorized:
         return Response(status=401)
 
     important_stuff = {}

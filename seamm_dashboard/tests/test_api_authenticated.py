@@ -36,7 +36,7 @@ def test_get_jobs(createdSince, createdBefore, limit, expected_number, auth_clie
     response = auth_client.get(query_string)
     jobs_received = response.json
 
-    assert len(jobs_received) == expected_number
+    assert len(jobs_received) == expected_number, jobs_received[0]["id"]
 
 
 def test_get_job_by_id(auth_client):
@@ -149,7 +149,7 @@ def test_get_project(auth_client):
 
     auth_client = auth_client[0]
 
-    response = auth_client.get("api/projects/2")
+    response = auth_client.get("api/projects/100")
 
     assert response.status_code == 200
 
@@ -159,7 +159,7 @@ def test_get_project_jobs(auth_client):
 
     auth_client = auth_client[0]
 
-    response = auth_client.get("api/projects/2/jobs")
+    response = auth_client.get("api/projects/100/jobs")
 
     assert response.status_code == 200
 
@@ -169,6 +169,6 @@ def test_get_project_jobs_404(auth_client):
 
     auth_client = auth_client[0]
 
-    response = auth_client.get("api/projects/100/jobs")
+    response = auth_client.get("api/projects/1000/jobs")
 
     assert response.status_code == 404
