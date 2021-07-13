@@ -54,6 +54,10 @@ jobs:
       # conda setup requires this special shell
       shell: bash -l {0}
       run: |
+        git clone https://github.com/molssi-seamm/seamm_datastore.git
+        cd seamm_datastore
+        pip install .
+        cd ..
         cd seamm_dashboard
         cd static
         npm install

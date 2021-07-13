@@ -5,9 +5,31 @@ The server runs Flask on Passenger and Apache, or can run flask testing server.
 
 ### Install the SEAMM dashboard
 
-This repository has a Makefile included to help install the SEAMM dashboard. First, you must create the `conda` environment and install the necessary Javascript packages.
+#### Install from PyPi
 
-To create the seamm dashboard environment and install the necessary packages, type
+You can install the SEAMM Dashboard from PyPi. First create a conda environment for the dashboard.
+
+~~~bash
+conda create -n seamm-dashboard python=3.9
+conda activate seamm-dashboard
+~~~
+
+Next, install from conda
+
+~~~bash
+pip install seamm-dashboard
+~~~
+
+#### Install from this repository
+
+To get the most up-to-date version of the dashboard, install the package from this repository.
+
+~~~bash
+git clone https://github.com/molssi-seamm/seamm_dashboard.git
+cd seamm_dashboard
+~~~
+
+To create the `seamm-dashboard` environment and install the necessary packages, type
 
 ~~~bash
 $ make environment
@@ -15,10 +37,20 @@ $ make environment
 
 in the top level of your directory.
 
-After the script is finished running, activate the seamm dashboard conda environment:
+After the script is finished running, activate the SEAMM Dashboard conda environment:
 
 ~~~
 conda activate seamm-dashboard
+~~~
+
+### Installing the Datastore (Required)
+
+You must also install the [SEAMM Datastore](https://github.com/molssi-seamm/seamm_datastore). This is the package that manages the database connection. We are working on getting it on PyPi. For now, navigate to the repository. You should clone this repository and install the package. Make sure you are not in the SEAMM dashboard directory if you installed from GitHub in the previous step.
+
+~~~bash
+git clone https://github.com/molssi-seamm/seamm_datastore.git
+cd seamm_datstore
+pip install .
 ~~~
 
 If your conda environment is activated, you're ready to start running the dashboard.
@@ -37,7 +69,7 @@ If you do not have SEAMM installed, you can view a demo dashboard by using the d
 
 If you are running the dashboard in production, you should use better secrets.
 
-Open a browser and navigate to `http://localhost:5000/` to  view the sample dashboard. 
+Open a browser and navigate to `http://localhost:5000/` to  view the sample dashboard. Running the sample dashboard will create a user in the database with the same username you use on your computer the default password is `default`.
 
 ### Running with SEAMM installed
 
@@ -69,19 +101,3 @@ optional arguments:
 ```
 
 By default, if the database does not exist, it will be initialized from the job files in the datastore. Otherwise, the dashboard will scan the job files on startup and add any missing ones to the database. You can prevent this initial check with `--nocheck`. Similarly, if you wish to force the database to be recreated from scratch, use the `--initialize` flag.
-
-## Connecting to the development test datastore
-
-For development it is convenient to use the sample data from the directory `data/` in this repository. To do so, use the `--datastore` option to point to the local directory:
-
-```
-results_dashboard --datastore <path>/data
-```
-
-At the moment you need to use the full, not relative path. To use an SQLite database in memory use
-
-```
-results_dashboard.py --datastore <path>/data --sqlalchemy-database-uri 'sqlite:///:memory:'
-```
-
-You might also wish to add `--env development` to activate debugging, etc.
