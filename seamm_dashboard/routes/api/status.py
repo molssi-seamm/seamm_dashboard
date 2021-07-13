@@ -3,7 +3,8 @@ API calls for the status
 """
 import logging
 
-from seamm_dashboard.models import Project, Job, Flowchart, RoleSchema
+from seamm_datastore.models import Project, Job, Flowchart
+from seamm_datastore.schema import RoleSchema
 
 from sqlalchemy import and_, func
 

@@ -7,7 +7,7 @@ import logging
 import os
 import sqlite3
 
-from . import Flowchart, Job, Project
+from seamm_datastore.models import Flowchart, Job, Project
 from .util import process_flowchart, process_job, file_owner
 
 from seamm_dashboard import db
