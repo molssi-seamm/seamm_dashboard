@@ -15,7 +15,8 @@ from flask_jwt_extended import (
     unset_jwt_cookies,
 )
 
-from seamm_dashboard.models import User, UserSchema
+from seamm_datastore.models import User
+from seamm_datastore.schema import UserSchema
 
 from seamm_dashboard import jwt
 

@@ -9,7 +9,7 @@ from wtforms import (
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
 from wtforms import ValidationError
-from seamm_dashboard.models import User, Group
+from seamm_datastore.models import User, Group
 
 
 def _validate_group(self, field):

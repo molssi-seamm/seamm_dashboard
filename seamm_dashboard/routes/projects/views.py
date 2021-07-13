@@ -8,7 +8,7 @@ from wtforms import BooleanField
 from . import projects
 from .forms import EditProject, ManageProjectAccessForm
 
-from seamm_dashboard.models import Project, User, UserProjectAssociation
+from seamm_datastore.models import Project, User, UserProjectAssociation
 
 from seamm_dashboard import authorize, db
 

@@ -197,7 +197,7 @@ def create_app(config_name=None):
 
     # Add some default roles to the dashboard
     with app.app_context():
-        from .models import Role
+        from seamm_datastore.models import Role
 
         role_names = ["user", "group manager", "admin"]
 
@@ -209,7 +209,7 @@ def create_app(config_name=None):
                 db.session.commit()
 
         # Add an admin group and user if not present
-        from .models import Group
+        from seamm_datastore.models import Group
 
         name = "admin"
         group = db.session.query(Group).filter_by(name=name).one_or_none()
@@ -218,7 +218,7 @@ def create_app(config_name=None):
             db.session.add(group)
             db.session.commit()
 
-        from .models import User
+        from seamm_datastore.models import User
 
         name = "admin"
         user = db.session.query(User).filter_by(username=name).one_or_none()
@@ -263,7 +263,7 @@ def create_app(config_name=None):
 
         # Add a default project if it does not exist.
 
-        from .models import Project
+        from seamm_datastore.models import Project
 
         # Ensure that the directory exists
         projects = datastore_path / "projects"
@@ -292,7 +292,7 @@ def create_app(config_name=None):
 
     if not options["no_check"]:
         # Ugly but avoids circular import.
-        from .models.import_jobs import import_jobs
+        from seamm_dashboard.util.import_jobs import import_jobs
 
         t0 = time.perf_counter()
         with app.app_context():
