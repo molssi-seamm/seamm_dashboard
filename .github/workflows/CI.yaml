@@ -58,6 +58,7 @@ jobs:
         cd seamm_datastore
         pip install .
         cd ..
+        rm -rf seamm_datastore
         cd seamm_dashboard
         cd static
         npm install
