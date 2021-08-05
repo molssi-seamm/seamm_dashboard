@@ -3,6 +3,8 @@ This application is a results Dashboard for MolSSI projects.
 
 The server runs Flask on Passenger and Apache, or can run flask testing server.
 
+Test
+
 ### Install the SEAMM dashboard
 
 #### Install from PyPi
