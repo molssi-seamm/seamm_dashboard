@@ -75,7 +75,7 @@ coverage: ## check code coverage quickly with the default Python
 environment: ## create the environment for running the dashboard
 	@echo 'Creating the Conda/pip environment. This will take some time!'
 	@echo ''
-	@conda env create --force --file seamm-dashboard.yml
+	@conda env create --force --file devtools/conda-envs/test_env.yaml --name seamm-dashboard
 	@echo ''
 	@echo 'Installing the Javascript, which will also take a couple minutes!'
 	@echo ''
