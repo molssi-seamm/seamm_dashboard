@@ -34,50 +34,56 @@ def user_loader_callback(jwt_header, jwt_payload):
         # return None / null
         return None
 
-
-def process_flowchart(flowchart_path):
-    """Read in flowchart from file and process for addition to SEAMM datastore.
-
+def process_flowchart(path):
+    """
+    Function for parsing information from flowchart
+    
     Parameters
     ----------
-        flowchart_path: str
-            The location of the flowchart
+    path: str
+        The path to the flowchart.
 
     Returns
     -------
-        flowchart_info: dict
-            Dictionary of flowchart information.
+    flowchart_info: dict
+        A json containing flowchart information to be added to the database.
     """
-    flowchart_info = {}
 
-    flowchart_info["path"] = os.path.abspath(flowchart_path)
+    import re
 
-    # Get the flowchart text
-    with open(flowchart_path, "r") as f:
-        flowchart_info["text"] = f.read()
-
-    # Get the flowchart description
-    with open(flowchart_path) as f:
+    with open(path) as f:
         f.readline()
-        f.readline()
-        flowchart_info["json"] = json.load(f)
+        version_info = " " + f.readline().split()[-1]
+        text = f.read()
 
-    # Get a hash of the flowchart contents
-    flowchart_info["id"] = hashlib.md5(
-        flowchart_info["text"].encode("utf-8")
+    if " 1." in version_info:
+        metadata_pattern = None
+        flowchart_pattern = re.compile("\{.+\}", re.DOTALL)
+    elif " 2." in version_info:
+        # Flowchart is version 2.
+        metadata_pattern = re.compile("#metadata\n(\{.+?\})\n#", re.DOTALL)
+        flowchart_pattern = re.compile("#flowchart\n(\{.+\})\n#", re.DOTALL)
+    else:
+        # TODO Maybe raise custom exception. SEAMM Flowchart version error
+        # Value Error for now
+        raise ValueError
+    
+    # Handle the metadata
+    if metadata_pattern:
+        metadata = json.loads(metadata_pattern.findall(text)[0])
+    else:
+        metadata = {}
+
+    metadata["flowchart_version"] = float(version_info)
+    flowchart = {"json":flowchart_pattern.findall(text)[0]}
+
+    flowchart.update(metadata)
+    flowchart["id"] = hashlib.md5(
+        text.encode("utf-8")
     ).hexdigest()
+    flowchart["path"] = path
 
-    # Get the flowchart description.
-    try:
-        node0 = flowchart_info["json"]["nodes"][0]
-        flowchart_info["description"] = node0["attributes"]["_description"]
-    except KeyError:
-        flowchart_info["description"] = "No description given."
-    except Exception:
-        flowchart_info["description"] = "The flowchart may be corrupted."
-
-    return flowchart_info
-
+    return flowchart
 
 def _read_job_data(job_data):
     """Function for reading job data from job_data.json"""
