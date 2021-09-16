@@ -12,7 +12,7 @@ import logging
 from pathlib import Path
 import os
 
-from seamm_datastore.models import User, Group, Role
+from seamm_datastore.database.models import User, Group, Role
 from seamm_dashboard import db, jwt
 
 logger = logging.getLogger(__name__)
@@ -24,7 +24,7 @@ def user_loader_callback(jwt_header, jwt_payload):
     """Function for app, to return user object"""
 
     if jwt_header:
-        from seamm_datastore.models import User
+        from seamm_datastore.database.models import User
 
         username = jwt_payload["sub"]["username"]
         user = User.query.filter_by(username=username).one_or_none()

@@ -4,7 +4,7 @@ from flask import request, render_template, flash, redirect, url_for
 
 from flask_jwt_extended import jwt_required, get_current_user
 
-from seamm_datastore.models import Project, Job
+from seamm_datastore.database.models import Project, Job
 from seamm_dashboard import db, authorize
 
 from seamm_dashboard.util.util import process_job
@@ -13,7 +13,7 @@ from seamm_dashboard.util.import_jobs import add_job
 from . import jobs
 
 from seamm_dashboard.routes.jobs.forms import EditJob, ImportJob
-from seamm_datastore.models import Job
+from seamm_datastore.database.models import Job
 
 from werkzeug.utils import secure_filename
 

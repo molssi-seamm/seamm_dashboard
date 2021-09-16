@@ -6,7 +6,7 @@ from dateutil import parser
 
 from seamm_dashboard import create_app, db
 from seamm_dashboard.util.util import process_flowchart
-from seamm_datastore.models import (
+from seamm_datastore.database.models import (
     Job,
     Flowchart,
     Project,

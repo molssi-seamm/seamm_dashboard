@@ -5,8 +5,8 @@ API endpoint for groups
 from flask_jwt_extended import jwt_required
 
 from seamm_dashboard import authorize
-from seamm_datastore.models import Role
-from seamm_datastore.schema import RoleSchema
+from seamm_datastore.database.models import Role
+from seamm_datastore.database.schema import RoleSchema
 
 
 @jwt_required(optional=True)

@@ -28,7 +28,7 @@ from wtforms import BooleanField
 from . import admin
 
 from seamm_dashboard import db, authorize
-from seamm_datastore.models import (
+from seamm_datastore.database.models import (
     Role,
     Group,
     User,

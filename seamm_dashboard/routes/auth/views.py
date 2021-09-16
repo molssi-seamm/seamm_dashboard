@@ -14,8 +14,8 @@ from flask_jwt_extended import (
 from .forms import LoginForm, ConfirmLogin, UpdateAccountInfoForm
 
 from seamm_dashboard import authorize, db
-from seamm_datastore.models import User, UserProjectAssociation
-from seamm_datastore.schema import UserSchema
+from seamm_datastore.database.models import User, UserProjectAssociation
+from seamm_datastore.database.schema import UserSchema
 
 from . import auth
 

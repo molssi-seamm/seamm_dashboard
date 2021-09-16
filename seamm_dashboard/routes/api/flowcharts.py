@@ -2,8 +2,8 @@
 API calls for flowcharts
 """
 
-from seamm_datastore.models import Flowchart
-from seamm_datastore.schema import FlowchartSchema
+from seamm_datastore.database.models import Flowchart
+from seamm_datastore.database.schema import FlowchartSchema
 from flask import Response
 from flask_jwt_extended import jwt_required
 
