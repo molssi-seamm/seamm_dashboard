@@ -87,7 +87,7 @@ def app(project_directory):
 
     # Fill in some data
     job1_data = {
-        "flowchart_id": "ABCD",
+        "flowchart_id": 100,
         "id": 1,
         "path": os.path.realpath(os.path.join(test_project_path, "Job_000001")),
         "submitted": parser.parse("2016-08-29T09:12:33.001000+00:00"),
@@ -98,7 +98,7 @@ def app(project_directory):
 
     # Fill in some data
     job2_data = {
-        "flowchart_id": "ABCD",
+        "flowchart_id": 100,
         "id": 2,
         "path": os.path.realpath(os.path.join(test_project_path, "Job_000002")),
         "submitted": parser.parse("2017-08-29T09:12:33.001000+00:00"),
@@ -109,7 +109,7 @@ def app(project_directory):
 
     # More data - this job path (probably) doesn't actually exist
     job3_data = {
-        "flowchart_id": "ABCD",
+        "flowchart_id": 100,
         "id": 3,
         "path": "/Users/username/seamm/projects",
         "submitted": parser.parse("2019-08-29T09:12:33.001000+00:00"),
@@ -125,7 +125,7 @@ def app(project_directory):
     )
 
     # Make the ID easier
-    flowchart_data["id"] = "ABCD"
+    flowchart_data["id"] = 100
     flowchart_data["owner_id"] = 3
 
     # Save the fake data to the db
