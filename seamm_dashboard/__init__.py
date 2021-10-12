@@ -84,6 +84,22 @@ db = SQLAlchemy()
 ma = Marshmallow()
 
 
+@jwt.user_lookup_loader
+def user_loader_callback(jwt_header, jwt_payload):
+    """Function for app, to return user object"""
+
+    if jwt_header:
+        from seamm_datastore.database.models import User
+
+        username = jwt_payload["sub"]["username"]
+        user = User.query.filter_by(username=username).one_or_none()
+
+        return user
+    else:
+        # return None / null
+        return None
+
+
 def create_app(config_name=None):
     """Flask app factory pattern
     separately creating the extensions and later initializing"""
@@ -160,13 +176,14 @@ def create_app(config_name=None):
     conn_app.add_api("swagger.yml")
     db.init_app(app)
     with app.app_context():
-        if options["initialize"] or config_name and config_name.lower()=="testing":
+        if options["initialize"] or config_name and config_name.lower() == "testing":
             logger.info("Removing all previous jobs from the database.")
             db.drop_all()
             db.create_all()
             # Create database using other interface for consistency.
             from seamm_datastore.util import _build_initial
-            _build_initial(db.session, "default")        
+
+            _build_initial(db.session, "default")
 
         from .routes.auth import auth as auth_blueprint
         from .routes.main import main as main_blueprint
@@ -186,7 +203,6 @@ def create_app(config_name=None):
 
         app.register_error_handler(404, errors.not_found)
 
-    
     # init
     mail.init_app(app)
     cors.init_app(app)
@@ -194,7 +210,6 @@ def create_app(config_name=None):
     authorize.init_app(app)
     jwt.init_app(app)
     moment.init_app(app)
-
 
     # jinja template
     app.jinja_env.filters["empty"] = replace_empty
@@ -205,12 +220,6 @@ def create_app(config_name=None):
     for key, value in app.config.items():
         logger.info("\t{:>30s} = {}".format(key, value))
     logger.info("")
-
-    if not options["no_check"]:
-        # Ugly but avoids circular import.
-        from seamm_dashboard.util.import_jobs import import_jobs
-
-        t1 = time.perf_counter()
 
     logger.info(f"{app.url_map}")
     return app

@@ -4,8 +4,10 @@ import os
 import shutil
 from dateutil import parser
 
+from flask_jwt_extended import jwt_required
 from seamm_dashboard import create_app, db
-from seamm_dashboard.util.util import process_flowchart
+from seamm_datastore.util import parse_flowchart
+
 from seamm_datastore.database.models import (
     Job,
     Flowchart,
@@ -120,13 +122,13 @@ def app(project_directory):
 
     # Load a simple flowchart
     current_location = os.path.dirname(os.path.realpath(__file__))
-    flowchart_data = process_flowchart(
+    flowchart_data = parse_flowchart(
         os.path.join(current_location, "..", "..", "data", "sample.flow")
     )
-
     # Make the ID easier
-    flowchart_data["id"] = 100
-    flowchart_data["owner_id"] = 3
+    flowchart_data[0]["id"] = 100
+    flowchart_data[0]["owner_id"] = 3
+    flowchart_data[0]["json"] = flowchart_data[1]
 
     # Save the fake data to the db
     job1 = Job(**job1_data)
@@ -146,7 +148,7 @@ def app(project_directory):
     db.session.add(a)
     db.session.add(visitor)
 
-    flowchart = Flowchart(**flowchart_data)
+    flowchart = Flowchart(**flowchart_data[0])
     db.session.add(test_user)
     db.session.add(admin_role)
     db.session.add(manager_role)

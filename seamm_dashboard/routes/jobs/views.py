@@ -5,10 +5,9 @@ from flask import request, render_template, flash, redirect, url_for
 from flask_jwt_extended import jwt_required, get_current_user
 
 from seamm_datastore.database.models import Project, Job
-from seamm_dashboard import db, authorize
+from seamm_datastore.util import parse_job_data
 
-from seamm_dashboard.util.util import process_job
-from seamm_dashboard.util.import_jobs import add_job
+from seamm_dashboard import db, authorize
 
 from . import jobs
 
@@ -88,6 +87,7 @@ def edit_job(job_id):
 @jobs.route("/jobs/import", methods=["GET", "POST"])
 @jwt_required()
 def import_job():
+    # TODO - rewrite
     form = ImportJob()
 
     if form.validate_on_submit():
@@ -95,7 +95,7 @@ def import_job():
 
         working_directory = data["working directory"]
 
-        job_info = process_job(working_directory)
+        job_info = parse_job_data(working_directory)
 
         if form.title.data:
             job_info["title"] = form.title.data
@@ -114,7 +114,8 @@ def import_job():
 
             project_objs.append(query_project)
 
-        add_job(working_directory, job_info["title"], project_objs)
+        ## TODO Add job
+        # add_job(working_directory, job_info["title"], project_objs)
         flash(f"Job {job_info['id']} successfully added to database.")
         return redirect(url_for("main.index"))
 
