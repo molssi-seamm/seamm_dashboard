@@ -82,7 +82,7 @@ def test_get_flowchart_logged_in(auth_client):
 
     auth_client = auth_client[0]
 
-    response = auth_client.get("api/flowcharts/ABCD")
+    response = auth_client.get("api/flowcharts/100")
 
     assert response.status_code == 200
 
@@ -93,7 +93,7 @@ def test_get_cytoscape_logged_in(auth_client):
     """
     auth_client = auth_client[0]
 
-    response = auth_client.get("api/flowcharts/ABCD/cytoscape")
+    response = auth_client.get("api/flowcharts/100/cytoscape")
     assert response.status_code == 201
 
 

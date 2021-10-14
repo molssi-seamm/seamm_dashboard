@@ -52,6 +52,7 @@ class TestingConfig(BaseConfig):
     TESTING = True
     API_DOMAIN = "http://localhost:4000"
     SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
+    initialize = True
 
 
 class ProductionConfig(BaseConfig):

@@ -41,7 +41,7 @@ def test_get_flowchart_logged_out(client):
     Get flowchart by ID
     """
 
-    response = client.get("api/flowcharts/ABCD")
+    response = client.get("api/flowcharts/100")
     assert response.status_code == 401
 
 
@@ -52,7 +52,7 @@ def test_get_cytoscape(client):
     Get cytoscape representation of flowchart graph.
     """
 
-    response = client.get("api/flowcharts/ABCD/cytoscape")
+    response = client.get("api/flowcharts/100/cytoscape")
     assert response.status_code == 401
 
 
