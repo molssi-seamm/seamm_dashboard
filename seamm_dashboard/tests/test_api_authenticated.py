@@ -10,33 +10,26 @@ from dateutil import parser
 
 
 @pytest.mark.parametrize(
-    "createdSince, createdBefore, limit, expected_number",
+    "limit, expected_number",
     [
-        ("01-01-2018", None, None, 1),
-        (None, "01-01-2018", None, 2),
-        (None, "01-01-2015", None, 0),
-        (None, None, 1, 1),
-        (None, None, None, 3),
+        (None, 3),
+        (2, 2),
     ],
 )
-def test_get_jobs(createdSince, createdBefore, limit, expected_number, auth_client):
+def test_get_jobs(limit, expected_number, auth_client):
     """Tests get method for api/jobs with various query strings"""
 
     auth_client = auth_client[0]
 
     query_string = "api/jobs"
 
-    if createdSince is not None:
-        query_string += f"?createdSince={createdSince}"
-    if createdBefore is not None:
-        query_string += f"?createdBefore={createdBefore}"
     if limit is not None:
         query_string += f"?limit={limit}"
 
     response = auth_client.get(query_string)
     jobs_received = response.json
 
-    assert len(jobs_received) == expected_number, jobs_received[0]["id"]
+    assert len(jobs_received) == expected_number, jobs_received
 
 
 def test_get_job_by_id(auth_client):

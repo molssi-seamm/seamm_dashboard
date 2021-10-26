@@ -13,6 +13,8 @@ from pathlib import Path
 import re
 import urllib.parse
 
+import seamm_datastore.api
+
 from marshmallow import ValidationError
 from sqlalchemy import and_
 from flask import send_from_directory, Response
@@ -21,6 +23,7 @@ from flask_jwt_extended import jwt_required
 from seamm_dashboard import db, datastore, authorize, options
 from seamm_datastore.database.models import User, Project, Job, Flowchart
 from seamm_datastore.database.schema import JobSchema, FlowchartSchema
+
 
 logger = logging.getLogger("__file__")
 
@@ -46,62 +49,13 @@ file_icons = {
 
 
 @jwt_required(optional=True)
-def get_jobs(createdSince=None, createdBefore=None, limit=None):
+def get_jobs(limit=None):
     """
     Function for API endpoint /api/jobs
-
-    Parameters
-    ----------
-    createdSince: str
-        Return jobs created after this date. Must be in format M-D-YYYY where M all
-        numbers are integers.
-    createdBefore:str
-        Return jobs created before this date. Must be in format M-D-YYYY where M all
-        numbers are integers.
-    limit: int
-        The maximum number of jobs to return.
     """
+    jobs = seamm_datastore.api.get_jobs(db.session, as_json=True, limit=limit)
 
-    # Handle dates
-    if createdSince is not None:
-        createdSince = datetime.strptime(createdSince, "%m-%d-%Y")
-    else:
-        # Basically all times
-        createdSince = datetime.strptime("1-1-0001", "%m-%d-%Y")
-
-    if createdBefore is not None:
-        createdBefore = datetime.strptime(createdBefore, "%m-%d-%Y")
-    else:
-        # Up to now.
-        createdBefore = datetime.utcnow()
-
-    # If limit is not set, set limit to all jobs in DB.
-    if limit is None:
-        limit = Job.query.count()
-
-    jobs = Job.query.filter(
-        and_(Job.submitted > createdSince, Job.submitted < createdBefore)
-    ).limit(limit)
-
-    # After we get the jobs, we need to know which jobs belong to projects which the user
-    # can read. This might be a performance issue on a larger DB, but I think we can do this
-    # check here.
-
-    authorized_jobs = []
-    for job in jobs:
-        if authorize.read(job):
-            authorized_jobs.append(job)
-        else:
-            for project in job.projects:
-                if authorize.read(project):
-                    authorized_jobs.append(job)
-                    # We can exit the loop if we have found one
-                    # project which grants read permission
-                    break
-
-    jobs_schema = JobSchema(many=True)
-
-    return jobs_schema.dump(authorized_jobs), 200
+    return jobs
 
 
 def get_job_id(filename):

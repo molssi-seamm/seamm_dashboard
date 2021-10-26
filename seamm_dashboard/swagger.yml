@@ -119,22 +119,6 @@ paths:
         Get jobs. By passing parameters you can get jobs fitting a certain criteria.
       operationId: seamm_dashboard.routes.api.get_jobs
       parameters:
-      - name: createdSince
-        in: query
-        description: look for jobs created since a date.
-        required: false
-        style: form
-        explode: true
-        schema:
-          type: string
-      - name: createdBefore
-        in: query
-        description: look for jobs created before a date.
-        required: false
-        style: form
-        explode: true
-        schema:
-          type: string
       - name: limit
         in: query
         description: maximum number of records to return
