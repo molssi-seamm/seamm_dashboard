@@ -1,7 +1,6 @@
 import logging
 import os
 from pathlib import Path
-import time
 
 import connexion
 
@@ -17,8 +16,6 @@ from flask_marshmallow import Marshmallow
 from flask_authorize import Authorize
 
 from .jwt_patch import flask_jwt_extended
-
-from flask_jwt_extended import get_current_user
 
 from .config import config
 from .template_filters import replace_empty
@@ -75,14 +72,12 @@ cors = CORS()
 bootstrap = Bootstrap()
 
 jwt = flask_jwt_extended.JWTManager()
-authorize = Authorize(current_user=get_current_user)
-
+authorize = Authorize(current_user=flask_jwt_extended.get_current_user)
 moment = Moment()
 toolbar = DebugToolbarExtension()
 
 db = SQLAlchemy()
 ma = Marshmallow()
-
 
 @jwt.user_lookup_loader
 def user_loader_callback(jwt_header, jwt_payload):
@@ -181,9 +176,20 @@ def create_app(config_name=None):
             db.drop_all()
             db.create_all()
             # Create database using other interface for consistency.
-            from seamm_datastore.util import _build_initial
-
+            from seamm_datastore.database.build import import_datastore, _build_initial
+            logger.info("Importing jobs...")
             _build_initial(db.session, "default")
+
+            if config_name is None or not config_name.lower() == "testing":
+                # Log in as user running
+                import flask_authorize.plugin
+                from seamm_datastore.database.models import User
+                flask_authorize.plugin.CURRENT_USER = User.query.filter_by(id=2).one
+                temp_path = os.path.join(os.path.expanduser(options["datastore"]), "projects")
+                import_datastore(db.session, temp_path)
+
+                flask_authorize.plugin.CURRENT_USER = flask_jwt_extended.get_current_user
+
 
         from .routes.auth import auth as auth_blueprint
         from .routes.main import main as main_blueprint
