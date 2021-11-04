@@ -3,7 +3,7 @@ function jobAction(selectedRows, action) {
     var actionInformation = {
         "run": {
             "request": {
-                "status": "Starting",
+                "status": "starting",
                 "started": "",
                 "finished": "",
             },
@@ -19,7 +19,7 @@ Do you wish to continue?
 
         "re-run": {
             "request":{
-                "status": "Submitted",
+                "status": "submitted",
                 "submitted": Date.now(),
                 "started": "",
                 "finished": "",
