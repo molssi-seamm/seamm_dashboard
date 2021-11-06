@@ -4,7 +4,7 @@ API calls for jobs.
 
 import os
 import shutil
-from datetime import datetime
+from datetime import datetime, timezone
 import fasteners
 import hashlib
 import json
@@ -176,6 +176,7 @@ def add_job(body):
         "projects": project_names,
         "datastore": datastore,
         "job id": job_id,
+        "submitted": datetime.now(timezone.utc).isoformat(),
     }
     path = directory / "job_data.json"
     with path.open("w") as fd:
