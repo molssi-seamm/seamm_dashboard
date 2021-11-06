@@ -42,6 +42,12 @@ datastore_path.mkdir(parents=True, exist_ok=True)
 setup_logging(datastore, options)
 logger = logging.getLogger("dashboard")
 
+# If there is no database we need to initialize!
+db_path = datastore_path / "seamm.db"
+if not db_path.exists():
+    logger.warning("The database does not exists, so forcing initialization")
+    options["initialize"] = True
+
 # Two of the Flask options cannot be reset, and should (apparently) be
 # handled with environment variables ... so if they are in the options
 # set the correct environment variables. Carefully!
@@ -175,7 +181,7 @@ def create_app(config_name=None):
         from seamm_datastore.database.build import import_datastore, _build_initial
 
         if options["initialize"] or config_name and config_name.lower() == "testing":
-            logger.info("Removing all previous jobs from the database.")
+            logger.warning("Removing all previous jobs from the database.")
             db.drop_all()
             db.create_all()
             # Create database using other interface for consistency.
@@ -191,6 +197,7 @@ def create_app(config_name=None):
             temp_path = os.path.join(
                 os.path.expanduser(options["datastore"]), "projects"
             )
+            logger.warning("Importing any jobs into the database.")
             import_datastore(db.session, temp_path)
 
             flask_authorize.plugin.CURRENT_USER = flask_jwt_extended.get_current_user
