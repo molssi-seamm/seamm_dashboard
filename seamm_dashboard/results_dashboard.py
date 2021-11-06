@@ -7,7 +7,8 @@ from seamm_datastore import connect
 
 def run():
     app = create_app()
-    app.run(debug=True, use_reloader=True)
+    # app.run(debug=True, use_reloader=True)
+    app.run(debug=False, use_reloader=False)
 
 
 if __name__ == "__main__":
