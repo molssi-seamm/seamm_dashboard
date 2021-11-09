@@ -2,15 +2,20 @@
 API calls for projects
 """
 
+import logging
+
 from flask import Response
 from flask_jwt_extended import jwt_required
 from sqlalchemy import and_
 
+from seamm_dashboard import db, authorize
+import seamm_datastore.api
 from seamm_datastore.database.models import Project, Job
 from seamm_datastore.database.schema import JobSchema, ProjectSchema
-from seamm_dashboard import authorize
 
-__all__ = ["get_projects", "get_project", "get_project_jobs"]
+logger = logging.getLogger("__file__")
+
+__all__ = ["get_projects", "add_project", "get_project", "get_project_jobs"]
 
 
 @jwt_required(optional=True)
@@ -29,6 +34,47 @@ def get_projects(description=None, limit=None):
     projects_schema = ProjectSchema(many=True)
 
     return projects_schema.dump(projects), 200
+
+
+@jwt_required(optional=True)
+def add_project(body):
+    """Add a new project
+
+    Parameters
+    ----------
+    body : dict
+        The description of the project.
+
+    Returns
+    -------
+    str
+        The project name
+
+    The body contains:
+
+        name : str
+            The name of the project
+        description : str
+            A longer description of the project.
+    """
+
+    logger.debug("Adding a project. Items in the body are:")
+    for key, value in body.items():
+        logger.debug("  {:15s}: {}".format(key, str(value)[:20]))
+
+    name = body["name"]
+    if "description" in body:
+        description = body["description"]
+    else:
+        description = ""
+
+    seamm_datastore.api.add_project(
+        db.session,
+        name,
+        description,
+    )
+
+    return {"name": name}, 201
 
 
 @jwt_required(optional=True)
