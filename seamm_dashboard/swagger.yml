@@ -314,6 +314,44 @@ paths:
                   $ref: '#/components/schemas/Project'
         "400":
           description: bad input parameter
+    post:
+      tags:
+      - developers
+      summary: create a new project
+      description: |
+        Creates a new project in the datastore
+      operationId: seamm_dashboard.routes.api.add_project
+      requestBody:
+        description: The new project
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - name
+              properties:
+                username:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+      responses:
+        "201":
+          description: name of the project
+          content:
+            application/json:
+              schema:
+                properties:
+                  name:
+                    type: string
+                    example: new_project
+        "400":
+          description: bad input parameter
+        "403":
+          description: user not registered
   /projects/{id}:
     get:
       tags:
@@ -449,7 +487,7 @@ paths:
       summary: return the status of the dashboard
       description: |
         Return the status of the dashboard. Currently 'running' |
-        but in the furtire may return other status strings.
+        but in the future may return other status strings.
       operationId: seamm_dashboard.routes.api.status
       responses:
         "200":
