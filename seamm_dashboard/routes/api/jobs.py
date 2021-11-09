@@ -182,7 +182,7 @@ def add_job(body):
     with path.open("w") as fd:
         json.dump(data, fd, sort_keys=True, indent=3)
 
-    seamm_datastore.api.submit_job(
+    seamm_datastore.api.add_job(
         db.session,
         job_id,
         path=str(directory),
