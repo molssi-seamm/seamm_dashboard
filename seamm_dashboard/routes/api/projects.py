@@ -13,27 +13,22 @@ import seamm_datastore.api
 from seamm_datastore.database.models import Project, Job
 from seamm_datastore.database.schema import JobSchema, ProjectSchema
 
-logger = logging.getLogger("__file__")
+logger = logging.getLogger(__name__)
 
-__all__ = ["get_projects", "add_project", "get_project", "get_project_jobs"]
+__all__ = [
+    "get_projects", "add_project", "get_project", "get_project_jobs", "list_projects"
+]
 
 
 @jwt_required(optional=True)
-def get_projects(description=None, limit=None):
+def get_projects(action="read", description=None, limit=None):
 
-    # If limit is not set, set limit to all jobs in DB.
-    if limit is None:
-        limit = Project.query.count()
-    if description is not None:
-        projects = Project.query.filter(
-            and_(Project.authorized("read"), Project.description.contains(description))
-        ).limit(limit)
-    else:
-        projects = Project.query.filter(Project.authorized("read")).limit(limit)
+    logger.info(f"get_projects {action=} {description=} {limit=}")
+    result = seamm_datastore.api.get_projects(action=action, as_json=True)
+    logger.info(f"returning {len(result)} projects")
+    logger.debug(f"{result=}")
 
-    projects_schema = ProjectSchema(many=True)
-
-    return projects_schema.dump(projects), 200
+    return result, 200
 
 
 @jwt_required(optional=True)
@@ -56,22 +51,26 @@ def add_project(body):
             The name of the project
         description : str
             A longer description of the project.
+        owner : str
+            The owner of the project. If not present defaults to the current logged in
+             user.
     """
+    from flask_jwt_extended import current_user
 
     logger.debug("Adding a project. Items in the body are:")
     for key, value in body.items():
-        logger.debug("  {:15s}: {}".format(key, str(value)[:20]))
+        logger.debug("  {:15s}: '{}'".format(key, str(value)[:20]))
 
     name = body["name"]
-    if "description" in body:
-        description = body["description"]
-    else:
-        description = ""
+    description = body["description"] if "description" in body else None
+    owner = body["owner"] if "owner" in body else None
 
     seamm_datastore.api.add_project(
         db.session,
         name,
-        description,
+        owner=owner,
+        description=description,
+        current_user=current_user,
     )
 
     return {"name": name}, 201
@@ -124,3 +123,23 @@ def get_project_jobs(id):
     jobs_schema = JobSchema(many=True)
 
     return jobs_schema.dump(jobs), 200
+
+
+@jwt_required(optional=True)
+def list_projects(action="read", limit=None, offset=None):
+    """
+    Function for api endpoint api/projects/list
+
+    Parameters
+    ----------
+    limit : int = None
+        How many project names to return
+    offset : into = None
+        The first project name to return, in the full list
+
+    Returns
+    -------
+    
+    """
+    projects = seamm_datastore.api.list_projects(limit=limit, offset=offset)
+    return projects, 200
