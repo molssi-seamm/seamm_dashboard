@@ -58,21 +58,6 @@ def project_directory(tmpdir_factory):
 
 @pytest.fixture(scope="module")
 def app(project_directory):
-    import pprint
-    import wtforms
-
-    print("WTForms  *******************")
-    pprint.pprint(dir(wtforms))
-
-    import wtforms.fields
-
-    print("WTForms.fields  *******************")
-    pprint.pprint(dir(wtforms.fields))
-
-    import wtforms.fields.html5
-
-    print("WTForms.fields.html5  *******************")
-    pprint.pprint(dir(wtforms.fields.html5))
     
     test_project_path = project_directory
 
