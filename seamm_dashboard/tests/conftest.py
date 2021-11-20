@@ -2,9 +2,8 @@ import pytest
 
 import os
 import shutil
-from dateutil import parser
+from datetime import datetime
 
-from flask_jwt_extended import jwt_required
 from seamm_dashboard import create_app, db
 from seamm_datastore.util import parse_flowchart
 
@@ -88,11 +87,13 @@ def app(project_directory):
     test_admin = User(username="admin_user", password="iamadmin", roles=[admin_role])
 
     # Fill in some data
+    sub_time = datetime.fromisoformat("2016-08-29T09:12:33.001000+00:00")
+    # "submitted": parser.parse("2016-08-29T09:12:33.001000+00:00"),
     job1_data = {
         "flowchart_id": 100,
         "id": 1,
         "path": os.path.realpath(os.path.join(test_project_path, "Job_000001")),
-        "submitted": parser.parse("2016-08-29T09:12:33.001000+00:00"),
+        "submitted": sub_time,
         "projects": [project],
         "owner_id": 3,
         "status": "finished",
@@ -103,7 +104,7 @@ def app(project_directory):
         "flowchart_id": 100,
         "id": 2,
         "path": os.path.realpath(os.path.join(test_project_path, "Job_000002")),
-        "submitted": parser.parse("2017-08-29T09:12:33.001000+00:00"),
+        "submitted": sub_time,
         "projects": [project],
         "owner_id": 3,
         "status": "finished",
@@ -114,7 +115,7 @@ def app(project_directory):
         "flowchart_id": 100,
         "id": 3,
         "path": "/Users/username/seamm/projects",
-        "submitted": parser.parse("2019-08-29T09:12:33.001000+00:00"),
+        "submitted": sub_time,
         "projects": [project],
         "owner_id": 3,
         "status": "finished",
