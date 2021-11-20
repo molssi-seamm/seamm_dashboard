@@ -6,7 +6,6 @@ import logging
 
 from flask import Response
 from flask_jwt_extended import jwt_required
-from sqlalchemy import and_
 
 from seamm_dashboard import db, authorize
 import seamm_datastore.api
@@ -16,7 +15,11 @@ from seamm_datastore.database.schema import JobSchema, ProjectSchema
 logger = logging.getLogger(__name__)
 
 __all__ = [
-    "get_projects", "add_project", "get_project", "get_project_jobs", "list_projects"
+    "get_projects",
+    "add_project",
+    "get_project",
+    "get_project_jobs",
+    "list_projects",
 ]
 
 
@@ -139,7 +142,7 @@ def list_projects(action="read", limit=None, offset=None):
 
     Returns
     -------
-    
+
     """
     projects = seamm_datastore.api.list_projects(limit=limit, offset=offset)
     return projects, 200
