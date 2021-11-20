@@ -6,6 +6,7 @@ dependencies:
   - nodejs
   - pip
   - seamm-util
+  - wtforms
   - pip:
     - email-validator
     - flask-authorize
@@ -29,7 +30,6 @@ dependencies:
     - seamm-datastore
     - selenium
     - sqlalchemy
-    - wtforms
     - flask-authorize
     # For testing:
     - pytest
