@@ -4,9 +4,8 @@ API calls for jobs.
 
 import os
 import shutil
-from datetime import datetime
+from datetime import datetime, timezone
 import fasteners
-import hashlib
 import json
 import logging
 from pathlib import Path
@@ -15,14 +14,12 @@ import urllib.parse
 
 import seamm_datastore.api
 
-from marshmallow import ValidationError
-from sqlalchemy import and_
 from flask import send_from_directory, Response
 from flask_jwt_extended import jwt_required
 
 from seamm_dashboard import db, datastore, authorize, options
-from seamm_datastore.database.models import User, Project, Job, Flowchart
-from seamm_datastore.database.schema import JobSchema, FlowchartSchema
+from seamm_datastore.database.models import Job
+from seamm_datastore.database.schema import JobSchema
 
 
 logger = logging.getLogger("__file__")
@@ -126,134 +123,73 @@ def add_job(body):
     Returns
     -------
     The job id (integer)
+
+    The body contains:
+
+        flowchart : str
+            The flowchart
+        project : [str]
+            The projects associated with this job.
+        title : str
+            The title of the job (<100 chars)
+        description : str
+            A longer description of the job.
     """
 
     logger.debug("Adding a job. Items in the body are:")
     for key, value in body.items():
         logger.debug("  {:15s}: {}".format(key, str(value)[:20]))
 
-    # Get the project
-    project_name = body.pop("project")
-    project = db.session.query(Project).filter_by(name=project_name).one_or_none()
-    if project is None:
-        return "There is no project '{}'".format(project_name), 403
-
-    logger.debug("  project = {}".format(project.id))
-
-    # Get the user...
-    username = body.pop("username")
-    user = db.session.query(User).filter_by(username=username).one_or_none()
-    if user is None:
-        return "User '{}' is not registered".format(username), 403
-    user_id = user.id
-    group_id = user.groups[0].id
-    body["owner"] = user_id
-    body["group"] = group_id
-
-    logger.debug("  user {} is {}:{}".format(username, user_id, group_id))
-
-    # Get the flowchart and put it in place
-    flowchart_text = body.pop("flowchart")
-    flowchart_data = {
-        "id": hashlib.md5(flowchart_text.encode("utf-8")).hexdigest(),
-        "owner_id": user_id,
-        "group_id": group_id,
-        "description": "No description given.",
-    }
-
-    # Validate and deserialize the flowchart data
-    flowchart_schema = FlowchartSchema(many=False)
-    try:
-        flowchart_schema.load(flowchart_data, session=db.session)
-    except ValidationError as err:
-        logger.error("ValidationError (flowchart): {}".format(err.messages))
-        logger.info("   valid data: {}".format(err.valid_data))
-        return err.messages, 422
-
-    # See if it already in the db, if not, add it
-    flowchart_is_new = False
-    flowchart = (
-        db.session.query(Flowchart).filter_by(id=flowchart_data["id"]).one_or_none()
-    )
-    if flowchart:
-        if project not in flowchart.projects:
-            flowchart.projects.append(project)
-            db.session.commit()
-
-    else:
-        flowchart = Flowchart(
-            **flowchart_data,
-            text=flowchart_text,
-            json="\n".join(flowchart_text.splitlines()[2:]),
-        )
-        flowchart.projects.append(project)
-        db.session.add(flowchart)
-        db.session.commit()
-        flowchart_is_new = True
-
-    # Validate and deserialize the job data
-    body["status"] = "Submitted"
-    body["flowchart_id"] = flowchart.id
-
-    job_schema = JobSchema(many=False)
-    try:
-        job_schema.load(body, session=db.session)
-    except ValidationError as err:
-        logger.error("ValidationError (job): {}".format(err.messages))
-        logger.info("   valid data: {}".format(err.valid_data))
-        return err.messages, 422
-
-    # Need objects, not ids?
-    # body["flowchart_id"] = flowchart
-    body["owner"] = user
-    body["group"] = user.groups[0]
-
-    job = Job(**body)
+    flowchart = body["flowchart"]
+    project_names = [body["project"]]
+    title = body["title"]
+    description = body["description"]
 
     # Get the unique ID for the job...
-
     if options["job_id_file"] is None:
         job_id_file = os.path.join(datastore, "job.id")
     else:
         job_id_file = options["job_id_file"]
-    job.id = get_job_id(job_id_file)
+    job_id = get_job_id(job_id_file)
 
-    # And the path
-    project_path = Path(datastore).expanduser() / "projects" / project_name
-    directory = project_path / "Job_{:06d}".format(job.id)
-    print("Writing job files to " + str(directory))
+    # Create the directory and write the flowchart to it.
+    project_path = Path(datastore).expanduser() / "projects" / project_names[0]
+    directory = project_path / "Job_{:06d}".format(job_id)
+    logger.info("Writing job files to " + str(directory))
     directory.mkdir(parents=True, exist_ok=True)
-    job.path = str(directory)
-
-    # Finally add the job to the database.
-    db.session.add(job)
-    job.projects.append(project)
-
-    db.session.commit()
 
     path = directory / "flowchart.flow"
     with path.open("w") as fd:
-        fd.write(flowchart_text)
-    if flowchart_is_new:
-        flowchart.path = str(path)
-
-    db.session.commit()
+        fd.write(flowchart)
+    flowchart_file = str(path)
 
     # Write the json data file for the job
     data = {
+        "data_version": "1.0",
         "command line": "",
         "title": body["title"],
         "working directory": str(directory),
-        "state": "Submitted",
-        "projects": [project_name],
+        "state": "submitted",
+        "projects": project_names,
         "datastore": datastore,
-        "job id": job.id,
+        "job id": job_id,
+        "submitted": datetime.now(timezone.utc).isoformat(),
     }
     path = directory / "job_data.json"
     with path.open("w") as fd:
         json.dump(data, fd, sort_keys=True, indent=3)
 
-    return {"id": job.id}, 201, {"location": format("/jobs/{}".format(job.id))}
+    seamm_datastore.api.add_job(
+        db.session,
+        job_id,
+        path=str(directory),
+        flowchart_filename=flowchart_file,
+        project_names=project_names,
+        title=title,
+        description=description,
+    )
+
+    return {"id": job_id}, 201, {"location": format("/jobs/{}".format(job_id))}
 
 
 @jwt_required(optional=True)

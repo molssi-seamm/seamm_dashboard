@@ -6,7 +6,7 @@ import json
 
 import pytest
 
-from dateutil import parser
+from datetime import datetime
 
 
 @pytest.mark.parametrize(
@@ -38,21 +38,19 @@ def test_get_job_by_id(auth_client):
 
     response = auth_client.get("api/jobs/3")
 
+    sub_time = datetime.fromisoformat("2016-08-29T09:12:00.000000+00:00").astimezone()
+    sub_time = sub_time.strftime(format="%Y-%m-%d %H:%M")
     expected_response = {
         "flowchart_id": "ABCD",
         "id": 3,
         "path": "/Users/username/seamm/projects",
-        "submitted": parser.parse("2019-08-29T09:12:33.001000+00:00").replace(
-            tzinfo=None
-        ),
+        "submitted": sub_time,
     }
 
     received = response.json
 
     for k in expected_response.keys():
         if k == "submitted":
-            received[k] = parser.parse(received[k])
-
             assert received[k] == expected_response[k]
 
     assert response.status_code == 200

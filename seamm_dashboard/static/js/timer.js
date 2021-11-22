@@ -4,7 +4,7 @@
 
 
 function idleTimer() {
-    let timeOutTime = 1200000 // timeout in milliseconds - 20 minutes
+    let timeOutTime = 36000000 // timeout in milliseconds - 10 hours
     let activityTimer;
 
     if (localStorage.getItem('timeOfActivity') != null) {

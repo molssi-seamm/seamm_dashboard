@@ -12,9 +12,6 @@ from seamm_dashboard import db, authorize
 from . import jobs
 
 from seamm_dashboard.routes.jobs.forms import EditJob, ImportJob
-from seamm_datastore.database.models import Job
-
-from werkzeug.utils import secure_filename
 
 
 @jobs.route("/views/jobs/")
@@ -114,7 +111,7 @@ def import_job():
 
             project_objs.append(query_project)
 
-        ## TODO Add job
+        # TODO Add job
         # add_job(working_directory, job_info["title"], project_objs)
         flash(f"Job {job_info['id']} successfully added to database.")
         return redirect(url_for("main.index"))

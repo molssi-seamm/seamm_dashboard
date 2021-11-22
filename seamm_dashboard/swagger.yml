@@ -314,6 +314,87 @@ paths:
                   $ref: '#/components/schemas/Project'
         "400":
           description: bad input parameter
+    post:
+      tags:
+      - developers
+      summary: create a new project
+      description: |
+        Creates a new project in the datastore
+      operationId: seamm_dashboard.routes.api.add_project
+      requestBody:
+        description: The new project
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                owner:
+                  type: string
+                description:
+                  type: string
+      responses:
+        "201":
+          description: name of the project
+          content:
+            application/json:
+              schema:
+                properties:
+                  name:
+                    type: string
+                    example: new_project
+        "400":
+          description: bad input parameter
+        "403":
+          description: user not registered
+  /projects/list:
+    get:
+      tags:
+      - developers
+      summary: a list of project names
+      description: |
+        Get list of projects
+      operationId: seamm_dashboard.routes.api.list_projects
+      parameters:
+      - name: action
+        in: query
+        description: whether reading or udpating the project
+        required: false
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: maximum number of records to return
+        required: false
+        style: form
+        explode: true
+        schema:
+          minimum: 1
+          type: integer
+          format: int32
+      - name: offset
+        in: query
+        description: the offset of records to return, i.e. the first one to return
+        required: false
+        style: form
+        explode: true
+        schema:
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: list of projects by name
+          content:
+            application/json:
+              schema:
+                type: array
+        "400":
+          description: bad input parameter
   /projects/{id}:
     get:
       tags:
@@ -449,7 +530,7 @@ paths:
       summary: return the status of the dashboard
       description: |
         Return the status of the dashboard. Currently 'running' |
-        but in the furtire may return other status strings.
+        but in the future may return other status strings.
       operationId: seamm_dashboard.routes.api.status
       responses:
         "200":

@@ -1,10 +1,12 @@
 name: test
 channels:
-  - defaults
+  - conda-forge
 dependencies:
   # Nodejs needed from anaconda, not pip, to have npm
   - nodejs
   - pip
+  - seamm-util
+  - wtforms
   - pip:
     - email-validator
     - flask-authorize
@@ -25,10 +27,9 @@ dependencies:
     - marshmallow_sqlalchemy
     - python_dateutil
     - requests
-    - seamm-util
+    - seamm-datastore
     - selenium
     - sqlalchemy
-    - wtforms
     - flask-authorize
     # For testing:
     - pytest

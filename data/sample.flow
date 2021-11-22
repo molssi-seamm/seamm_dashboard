@@ -1,5 +1,21 @@
 #!/usr/bin/env run_flowchart
-!MolSSI flowchart 1.0
+!MolSSI flowchart 2.0
+#metadata
+{
+    "title": "",
+    "description": "",
+    "keywords": [],
+    "creators": [
+        {
+            "name": "Saxe, Paul",
+            "orcid": "0000-0002-8641-9448",
+            "affiliation": "Molecular Sciences Software Institute"
+        }
+    ],
+    "sha256": "081369c1c5cc3801be4c5c022874068da2fb338651e1353d1f470075a05aaeec",
+    "sha256_strict": "a87bd860e5164fdae9277a8f804a6e51741ad686935a6801497b6218f1779895"
+}
+#flowchart
 {
     "item": "object",
     "module": "seamm.flowchart",
@@ -10,17 +26,58 @@
             "item": "object",
             "module": "seamm.start_node",
             "class": "StartNode",
+            "version": "2021.10.25+4.g72bd309.dirty",
             "extension": null,
             "attributes": {
                 "_uuid": 1,
                 "_title": "Start",
-                "_description": "",
-                "_id": null,
                 "extension": null,
-                "_visited": true,
                 "parameters": null,
-                "x": 150.0,
-                "y": 35.0,
+                "x": 150,
+                "y": 35,
+                "w": 200,
+                "h": 50
+            }
+        },
+        {
+            "item": "object",
+            "module": "rdkit_step.rdkit",
+            "class": "Rdkit",
+            "version": "0+untagged.12.g6d5f7d4.dirty",
+            "extension": "RDKit",
+            "attributes": {
+                "_uuid": 325080268928776434767577152350489692869,
+                "_title": "RDKit",
+                "extension": "RDKit",
+                "parameters": {
+                    "__class__": "RdkitParameters",
+                    "__module__": "rdkit_step.rdkit_parameters",
+                    "features": {
+                        "value": [
+                            "Asphericity",
+                            "Eccentricity",
+                            "InertialShapeFactor",
+                            "NPR1",
+                            "NPR2",
+                            "MaxEStateIndex",
+                            "MinEStateIndex",
+                            "MaxAbsEStateIndex",
+                            "MinAbsEStateIndex",
+                            "MolWt"
+                        ],
+                        "units": null
+                    },
+                    "where": {
+                        "value": "Database",
+                        "units": null
+                    },
+                    "table": {
+                        "value": "table1",
+                        "units": null
+                    }
+                },
+                "x": 150,
+                "y": 175,
                 "w": 200,
                 "h": 50
             }
@@ -29,157 +86,40 @@
             "item": "object",
             "module": "from_smiles_step.from_smiles",
             "class": "FromSMILES",
+            "version": "2021.10.13+1.g1177adb",
             "extension": "FromSMILESStep",
             "attributes": {
-                "_uuid": 37919797731459127919404001026537257056,
+                "_uuid": 331292605309338784668469128507860994738,
                 "_title": "from SMILES",
-                "_description": "",
-                "_id": null,
                 "extension": "FromSMILESStep",
-                "_visited": true,
                 "parameters": {
                     "__class__": "FromSMILESParameters",
                     "__module__": "from_smiles_step.from_smiles_parameters",
                     "smiles string": {
-                        "value": "CH4",
+                        "value": "CCO",
                         "units": null
                     },
-                    "minimize": {
-                        "value": "no",
+                    "structure handling": {
+                        "value": "Overwrite the current configuration",
                         "units": null
                     },
-                    "forcefield": {
-                        "value": "UFF",
+                    "subsequent structure handling": {
+                        "value": "Create a new system and configuration",
+                        "units": null
+                    },
+                    "system name": {
+                        "value": "from file",
+                        "units": null
+                    },
+                    "configuration name": {
+                        "value": "use Canonical SMILES string",
                         "units": null
                     }
                 },
-                "x": 150.0,
-                "y": 105.0,
+                "x": 150,
+                "y": 105,
                 "w": 200,
                 "h": 50
-            }
-        },
-        {
-            "item": "object",
-            "module": "mopac_step.mopac",
-            "class": "MOPAC",
-            "extension": "MOPAC",
-            "attributes": {
-                "_data": {},
-                "_uuid": 125613082283930201323951280222419436393,
-                "_title": "MOPAC",
-                "_description": "",
-                "_id": null,
-                "extension": "MOPAC",
-                "_visited": false,
-                "parameters": null,
-                "x": 150.0,
-                "y": 175.0,
-                "w": 200,
-                "h": 50
-            },
-            "subflowchart": {
-                "item": "object",
-                "module": "seamm.flowchart",
-                "class": "Flowchart",
-                "extension": null,
-                "nodes": [
-                    {
-                        "item": "object",
-                        "module": "seamm.start_node",
-                        "class": "StartNode",
-                        "extension": null,
-                        "attributes": {
-                            "_uuid": 1,
-                            "_title": "Start",
-                            "_description": "",
-                            "_id": null,
-                            "extension": null,
-                            "_visited": true,
-                            "parameters": null,
-                            "x": 150.0,
-                            "y": 35.0,
-                            "w": 200,
-                            "h": 50
-                        }
-                    },
-                    {
-                        "item": "object",
-                        "module": "mopac_step.energy",
-                        "class": "Energy",
-                        "extension": "Energy",
-                        "attributes": {
-                            "_uuid": 93052355587451499111537791002328002372,
-                            "_title": "Energy",
-                            "_description": "A single point energy calculation",
-                            "_id": null,
-                            "extension": "Energy",
-                            "_visited": false,
-                            "parameters": {
-                                "__class__": "EnergyParameters",
-                                "__module__": "mopac_step.energy_parameters",
-                                "structure": {
-                                    "value": "default",
-                                    "units": null
-                                },
-                                "hamiltonian": {
-                                    "value": "PM7",
-                                    "units": null
-                                },
-                                "convergence": {
-                                    "value": "normal",
-                                    "units": null
-                                },
-                                "relative": {
-                                    "value": "0.1",
-                                    "units": null
-                                },
-                                "absolute": {
-                                    "value": "1.0E-07",
-                                    "units": "kcal/mol"
-                                },
-                                "extra keywords": {
-                                    "value": [],
-                                    "units": null
-                                },
-                                "results": {
-                                    "value": {},
-                                    "units": null
-                                },
-                                "create tables": {
-                                    "value": "yes",
-                                    "units": null
-                                }
-                            },
-                            "x": 150.0,
-                            "y": 105.0,
-                            "w": 200,
-                            "h": 50,
-                            "_long_header": "",
-                            "keywords": []
-                        }
-                    }
-                ],
-                "edges": [
-                    {
-                        "item": "edge",
-                        "node1": 1,
-                        "node2": 93052355587451499111537791002328002372,
-                        "edge_type": "execution",
-                        "edge_subtype": "next",
-                        "attributes": {
-                            "anchor1": "s",
-                            "anchor2": "n",
-                            "coords": [
-                                150,
-                                60,
-                                150,
-                                80
-                            ],
-                            "arrow_id": 43
-                        }
-                    }
-                ]
             }
         }
     ],
@@ -187,10 +127,11 @@
         {
             "item": "edge",
             "node1": 1,
-            "node2": 37919797731459127919404001026537257056,
+            "node2": 331292605309338784668469128507860994738,
             "edge_type": "execution",
             "edge_subtype": "next",
             "attributes": {
+                "arrow_id": 10,
                 "anchor1": "s",
                 "anchor2": "n",
                 "coords": [
@@ -198,17 +139,17 @@
                     60,
                     150,
                     80
-                ],
-                "arrow_id": 72
+                ]
             }
         },
         {
             "item": "edge",
-            "node1": 37919797731459127919404001026537257056,
-            "node2": 125613082283930201323951280222419436393,
+            "node1": 331292605309338784668469128507860994738,
+            "node2": 325080268928776434767577152350489692869,
             "edge_type": "execution",
             "edge_subtype": "next",
             "attributes": {
+                "arrow_id": 31,
                 "anchor1": "s",
                 "anchor2": "n",
                 "coords": [
@@ -216,9 +157,9 @@
                     130,
                     150,
                     150
-                ],
-                "arrow_id": 92
+                ]
             }
         }
     ]
 }
+#end

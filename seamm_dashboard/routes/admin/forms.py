@@ -6,7 +6,10 @@ from wtforms import (
     SelectMultipleField,
     BooleanField,
 )
-from wtforms.fields.html5 import EmailField
+try:
+    from wtforms.fields import EmailField
+except ImportError:
+    from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
 from wtforms import ValidationError
 from seamm_datastore.database.models import User, Group
