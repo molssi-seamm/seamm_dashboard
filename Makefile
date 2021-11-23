@@ -141,7 +141,7 @@ seamm_dashboard/static/node_modules:
 	@cd seamm_dashboard/static && python only_needed_files.py
 
 update-nodejs: ## reinstall the node.js files
-	@rm -fr seamm_dashboard/static/node_module
+	@rm -fr seamm_dashboard/static/node_modules
 	@echo 'Reinstalling the Javascript, which will take a couple minutes!'
 	@echo ''
 	@cd seamm_dashboard/static && npm install
