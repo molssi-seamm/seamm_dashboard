@@ -1,4 +1,4 @@
-connexion[swagger-ui]
+connexion
 fasteners
 flask
 flask-authorize
@@ -11,10 +11,8 @@ flask-marshmallow
 flask-moment
 flask-sqlalchemy
 flask-wtf
-requests
 seamm-datastore
 seamm-util
-selenium
 six
 sqlalchemy
 wtforms
