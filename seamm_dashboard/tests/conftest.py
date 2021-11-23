@@ -58,7 +58,7 @@ def project_directory(tmpdir_factory):
 
 @pytest.fixture(scope="module")
 def app(project_directory):
-    
+
     test_project_path = project_directory
 
     flask_app = create_app("testing")
