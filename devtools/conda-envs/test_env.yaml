@@ -23,6 +23,7 @@ dependencies:
   - seamm-util
   - six
   - sqlalchemy
+  - swagger-ui-bundle
   - wtforms
 
   # For testing:

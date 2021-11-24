@@ -16,4 +16,5 @@ seamm-datastore
 seamm-util
 six
 sqlalchemy
+swagger-ui-bundle
 wtforms
