@@ -1,4 +1,5 @@
 connexion
+email-validator
 fasteners
 flask
 flask-authorize
