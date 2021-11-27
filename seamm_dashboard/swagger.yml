@@ -155,7 +155,6 @@ paths:
             schema:
               type: object
               required:
-                - username
                 - flowchart
               properties:
                 username:
