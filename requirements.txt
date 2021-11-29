@@ -1,4 +1,5 @@
 connexion==2.7.0
+email-validator
 fasteners==0.16.3
 Flask==2.0.2
 Flask_Authorize==0.2.6
@@ -15,4 +16,5 @@ seamm_datastore==2021.11.21
 seamm_util==2021.8.26
 six==1.16.0
 SQLAlchemy==1.4.26
+swagger-ui-bundle
 WTForms==2.3.3
