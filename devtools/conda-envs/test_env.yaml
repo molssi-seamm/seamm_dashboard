@@ -2,42 +2,44 @@ name: test
 channels:
   - conda-forge
 dependencies:
-  # Nodejs needed from anaconda, not pip, to have npm
-  - nodejs
   - pip
+  - python
+
+  - connexion
+  - email-validator
+  - fasteners
+  - flask>2.0
+  - flask-authorize
+  - flask-bootstrap
+  - flask-cors
+  - flask-debugtoolbar
+  - flask-jwt-extended>=4.1.0
+  - flask-mail
+  - flask-marshmallow
+  - flask-moment
+  - flask-sqlalchemy
+  - flask-wtf
+  - seamm-datastore
   - seamm-util
+  - six
+  - sqlalchemy
+  - swagger-ui-bundle
   - wtforms
+
+  # For testing:
+  - pytest
+  - pytest-cov
+  - pytest-flask
+  - pytest-mock
+  - requests
+  - selenium
+
+  # For development
+  - black
+  - flake8
+  - nodejs
+  - twine
+  
   - pip:
-    - email-validator
-    - flask-authorize
-    - fasteners
-    - flask-jwt-extended>=4.1.0
-    - connexion[swagger-ui]
-    - flask>2.0
-    - flask_bootstrap
-    - flask_cors
-    - flask_debugtoolbar
-    - flask_login
-    - flask_mail
-    - flask_marshmallow
-    - flask_moment
-    - flask_sqlalchemy
-    - flask_wtf
-    - marshmallow
-    - marshmallow_sqlalchemy
-    - python_dateutil
-    - requests
-    - seamm-datastore
-    - selenium
-    - sqlalchemy
-    - flask-authorize
     # For testing:
-    - pytest
     - pytest-selenium
-    - pytest-flask
-    - pytest-cov
-    - pytest-mock
-    # For development
-    - black
-    - flake8
-    - twine

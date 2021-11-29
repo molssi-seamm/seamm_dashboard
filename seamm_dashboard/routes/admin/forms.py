@@ -6,6 +6,7 @@ from wtforms import (
     SelectMultipleField,
     BooleanField,
 )
+
 try:
     from wtforms.fields import EmailField
 except ImportError:
