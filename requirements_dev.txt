@@ -2,13 +2,16 @@
 
 # For testing:
 chromedriver-binary==89.0.4389.23
-flask-authorize
-flask-jwt-extended
 pytest
-pytest-selenium
-pytest-flask
 pytest-cov
+pytest-flask
+pytest-mock
+pytest-selenium
+requests
+selenium
 # For development
+black
 flake8
+# Probably need to install node.js using conda, not pip.
+nodejs
 twine
-yapf
