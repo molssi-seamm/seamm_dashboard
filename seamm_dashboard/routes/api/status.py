@@ -3,6 +3,9 @@ API calls for the status
 """
 import logging
 
+from seamm_dashboard import db
+
+from seamm_datastore import api
 from seamm_datastore.database.models import Project, Job, Flowchart
 from seamm_datastore.database.schema import RoleSchema
 
@@ -23,10 +26,6 @@ def status():
     values may be added.
 
     """
-    # users = User.query.all()
-    # user_schema = UserSchema(many=True)
-    # users = user_schema.dump(users)
-
     current_user = get_current_user()
 
     try:
@@ -48,18 +47,14 @@ def status():
         user_id = None
 
     # Get information about jobs, projects, flowcharts
-    num_jobs = Job.query.filter(Job.authorized("read")).count()
-    num_jobs_running = Job.query.filter(
-        and_(func.lower(Job.status) == "running", Job.authorized("read"))
-    ).count()
-    num_jobs_finished = Job.query.filter(
-        and_(func.lower(Job.status) == "finished", Job.authorized("read"))
-    ).count()
-    num_jobs_queued = Job.query.filter(
-        and_(func.lower(Job.status) == "running", Job.authorized("submitted"))
-    ).count()
-    num_flowcharts = Flowchart.query.filter(Flowchart.authorized("read")).count()
-    num_projects = Project.query.filter(Project.authorized("read")).count()
+    num_jobs = api.get_jobs(count=True)
+    num_jobs_running = api.get_jobs(count=True, status="running")
+    num_jobs_finished = api.get_jobs(count=True, status="finished")
+    num_jobs_queued = api.get_jobs(count=True, status="submitted")
+
+    flowcharts = api.get_flowcharts()
+    num_flowcharts = len(flowcharts)
+    num_projects = len(api.get_projects())
 
     # Build return json
     status = {
