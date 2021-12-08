@@ -24,9 +24,13 @@ def jobs_list():
 @jobs.route("/views//jobs/<id>")
 @jwt_required(optional=True)
 def job_details(id):
-    job = Job.query.get(id)
 
-    if not authorize.read(job):
+    from seamm_datastore.api import get_job
+    from seamm_datastore.util import NotAuthorizedError
+
+    try:
+        job = get_job(db.session, id)
+    except NotAuthorizedError:
         return render_template("401.html")
 
     edit_job = authorize.update(job)
