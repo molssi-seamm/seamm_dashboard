@@ -215,7 +215,10 @@ class TestLiveServer:
         chrome_driver.get(f"{self.base_url}#jobs/1")
 
         # Initially, there should be nothing in the text box.
-        initial_displayed_text = chrome_driver.find_element_by_id("file-content").text
+
+        initial_displayed_text = WebDriverWait(chrome_driver, 20).until(
+            EC.presence_of_element_located((By.ID, "file-content"))
+        ).text
 
         # Get a link for a file and click on it.
         job_link = WebDriverWait(chrome_driver, 20).until(
@@ -223,6 +226,7 @@ class TestLiveServer:
         )
         job_link.click()
 
+        # Give time to load
         time.sleep(0.25)
 
         # When clicked, file text should be displayed in the div.
@@ -232,11 +236,8 @@ class TestLiveServer:
 
         # Splitting on whitespace and rejoining let's us compare the file
         # contents without worrying about how whitespace is handled.
-        # if displayed_text_list:
-        # using if statement because this doesn't load a lot of times on travis
-        # if we get nothing, it's usually just a time out
-        assert initial_displayed_text == ""
-        assert " ".join(displayed_text_list) == " ".join(file_contents_split)
+        assert initial_displayed_text == "", "initial displayed text error"
+        assert " ".join(displayed_text_list) == " ".join(file_contents_split), "displayed text error"
 
     def test_job_report_file_content_refresh(
         self, app, chrome_driver, project_directory
@@ -261,7 +262,9 @@ class TestLiveServer:
         chrome_driver.get(f"{self.base_url}#jobs/1")
 
         # Initially, there should be nothing in the text box.
-        initial_displayed_text = chrome_driver.find_element_by_id("file-content").text
+        initial_displayed_text = WebDriverWait(chrome_driver, 20).until(
+            EC.presence_of_element_located((By.ID, "file-content"))
+        ).text
 
         # Get a link for a file and click on it.
         job_link = WebDriverWait(chrome_driver, 20).until(
@@ -269,7 +272,7 @@ class TestLiveServer:
         )
         job_link.click()
 
-        time.sleep(0.25)
+        time.sleep(0.10)
 
         # When clicked, file text should be displayed in the div.
         displayed_text = chrome_driver.find_element_by_id("file-content").text
@@ -293,7 +296,7 @@ class TestLiveServer:
         # Click refresh button
         refresh_button = chrome_driver.find_element_by_id("refresh")
         refresh_button.click()
-        time.sleep(0.25)
+        time.sleep(0.10)
 
         # Check the new displayed text
         new_displayed_text = chrome_driver.find_element_by_id("file-content").text
