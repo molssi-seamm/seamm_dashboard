@@ -456,6 +456,7 @@ def manage_user(user_id):
             user = _process_user_body(form.data, original_user_data=user)
             db.session.add(user)
             db.session.commit()
+            _process_user_permissions(form, user)
             flash(f"The user {form.data['username']} has been successfully updated.")
             return render_template("admin/manage_users.html")
 
