@@ -41,6 +41,14 @@ from seamm_dashboard.routes.api.users import _process_user_body
 
 def _process_user_permissions(filled_form, user):
 
+    # Empty dictionary containing all entries
+    permissions_dict = {
+        int(k.split("_")[1]): []
+        for k in filled_form.data.keys()
+        if "specialproject" in k
+    }
+
+    # Get just the checked fields
     specialproject_keys = [
         x
         for x in filled_form.data.keys()
@@ -48,18 +56,18 @@ def _process_user_permissions(filled_form, user):
         if filled_form.data[x] is True
     ]
 
-    permissions_dict = {}
-
+    # Loop over checked fields and update dictionary containing all entries.
     # First collect permissions which were set in form
+    # Build permissions dictionary (keys are project IDs,
+    # values are permissions ("read", "update", etc))
     for key in specialproject_keys:
         split = key.split("_")
         project_id = int(split[1])
+        permissions_dict[project_id].append(split[2])
 
-        try:
-            permissions_dict[project_id].append(split[2])
-        except KeyError:
-            permissions_dict[project_id] = [split[2]]
-
+    # Loop through permissions dictionary built in previous loop.
+    # This is done after processing permissions because we need a full
+    # list of the permissions for updating.
     for project_id, permission in permissions_dict.items():
         project = Project.query.filter_by(id=project_id).one()
 
@@ -433,8 +441,14 @@ def manage_user(user_id):
         form.email.data = user.email
 
     if request.method == "POST":
+
+        # Each of these has to be tried - two separate try statements
         try:
             form.username.validators.remove(_validate_username)
+        except ValueError:
+            pass
+
+        try:
             form.email.validators.remove(_validate_email)
         except ValueError:
             pass
@@ -456,6 +470,7 @@ def manage_user(user_id):
             user = _process_user_body(form.data, original_user_data=user)
             db.session.add(user)
             db.session.commit()
+            _process_user_permissions(form, user)
             flash(f"The user {form.data['username']} has been successfully updated.")
             return render_template("admin/manage_users.html")
 
