@@ -46,11 +46,12 @@ file_icons = {
 
 
 @jwt_required(optional=True)
-def get_jobs(limit=None):
+def get_jobs(limit=None, sort="asc"):
     """
     Function for API endpoint /api/jobs
     """
-    jobs = seamm_datastore.api.get_jobs(db.session, as_json=True, limit=limit)
+
+    jobs = seamm_datastore.api.get_jobs(db.session, as_json=True, limit=limit, sort=sort)
 
     return jobs
 

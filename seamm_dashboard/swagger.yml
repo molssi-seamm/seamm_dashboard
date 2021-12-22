@@ -129,6 +129,15 @@ paths:
           minimum: 1
           type: integer
           format: int32
+      - name: sort
+        in: query
+        description: sort order
+        required: false
+        style: form
+        explode: true
+        schema:
+          minimum: 1
+          type: string
       responses:
         "200":
           description: search results matching criteria
