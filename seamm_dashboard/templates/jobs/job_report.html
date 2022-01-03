@@ -8,7 +8,7 @@
 <div class="animated fadeIn vh-100 mh-100 hidden" id="view">
     <div class="row">
       <div class="col-sm-3">
-        <div class="h4 mt-3 row" id="root-folder"></div>
+        <div class="h4 mt-3 row"><span id="root-folder"></span><span><button type="button" id="refresh-file-list" class="btn btn btn-outline-primary float-right mb-3 ml-5" title="Refresh Job Info" data-toggle="tooltip" data-placement="top"><i class="fas fa-sync"></i></button></span></div>
         <div class="row"><strong>Title: </strong> <span id="job-title" class="ml-2">{{ job.title }}</span></div>
         <div class="row"><strong>Status: </strong><span id="job-status" class="ml-2"></span></div>
         <div class="row"><strong>{{ own_string }}</strong></div>
@@ -22,7 +22,7 @@
           {% endif %}
 
         </div>
-        <div class='h5 mt-3'>Browse files for job<span><button type="button" id="refresh-file-list" class="btn btn btn-outline-primary float-right mb-3" title="Refresh File List" data-toggle="tooltip" data-placement="top"><i class="fas fa-sync"></i></button></span></div>
+        <div class='h5 mt-3'>Browse files for job</div>
         <div class="input-group">
           <input type="text" class="form-control" placeholder="Search Files" id="search">
           <span class="input-group-btn">

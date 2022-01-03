@@ -376,6 +376,11 @@ $(document).ready(function() {
             $('#js-tree').jstree(true).settings.core.data = newData;
             $('#js-tree').jstree("refresh")
             document.getElementById("js-tree").classList.toggle("hidden")
+
+            // Update the job data and status.
+            jobData = getJobData(jobID);
+            $("#job-status").html(jobData.status);
+            $("#job-title").html(jobData.title);
         }
     )
 
