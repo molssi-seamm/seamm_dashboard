@@ -227,7 +227,7 @@ class TestLiveServer:
         job_link.click()
 
         # Give time to load
-        time.sleep(0.25)
+        time.sleep(1.25)
 
         # When clicked, file text should be displayed in the div.
         displayed_text = chrome_driver.find_element_by_id("file-content").text

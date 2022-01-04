@@ -36,7 +36,8 @@ del get_versions, versions
 # Ensure that the projects directory exists.
 datastore_path = Path(options["datastore"]).expanduser().resolve()
 datastore = str(datastore_path)
-datastore_path.mkdir(parents=True, exist_ok=True)
+projects_path = datastore_path / "projects"
+projects_path.mkdir(parents=True, exist_ok=True)
 
 # Setup the logging, now that we know where the datastore is
 setup_logging(datastore, options)
@@ -194,11 +195,8 @@ def create_app(config_name=None):
             from seamm_datastore.database.models import User
 
             flask_authorize.plugin.CURRENT_USER = User.query.filter_by(id=2).one
-            temp_path = os.path.join(
-                os.path.expanduser(options["datastore"]), "projects"
-            )
             logger.warning("Importing any jobs into the database.")
-            import_datastore(db.session, temp_path)
+            import_datastore(db.session, str(projects_path))
 
             flask_authorize.plugin.CURRENT_USER = flask_jwt_extended.get_current_user
 
