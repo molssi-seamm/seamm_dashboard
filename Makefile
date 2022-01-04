@@ -61,7 +61,7 @@ typing: ## check typing
 
 test: ## run tests quickly with the default Python
 	devtools/scripts/install_chromedriver.py
-	pytest
+	pytest -rxX
 
 test-all: ## run tests on every Python version with tox
 	tox
