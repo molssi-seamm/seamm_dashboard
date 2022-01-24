@@ -1,11 +1,12 @@
 #!/usr/bin/env python
-from seamm_dashboard import create_app
+from seamm_dashboard import create_app, options
 
+print(options)
 
 def run():
     app = create_app()
     # app.run(debug=True, use_reloader=True)
-    app.run(debug=False, use_reloader=False)
+    app.run(debug=False, use_reloader=False, port=options["port"])
 
 
 if __name__ == "__main__":

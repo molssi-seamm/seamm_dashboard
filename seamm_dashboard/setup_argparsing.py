@@ -15,6 +15,15 @@ parser.add_argument_group(
 
 parser.add_argument(
     "SEAMM",
+    "--port",
+    group="dashboard options",
+    default=5000,
+    type=int,
+    help="the port to use",
+)
+
+parser.add_argument(
+    "SEAMM",
     "--initialize",
     group="dashboard options",
     action="store_true",
@@ -666,7 +675,7 @@ parser.add_argument(
     "--mail-port",
     group="mail options",
     default=argparse.SUPPRESS,
-    help=("" "default=25"),
+    help="default=25",
 )
 
 parser.add_argument(
@@ -674,7 +683,7 @@ parser.add_argument(
     "--mail-use-TLS",
     group="mail options",
     default=argparse.SUPPRESS,
-    help=("" "default=False"),
+    help="default=False",
 )
 
 parser.add_argument(
@@ -682,7 +691,7 @@ parser.add_argument(
     "--mail-use-SSL",
     group="mail options",
     default=argparse.SUPPRESS,
-    help=("" "default=False"),
+    help="default=False",
 )
 
 parser.add_argument(
@@ -690,7 +699,7 @@ parser.add_argument(
     "--mail-debug",
     group="mail options",
     default=argparse.SUPPRESS,
-    help=("", "default=app.debug"),
+    help="default=app.debug",
 )
 
 parser.add_argument(
@@ -698,7 +707,7 @@ parser.add_argument(
     "--mail-username",
     group="mail options",
     default=argparse.SUPPRESS,
-    help=("" "default=None"),
+    help="default=None",
 )
 
 parser.add_argument(
@@ -706,7 +715,7 @@ parser.add_argument(
     "--mail-password",
     group="mail options",
     default=argparse.SUPPRESS,
-    help=("" "default=None"),
+    help="default=None",
 )
 
 parser.add_argument(
@@ -714,7 +723,7 @@ parser.add_argument(
     "--mail-default-sender",
     group="mail options",
     default=argparse.SUPPRESS,
-    help=("" "default=None"),
+    help="default=None",
 )
 
 parser.add_argument(
@@ -722,7 +731,7 @@ parser.add_argument(
     "--mail-max-emails",
     group="mail options",
     default=argparse.SUPPRESS,
-    help=("" "default=None"),
+    help="default=None",
 )
 
 parser.add_argument(
@@ -730,7 +739,7 @@ parser.add_argument(
     "--mail-suppress-send",
     group="mail options",
     default=argparse.SUPPRESS,
-    help=("" "default=app.testing"),
+    help="default=app.testing",
 )
 
 parser.add_argument(
@@ -738,7 +747,7 @@ parser.add_argument(
     "--mail-ascii-attachments",
     group="mail options",
     default=argparse.SUPPRESS,
-    help=("" "default=False"),
+    help="default=False",
 )
 
 parser.add_argument(
@@ -746,11 +755,11 @@ parser.add_argument(
     "--mail-subject-prefix",
     group="mail options",
     default=argparse.SUPPRESS,
-    help=(""),
+    help="",
 )
 
 parser.add_argument(
-    "SEAMM", "--mail-sender", group="mail options", default=argparse.SUPPRESS, help=("")
+    "SEAMM", "--mail-sender", group="mail options", default=argparse.SUPPRESS, help=""
 )
 
 # And handle the command-line arguments and ini file options.
