@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 from seamm_dashboard import create_app, options
 
-print(options)
 
 def run():
     app = create_app()
