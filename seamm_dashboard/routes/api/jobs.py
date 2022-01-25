@@ -144,6 +144,10 @@ def add_job(body):
     project_names = [body["project"]]
     title = body["title"]
     description = body["description"]
+    if "parameters" in body:
+        parameters = body["parameters"]
+    else:
+        parameters = {}
 
     # Get the unique ID for the job...
     if options["job_id_file"] is None:
@@ -187,6 +191,7 @@ def add_job(body):
         project_names=project_names,
         title=title,
         description=description,
+        parameters=parameters,
     )
 
     return {"id": job_id}, 201, {"location": format("/jobs/{}".format(job_id))}
