@@ -410,7 +410,7 @@ def add_file_to_job(body, id=None):
     path = root / filename
     path.parent.mkdir(parents=True, exist_ok=True)
 
-    print(f"Saving file to {root / filename}")
+    logger.info(f"Saving file to {root / filename}")
     file_data.save(root / filename)
 
     return {"path": str(root / filename)}, 201
