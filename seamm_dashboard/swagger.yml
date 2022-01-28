@@ -110,6 +110,50 @@ paths:
           description: search results matching criteria
         "400":
           description: bad input parameter
+    post:
+      tags:
+      - developers
+      summary: Upload a file
+      description: |
+        Upload a file
+      operationId: seamm_dashboard.routes.api.add_file_to_job
+      parameters:
+      - name: id
+        in: path
+        description: the job to add files to
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        description: The file uploaded.
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: path to file
+          content:
+            application/json:
+              schema:
+                properties:
+                  path:
+                    type: string
+                    example: data/mydir_my_file.txt
+        "400":
+          description: bad input parameter
+        "403":
+          description: user not registered
+
   /jobs:
     get:
       tags:
@@ -187,6 +231,7 @@ paths:
           description: user not registered
         "422":
           description: error validating job data
+
   /flowcharts:
     get:
       tags:
