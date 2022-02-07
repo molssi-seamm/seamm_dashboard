@@ -423,6 +423,8 @@ def download_job_files(id, filename=None):
         shutil.make_archive(f"{tmpzip}", 'zip', job.path)
         return send_from_directory(tmpdir, path=f"{job_directory}.zip", as_attachment=True)
     else:
+        if "../" in filename:
+            return Response(status=401)
         unencoded_path = urllib.parse.unquote(filename)
         return send_from_directory(job.path, path=unencoded_path, as_attachment=True)
 
