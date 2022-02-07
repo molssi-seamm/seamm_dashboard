@@ -5,7 +5,6 @@ from flask import request, render_template, flash, redirect, url_for
 from flask_jwt_extended import jwt_required, get_current_user
 
 from seamm_datastore.database.models import Project, Job
-from seamm_datastore.util import parse_job_data
 
 from seamm_dashboard import db, authorize
 
@@ -25,11 +24,10 @@ def jobs_list():
 @jwt_required(optional=True)
 def job_details(id):
 
-    from seamm_datastore.api import get_job
     from seamm_datastore.util import NotAuthorizedError
 
     try:
-        job = get_job(db.session, id)
+        job = Job.get_by_id(id)
     except NotAuthorizedError:
         return render_template("401.html")
 
@@ -96,7 +94,7 @@ def import_job():
 
         working_directory = data["working directory"]
 
-        job_info = parse_job_data(working_directory)
+        job_info = Job.parse_job_data(working_directory)
 
         if form.title.data:
             job_info["title"] = form.title.data

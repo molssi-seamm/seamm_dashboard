@@ -8,7 +8,6 @@ from flask import Response
 from flask_jwt_extended import jwt_required
 
 from seamm_dashboard import db, authorize
-import seamm_datastore.api
 from seamm_datastore.database.models import Project, Job
 from seamm_datastore.database.schema import JobSchema, ProjectSchema
 
@@ -20,7 +19,15 @@ __all__ = [
     "get_project",
     "get_project_jobs",
     "list_projects",
+    "update_project", 
+    "delete_project"
 ]
+
+def update_project():
+    pass
+
+def delete_project():
+    pass
 
 
 @jwt_required(optional=True)

@@ -11,8 +11,8 @@ import logging
 from pathlib import Path
 import re
 import urllib.parse
-
-import seamm_datastore.api
+import shutil
+import tempfile
 
 from flask import send_from_directory, Response
 from flask_jwt_extended import jwt_required
@@ -21,6 +21,7 @@ from seamm_dashboard import db, datastore, authorize, options
 from seamm_datastore.database.models import Job
 from seamm_datastore.database.schema import JobSchema
 
+from seamm_datastore.util import NotAuthorizedError
 
 logger = logging.getLogger("__file__")
 
@@ -28,6 +29,7 @@ __all__ = [
     "get_jobs",
     "get_job",
     "get_job_files",
+    "download_job_files",
     "add_job",
     "update_job",
     "delete_job",
@@ -46,11 +48,27 @@ file_icons = {
 
 
 @jwt_required(optional=True)
-def get_jobs(limit=None):
+def get_jobs(permission="read",
+        description=None,
+        title=None,
+        offset=None,
+        limit=None,
+        sort_by="id",
+        order="asc",
+    ):
     """
     Function for API endpoint /api/jobs
     """
-    jobs = seamm_datastore.api.get_jobs(db.session, as_json=True, limit=limit)
+
+    jobs = Job.get(permission=permission, 
+                    description=description, 
+                    title=title, 
+                    offset=offset,
+                    limit=limit,
+                    sort_by=sort_by,
+                    order=order)
+    
+    jobs = JobSchema(many=True).dump(jobs)
 
     return jobs
 
@@ -179,8 +197,7 @@ def add_job(body):
     with path.open("w") as fd:
         json.dump(data, fd, sort_keys=True, indent=3)
 
-    seamm_datastore.api.add_job(
-        db.session,
+    job = Job.create(
         job_id,
         path=str(directory),
         flowchart_filename=flowchart_file,
@@ -189,7 +206,12 @@ def add_job(body):
         description=description,
     )
 
-    return {"id": job_id}, 201, {"location": format("/jobs/{}".format(job_id))}
+    db.session.add(job)
+    db.session.commit(job)
+
+    job = JobSchema.dump(job)
+    
+    return job
 
 
 @jwt_required(optional=True)
@@ -201,22 +223,17 @@ def get_job(id):
     ----------
     id : the ID of the job to return
     """
+    
     if not isinstance(id, int):
         return Response(status=400)
 
-    job = Job.query.get(id)
-
+    try:
+        job = Job.get_by_id(id)
+    except NotAuthorizedError:
+        return Response("You are not authorized to view this content.", status=401)
+    
     if job is None:
         return Response(status=404)
-
-    authorized = False
-    for project in job.projects:
-        if authorize.read(project):
-            authorized = True
-            break
-
-    if not authorized:
-        return Response("You are not authorized to view this content.", status=401)
 
     job_schema = JobSchema(many=False)
     return job_schema.dump(job), 200
@@ -235,25 +252,20 @@ def update_job(id, body):
     body : json
         The job information to update.
     """
-    job = Job.query.get(id)
+    
+    from seamm_datastore.util import NotAuthorizedError
 
-    if not job:
-        return Response(status=404)
-
-    if not authorize.update(job):
+    try:
+        job = Job.get_by_id(id, permission="update")
+    except NotAuthorizedError:
         return Response(status=401)
+    
+    if job is None:
+        return Response(status=404)
+        
+    job = Job.update(id, body)
 
-    for key, value in body.items():
-        if key == "submitted" or key == "finished" or key == "started":
-            if value:
-                # This assumes the timestamp is in format from javascript Date.now()
-                # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/now
-                # Number of milliseconds since January 1, 1970
-                value = datetime.fromtimestamp(value / 1000)
-            else:
-                value = None
-        setattr(job, key, value)
-
+    db.session.add(job)
     db.session.commit()
 
     return Response(status=201)
@@ -278,8 +290,11 @@ def delete_job(id):
     status : int
         Response code for operation. 200 = successful, 404 = job not found.
     """
-    job = Job.query.get(id)
-    print("deleting job")
+
+    try:
+        job = Job.get_by_id(id, permission="delete")
+    except NotAuthorizedError:
+        return Response(status=401)
 
     if not job:
         return Response(status=404)
@@ -299,80 +314,115 @@ def delete_job(id):
 
 
 @jwt_required(optional=True)
-def get_job_files(id, file_path=None):
+def get_job_files(id):
     """
-    Function for get method of api endpoint api/jobs/{id}/files. If the file_path
-    parameter is used, this endpoint will send the file which is indicated by the path.
+    Function for get method of api endpoint api/jobs/{id}/files.
 
     Parameters
     ----------
     id : int
         the ID of the job to return
+    """
+    try:
+        job = Job.get_by_id(id)
+    except NotAuthorizedError:
+        return Response(status=401)
 
-    file_path : string
-        The encoded file path for the file to return.
+    js_tree = []
+
+    path = job.path
+
+    base_dir = os.path.split(path)[1]
+
+    js_tree.append(
+        {
+            "id": path,
+            "parent": "#",
+            "text": base_dir,
+            "state": {
+                "opened": "true",
+                "selected": "true",
+            },
+            "icon": file_icons["folder"],
+        }
+    )
+
+    for root, dirs, files in os.walk(path):
+        parent = root
+        safe = parent.replace(job.path, "")[1:]
+
+        for name in sorted(files):
+
+            extension = name.split(".")[-1]
+
+            encoded_path = urllib.parse.quote(os.path.join(root, name), safe="")
+            safe_encode = urllib.parse.quote(os.path.join(safe, name), safe="")
+            
+
+            js_tree.append(
+                {
+                    "id": encoded_path,
+                    "parent": parent,
+                    "text": name,
+                    "a_attr": {
+                        "href": f"api/jobs/{id}/files/download?{safe_encode}",
+                        "class": "file",
+                    },
+                    "icon": [
+                        file_icons[extension]
+                        if extension in file_icons.keys()
+                        else file_icons["other"]
+                    ][0],
+                }
+            )
+
+        for name in sorted(dirs):
+            js_tree.append(
+                {
+                    "id": os.path.join(root, name),
+                    "parent": parent,
+                    "text": name,
+                    "icon": file_icons["folder"],
+                }
+            )
+    return js_tree
+
+
+@jwt_required(optional=True)
+def download_job_files(id, filename=None):
+    """
+    Function for get method of api endpoint api/jobs/{id}/files/download.
+
+    Without a query, will return zip file of job directory. With query, returns specified file.
+
+    Parameters
+    ----------
+    id : int
+        the ID of the job to return
     """
 
-    job_info, status = get_job(id)
+    breakpoint()
 
-    if file_path is None:
-        js_tree = []
+    try:
+        job = Job.get_by_id(id)
+    except NotAuthorizedError:
+        return Response(status=401)
+    
+    path = job.path
+    path, job_directory = os.path.split(path)
 
-        path = job_info["path"]
-
-        base_dir = os.path.split(path)[1]
-
-        js_tree.append(
-            {
-                "id": path,
-                "parent": "#",
-                "text": base_dir,
-                "state": {
-                    "opened": "true",
-                    "selected": "true",
-                },
-                "icon": file_icons["folder"],
-            }
-        )
-
-        for root, dirs, files in os.walk(path):
-            parent = root
-
-            for name in sorted(files):
-
-                extension = name.split(".")[-1]
-
-                encoded_path = urllib.parse.quote(os.path.join(root, name), safe="")
-
-                js_tree.append(
-                    {
-                        "id": encoded_path,
-                        "parent": parent,
-                        "text": name,
-                        "a_attr": {
-                            "href": f"api/jobs/{id}/files?file_path={encoded_path}",
-                            "class": "file",
-                        },
-                        "icon": [
-                            file_icons[extension]
-                            if extension in file_icons.keys()
-                            else file_icons["other"]
-                        ][0],
-                    }
-                )
-
-            for name in sorted(dirs):
-                js_tree.append(
-                    {
-                        "id": os.path.join(root, name),
-                        "parent": parent,
-                        "text": name,
-                        "icon": file_icons["folder"],
-                    }
-                )
-        return js_tree
-
+    if filename is None:
+        # Create zip file in temporary directory and send.
+        tmpdir = tempfile.mkdtemp()
+        tmpzip = os.path.join(tmpdir, job_directory)
+        shutil.make_archive(f"{tmpzip}", 'zip', job.path)
+        return send_from_directory(tmpdir, path=f"{job_directory}.zip", as_attachment=True)
     else:
-        unencoded_path = urllib.parse.unquote(file_path)
-        directory, file_name = os.path.split(unencoded_path)
-        return send_from_directory(directory, path=file_name, as_attachment=True)
+        unencoded_path = urllib.parse.unquote(filename)
+        return send_from_directory(job.path, path=unencoded_path, as_attachment=True)
+
+
+
+
+   
+    return 

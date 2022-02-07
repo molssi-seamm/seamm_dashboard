@@ -175,7 +175,7 @@ def create_app(config_name=None):
     app.config["JWT_COOKIE_CSRF_PROTECT"] = True
     app.config["JWT_CSRF_ACCESS_PATH"] = "/api/"
 
-    conn_app.add_api("swagger.yml")
+    conn_app.add_api("swagger_new.yml")
     db.init_app(app)
     with app.app_context():
         from seamm_datastore.database.build import import_datastore, _build_initial
@@ -183,6 +183,7 @@ def create_app(config_name=None):
         if options["initialize"] or config_name and config_name.lower() == "testing":
             logger.warning("Removing all previous jobs from the database.")
             db.drop_all()
+            logger.info("Tables dropped creating tables")
             db.create_all()
             # Create database using other interface for consistency.
             logger.info("Importing jobs...")
