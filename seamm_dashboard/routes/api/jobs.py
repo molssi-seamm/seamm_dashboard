@@ -14,7 +14,7 @@ import urllib.parse
 
 import seamm_datastore.api
 
-from flask import send_from_directory, Response
+from flask import send_from_directory, Response, request
 from flask_jwt_extended import jwt_required
 
 from seamm_dashboard import db, datastore, authorize, options
@@ -25,6 +25,7 @@ from seamm_datastore.database.schema import JobSchema
 logger = logging.getLogger("__file__")
 
 __all__ = [
+    "add_file_to_job",
     "get_jobs",
     "get_job",
     "get_job_files",
@@ -181,6 +182,7 @@ def add_job(body):
     }
     path = directory / "job_data.json"
     with path.open("w") as fd:
+        fd.write("!MolSSI job_data 1.0\n")
         json.dump(data, fd, sort_keys=True, indent=3)
 
     seamm_datastore.api.add_job(
@@ -381,3 +383,34 @@ def get_job_files(id, file_path=None):
         unencoded_path = urllib.parse.unquote(file_path)
         directory, file_name = os.path.split(unencoded_path)
         return send_from_directory(directory, path=file_name, as_attachment=True)
+
+
+@jwt_required(optional=True)
+def add_file_to_job(body, id=None):
+    """Add a new file to a job
+
+    Parameters
+    ----------
+    body : dict
+        The description of the file.
+
+    Returns
+    -------
+    The job id (integer)
+    """
+    job_info, status = get_job(id)
+    root = Path(job_info["path"])
+
+    file_data = request.files["file"]
+    filename = file_data.filename
+
+    if filename[0:4] == "job:":
+        filename = filename[4:]
+
+    path = root / filename
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+    logger.info(f"Saving file to {root / filename}")
+    file_data.save(root / filename)
+
+    return {"path": str(root / filename)}, 201
