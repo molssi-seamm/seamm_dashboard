@@ -5,7 +5,6 @@ import shutil
 from datetime import datetime
 
 from seamm_dashboard import create_app, db
-from seamm_datastore.util import parse_flowchart
 
 from seamm_datastore.database.models import (
     Job,
@@ -123,7 +122,7 @@ def app(project_directory):
 
     # Load a simple flowchart
     current_location = os.path.dirname(os.path.realpath(__file__))
-    flowchart_data = parse_flowchart(
+    flowchart_data = Flowchart.parse_flowchart_file(
         os.path.join(current_location, "..", "..", "data", "sample.flow")
     )
     # Make the ID easier
