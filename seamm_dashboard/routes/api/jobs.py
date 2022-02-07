@@ -365,7 +365,7 @@ def get_job_files(id):
                     "parent": parent,
                     "text": name,
                     "a_attr": {
-                        "href": f"api/jobs/{id}/files/download?{safe_encode}",
+                        "href": f"api/jobs/{id}/files/download?filename={safe_encode}",
                         "class": "file",
                     },
                     "icon": [
@@ -401,8 +401,6 @@ def download_job_files(id, filename=None):
         the ID of the job to return
     """
 
-    breakpoint()
-
     try:
         job = Job.get_by_id(id)
     except NotAuthorizedError:
@@ -421,8 +419,4 @@ def download_job_files(id, filename=None):
         unencoded_path = urllib.parse.unquote(filename)
         return send_from_directory(job.path, path=unencoded_path, as_attachment=True)
 
-
-
-
-   
-    return 
+ 
