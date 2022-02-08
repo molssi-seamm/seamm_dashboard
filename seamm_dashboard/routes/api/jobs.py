@@ -49,26 +49,29 @@ file_icons = {
 
 
 @jwt_required(optional=True)
-def get_jobs(permission="read",
-        description=None,
-        title=None,
-        offset=None,
-        limit=None,
-        sort_by="id",
-        order="asc",
-    ):
+def get_jobs(
+    permission="read",
+    description=None,
+    title=None,
+    offset=None,
+    limit=None,
+    sort_by="id",
+    order="asc",
+):
     """
     Function for API endpoint /api/jobs
     """
 
-    jobs = Job.get(permission=permission, 
-                    description=description, 
-                    title=title, 
-                    offset=offset,
-                    limit=limit,
-                    sort_by=sort_by,
-                    order=order)
-    
+    jobs = Job.get(
+        permission=permission,
+        description=description,
+        title=title,
+        offset=offset,
+        limit=limit,
+        sort_by=sort_by,
+        order=order,
+    )
+
     jobs = JobSchema(many=True).dump(jobs)
 
     return jobs
@@ -217,7 +220,7 @@ def add_job(body):
     db.session.commit(job)
 
     job = JobSchema.dump(job)
-    
+
     return job
 
 
@@ -230,7 +233,7 @@ def get_job(id):
     ----------
     id : the ID of the job to return
     """
-    
+
     if not isinstance(id, int):
         return Response(status=400)
 
@@ -238,7 +241,7 @@ def get_job(id):
         job = Job.get_by_id(id)
     except NotAuthorizedError:
         return Response("You are not authorized to view this content.", status=401)
-    
+
     if job is None:
         return Response(status=404)
 
@@ -259,21 +262,18 @@ def update_job(id, body):
     body : json
         The job information to update.
     """
-    
+
     from seamm_datastore.util import NotAuthorizedError
 
     try:
         job = Job.get_by_id(id, permission="update")
     except NotAuthorizedError:
         return Response(status=401)
-    
+
     if job is None:
         return Response(status=404)
-        
-    job = Job.update(id, body)
 
-    db.session.add(job)
-    db.session.commit()
+    job = Job.update(id=id, **body)
 
     return Response(status=201)
 
@@ -364,7 +364,6 @@ def get_job_files(id):
 
             encoded_path = urllib.parse.quote(os.path.join(root, name), safe="")
             safe_encode = urllib.parse.quote(os.path.join(safe, name), safe="")
-            
 
             js_tree.append(
                 {
@@ -412,7 +411,7 @@ def download_job_files(id, filename=None):
         job = Job.get_by_id(id)
     except NotAuthorizedError:
         return Response(status=401)
-    
+
     path = job.path
     path, job_directory = os.path.split(path)
 
@@ -420,15 +419,16 @@ def download_job_files(id, filename=None):
         # Create zip file in temporary directory and send.
         tmpdir = tempfile.mkdtemp()
         tmpzip = os.path.join(tmpdir, job_directory)
-        shutil.make_archive(f"{tmpzip}", 'zip', job.path)
-        return send_from_directory(tmpdir, path=f"{job_directory}.zip", as_attachment=True)
+        shutil.make_archive(f"{tmpzip}", "zip", job.path)
+        return send_from_directory(
+            tmpdir, path=f"{job_directory}.zip", as_attachment=True
+        )
     else:
         if "../" in filename:
             return Response(status=401)
         unencoded_path = urllib.parse.unquote(filename)
         return send_from_directory(job.path, path=unencoded_path, as_attachment=True)
 
-<<<<<<< HEAD
 @jwt_required(optional=True)
 def add_file_to_job(body, id=None):
     """Add a new file to a job
@@ -458,6 +458,3 @@ def add_file_to_job(body, id=None):
     file_data.save(root / filename)
 
     return {"path": str(root / filename)}, 201
-=======
- 
->>>>>>> file download paths

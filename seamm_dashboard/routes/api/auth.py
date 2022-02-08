@@ -111,7 +111,7 @@ def needed_token_callback(_):
 
 
 @jwt.expired_token_loader
-def my_expired_token_callback(expired_token):
+def my_expired_token_callback(jwt_header, expired_token):
 
     token_type = expired_token["type"]
     return (
