@@ -19,26 +19,41 @@ __all__ = [
     "get_project",
     "get_project_jobs",
     "list_projects",
-    "update_project", 
-    "delete_project"
+    "update_project",
+    "delete_project",
 ]
+
 
 def update_project():
     pass
+
 
 def delete_project():
     pass
 
 
 @jwt_required(optional=True)
-def get_projects(action="read", description=None, limit=None):
+def get_projects(
+    permission="read",
+    description=None,
+    offset=None,
+    limit=None,
+    sort_by="id",
+    order="asc",
+):
 
-    logger.info(f"get_projects {action=} {description=} {limit=}")
-    result = seamm_datastore.api.get_projects(action=action, as_json=True)
-    logger.info(f"returning {len(result)} projects")
-    logger.debug(f"{result=}")
+    projects = Project.get(
+        permission=permission,
+        description=description,
+        offset=offset,
+        limit=limit,
+        sort_by=sort_by,
+        order=order,
+    )
 
-    return result, 200
+    projects = ProjectSchema(many=True).dump(projects)
+
+    return projects, 200
 
 
 @jwt_required(optional=True)
