@@ -233,7 +233,9 @@ def get_job(id):
     id : the ID of the job to return
     """
 
-    if not isinstance(id, int):
+    try:
+        id = int(id)
+    except ValueError:
         return Response(status=400)
 
     try:

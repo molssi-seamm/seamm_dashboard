@@ -395,8 +395,6 @@ paths:
               properties:
                 name:
                   type: string
-                owner:
-                  type: string
                 description:
                   type: string
       responses:

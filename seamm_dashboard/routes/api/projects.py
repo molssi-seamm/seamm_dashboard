@@ -3,13 +3,17 @@ API calls for projects
 """
 
 import logging
+from pathlib import Path
 
 from flask import Response
 from flask_jwt_extended import jwt_required
 
-from seamm_dashboard import db, authorize
-from seamm_datastore.database.models import Project, Job
+from seamm_dashboard import datastore
+from seamm_datastore.database.models import Project
 from seamm_datastore.database.schema import JobSchema, ProjectSchema
+
+from seamm_datastore.util import NotAuthorizedError
+
 
 logger = logging.getLogger(__name__)
 
@@ -80,23 +84,18 @@ def add_project(body):
             The owner of the project. If not present defaults to the current logged in
              user.
     """
-    from flask_jwt_extended import current_user
-
     logger.debug("Adding a project. Items in the body are:")
     for key, value in body.items():
         logger.debug("  {:15s}: '{}'".format(key, str(value)[:20]))
-
     name = body["name"]
     description = body["description"] if "description" in body else None
-    owner = body["owner"] if "owner" in body else None
 
-    seamm_datastore.api.add_project(
-        db.session,
-        name,
-        owner=owner,
-        description=description,
-        current_user=current_user,
-    )
+    # Create a directory for the project
+    project_path = Path(datastore).expanduser() / "projects" / name
+
+    project_path.mkdir(parents=True, exist_ok=True)
+
+    Project.create(name=name, description=description, path=project_path)
 
     return {"name": name}, 201
 
@@ -110,13 +109,19 @@ def get_project(id):
     ----------
     id : the ID of the project to return
     """
-    project = Project.query.get(id)
+
+    try:
+        id = int(id)
+    except ValueError:
+        return Response(status=400)
+
+    try:
+        project = Project.get_by_id(id)
+    except NotAuthorizedError:
+        return Response("You are not authorized to view this content.", status=401)
 
     if project is None:
         return Response(status=404)
-
-    if not authorize.read(project):
-        return Response("You are not authorized to access this content.", status=401)
 
     project_schema = ProjectSchema(many=False)
     return project_schema.dump(project), 200
@@ -133,38 +138,42 @@ def get_project_jobs(id):
     id : the ID of the project to return
     """
 
-    project = Project.query.get(id)
+    try:
+        id = int(id)
+    except ValueError:
+        return Response(status=400)
+
+    try:
+        project = Project.get_by_id(id, permission="read")
+    except NotAuthorizedError:
+        return Response("You are not authorized to view this content.", status=401)
 
     if project is None:
         return Response(status=404)
 
-    if not authorize.read(project):
-        return Response("You are not authorized to access this content.", status=401)
-
-    jobs = []
-    for job in project.jobs:
-        jobs.append(Job.query.get(job.id))
-
     jobs_schema = JobSchema(many=True)
 
-    return jobs_schema.dump(jobs), 200
+    return jobs_schema.dump(project.jobs), 200
 
 
 @jwt_required(optional=True)
-def list_projects(action="read", limit=None, offset=None):
-    """
-    Function for api endpoint api/projects/list
+def list_projects(
+    permission="read",
+    description=None,
+    offset=None,
+    limit=None,
+    sort_by="id",
+    order="asc",
+):
 
-    Parameters
-    ----------
-    limit : int = None
-        How many project names to return
-    offset : into = None
-        The first project name to return, in the full list
-
-    Returns
-    -------
-
-    """
-    projects = seamm_datastore.api.list_projects(limit=limit, offset=offset)
-    return projects, 200
+    projects = Project.get(
+        permission=permission,
+        description=description,
+        offset=offset,
+        limit=limit,
+        sort_by=sort_by,
+        order=order,
+        only="name",
+    )
+    project_list = [x.name for x in projects]
+    return project_list, 200
