@@ -216,9 +216,11 @@ class TestLiveServer:
 
         # Initially, there should be nothing in the text box.
 
-        initial_displayed_text = WebDriverWait(chrome_driver, 20).until(
-            EC.presence_of_element_located((By.ID, "file-content"))
-        ).text
+        initial_displayed_text = (
+            WebDriverWait(chrome_driver, 20)
+            .until(EC.presence_of_element_located((By.ID, "file-content")))
+            .text
+        )
 
         # Get a link for a file and click on it.
         job_link = WebDriverWait(chrome_driver, 20).until(
@@ -237,7 +239,9 @@ class TestLiveServer:
         # Splitting on whitespace and rejoining let's us compare the file
         # contents without worrying about how whitespace is handled.
         assert initial_displayed_text == "", "initial displayed text error"
-        assert " ".join(displayed_text_list) == " ".join(file_contents_split), "displayed text error"
+        assert " ".join(displayed_text_list) == " ".join(
+            file_contents_split
+        ), "displayed text error"
 
     def test_job_report_file_content_refresh(
         self, app, chrome_driver, project_directory
@@ -262,9 +266,11 @@ class TestLiveServer:
         chrome_driver.get(f"{self.base_url}#jobs/1")
 
         # Initially, there should be nothing in the text box.
-        initial_displayed_text = WebDriverWait(chrome_driver, 20).until(
-            EC.presence_of_element_located((By.ID, "file-content"))
-        ).text
+        initial_displayed_text = (
+            WebDriverWait(chrome_driver, 20)
+            .until(EC.presence_of_element_located((By.ID, "file-content")))
+            .text
+        )
 
         # Get a link for a file and click on it.
         job_link = WebDriverWait(chrome_driver, 20).until(

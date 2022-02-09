@@ -11,7 +11,6 @@ import logging
 from pathlib import Path
 import re
 import urllib.parse
-import shutil
 import tempfile
 
 from flask import send_from_directory, Response
@@ -392,7 +391,8 @@ def download_job_files(id, filename=None):
     """
     Function for get method of api endpoint api/jobs/{id}/files/download.
 
-    Without a query, will return zip file of job directory. With query, returns specified file.
+    Without a query, will return zip file of job directory.
+    With query, returns specified file.
 
     Parameters
     ----------
