@@ -3,12 +3,15 @@ API calls for projects
 """
 
 import logging
+import os
+import shutil
+
 from pathlib import Path
 
 from flask import Response
 from flask_jwt_extended import jwt_required
 
-from seamm_dashboard import datastore
+from seamm_dashboard import datastore, db
 from seamm_datastore.database.models import Project
 from seamm_datastore.database.schema import JobSchema, ProjectSchema
 
@@ -47,7 +50,36 @@ def update_project(id, body):
 
 @jwt_required(optional=True)
 def delete_project():
-    pass
+    try:
+        project = Project.get_by_id(id, permission="delete")
+    except NotAuthorizedError:
+        return Response(status=401)
+
+    if not project:
+        return Response(status=404)
+
+    from seamm_dashboard import datastore
+
+    path = project.path
+
+    # Ensure that job path is absolute
+    # and that it shares a base directory
+    # with the datastore
+    if not os.path.isabs(path) or os.path.commonprefix([datastore, path]) != datastore:
+        return Response(status=401)
+
+    path = project.path
+    project_path = Path(path)
+
+    # Remove job files if they exist
+    if project_path.exists():
+        shutil.rmtree(project_path)
+
+    # Remove job info from DB
+    db.session.delete(project)
+    db.session.commit()
+
+    return Response(status=200)
 
 
 @jwt_required(optional=True)
