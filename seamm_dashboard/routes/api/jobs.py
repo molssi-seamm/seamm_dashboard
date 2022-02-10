@@ -299,19 +299,28 @@ def delete_job(id):
 
     if not job:
         return Response(status=404)
-    else:
-        path = job.path
-        job_path = Path(path)
 
-        # Remove job files if they exist
-        if job_path.exists():
-            shutil.rmtree(job_path)
+    from seamm_dashboard import datastore
 
-        # Remove job info from DB
-        db.session.delete(job)
-        db.session.commit()
+    path = job.path
 
-        return Response(status=200)
+    # Ensure that job path is absolute
+    # and that it shares a base directory
+    # with the datastore
+    if not os.path.isabs(path) or os.path.commonprefix([datastore, path]) != datastore:
+        return Response(status=401)
+
+    job_path = Path(path)
+
+    # Remove job files if they exist
+    if job_path.exists():
+        shutil.rmtree(job_path)
+
+    # Remove job info from DB
+    db.session.delete(job)
+    db.session.commit()
+
+    return Response(status=200)
 
 
 @jwt_required(optional=True)
