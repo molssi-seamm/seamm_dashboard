@@ -28,10 +28,24 @@ __all__ = [
 ]
 
 
-def update_project():
-    pass
+@jwt_required(optional=True)
+def update_project(id, body):
+    from seamm_datastore.util import NotAuthorizedError
+
+    try:
+        project = Project.get_by_id(id, permission="update")
+    except NotAuthorizedError:
+        return Response(status=401)
+
+    if project is None:
+        return Response(status=404)
+
+    project.update(id, **body)
+
+    return Response(status=201)
 
 
+@jwt_required(optional=True)
 def delete_project():
     pass
 

@@ -209,7 +209,7 @@ def add_job(body):
     )
 
     db.session.add(job)
-    db.session.commit(job)
+    db.session.commit()
 
     job = JobSchema.dump(job)
 
@@ -267,7 +267,7 @@ def update_job(id, body):
     if job is None:
         return Response(status=404)
 
-    job = Job.update(id=id, **body)
+    job.update(id=id, **body)
 
     return Response(status=201)
 

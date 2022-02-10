@@ -97,7 +97,6 @@ def test_update_job(auth_client):
 
     original_info = auth_client.get("api/jobs/1").json
     assert original_info["status"].lower() == "finished"
-
     response = auth_client.put(
         "api/jobs/1",
         data=json.dumps({"status": "submitted"}),
@@ -111,7 +110,32 @@ def test_update_job(auth_client):
     assert response.status_code == 201
 
     new_info = auth_client.get("api/jobs/1").json
+
     assert new_info["status"] == "submitted"
+
+
+def test_update_project(auth_client):
+    """Check put method of api/jobs/{job_ID}"""
+
+    csrf_token = auth_client[1]
+    auth_client = auth_client[0]
+    original_info = auth_client.get("api/projects/1").json
+    assert original_info["description"] is None
+
+    response = auth_client.put(
+        "api/projects/1",
+        data=json.dumps({"description": "testing update"}),
+        headers={
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": csrf_token,
+        },
+    )
+
+    assert response.status_code == 201
+
+    new_info = auth_client.get("api/projects/1").json
+    assert new_info["description"] == "testing update"
 
 
 def test_add_project(auth_client):
