@@ -440,6 +440,7 @@ def download_job_files(id, filename=None):
         unencoded_path = urllib.parse.unquote(filename)
         return send_from_directory(job.path, path=unencoded_path, as_attachment=True)
 
+
 @jwt_required(optional=True)
 def add_file_to_job(body, id=None):
     """Add a new file to a job
