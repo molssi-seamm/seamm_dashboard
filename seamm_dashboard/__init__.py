@@ -176,7 +176,7 @@ def create_app(config_name=None):
     app.config["JWT_COOKIE_CSRF_PROTECT"] = True
     app.config["JWT_CSRF_ACCESS_PATH"] = "/api/"
 
-    conn_app.add_api("swagger_new.yml")
+    conn_app.add_api("swagger.yml")
     db.init_app(app)
     with app.app_context():
         from seamm_datastore.database.build import import_datastore, _build_initial
