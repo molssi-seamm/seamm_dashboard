@@ -4,22 +4,111 @@ info:
   description: This is an API for the SEAMM dashboard.
   contact:
     email: janash@vt.edu
-  version: "1.0.0"
+  version: "1.1.0"
 servers: 
   - url: /api
-tags:
-- name: admins
-  description: Secured Admin-only calls
-- name: developers
-  description: Operations available to regular developers
 paths:
+  /jobs:
+    get:
+      summary: searches jobs database
+      description: 
+        Get jobs that the current user has permission to read.
+      operationId: seamm_dashboard.routes.api.get_jobs
+      parameters:
+      - name: description
+        in: query
+        description: search job description
+        required: false
+        schema:
+          type: string
+      - name: title
+        in: query
+        description: Search job by title
+        required: false
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: maximum number of records to return.
+        required: false
+        schema:
+          minimum: 1
+          type: integer
+          format: int32
+      - name: sort
+        in: query
+        description: sort by job id or last modified time.
+        required: false
+        schema:
+          type: string
+          enum: [id, last-modified]
+      - name: order
+        in: query
+        description: How to sort the jobs.
+        schema: 
+          type: string
+          enum: [asc, desc]
+      responses:
+        "200":
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Job'
+        "400":
+          description: bad input parameter
+    post:
+      summary: submit a job
+      description: 
+        Submits a new job to the system
+      operationId: seamm_dashboard.routes.api.add_job
+      requestBody:
+        description: The job being submitted.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - flowchart
+              properties:
+                username:
+                  type: string
+                project:
+                  type: string
+                flowchart:
+                  type: string
+                title:
+                  type: string
+                description:
+                  type: string
+      responses:
+        "201":
+          description: job data added to database
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: integer
+                    example: 53
+                  path:
+                    type: string
+                    format: filepath
+                    example: /Users/username/seamm/projects/username/Job000053
+        "400":
+          description: bad input parameter
+        "403":
+          description: user doesn't have permission to add job.
+        "422":
+          description: error validating job data
   /jobs/{id}:
     get:
-      tags:
-      - developers
       summary: searches jobs database by id
-      description: |
-        Get jobs. By passing parameters you can get jobs fitting a certain criteria.
+      description: 
+        Get job by ID. The job will only be returned if the user has permission to read the job.
       operationId: seamm_dashboard.routes.api.get_job
       parameters:
       - name: id
@@ -42,8 +131,6 @@ paths:
         "400":
           description: bad input parameter
     put:
-      tags:
-      - admins
       operationId: seamm_dashboard.routes.api.update_job
       parameters:
       - name: id
@@ -66,8 +153,6 @@ paths:
         "400":
           description: invalid input, object invalid
     delete:
-      tags:
-      - admins
       operationId: seamm_dashboard.routes.api.delete_job
       parameters:
       - name: id
@@ -85,31 +170,67 @@ paths:
           description: Job not found.
   /jobs/{id}/files:
     get:
-      tags:
-      - developers
       summary: returns json of files associated with a particular job
-      description: |
+      description: 
         Get job files.
       operationId: seamm_dashboard.routes.api.get_job_files
       parameters:
       - name: id
         in: path
-        description: retrieve job by id.
+        description: Retrieve files for job by ID.
         required: true
         style: simple
         explode: false
         schema:
           type: integer
-      - name: file_path
-        in: query
-        schema: 
-          type: string
-        description: Retrieve text for file.
       responses:
         "200":
           description: search results matching criteria
         "400":
           description: bad input parameter
+        "401":
+          description: not authorized
+    post:
+      summary: Upload a file
+      description: |
+        Upload a file
+      operationId: seamm_dashboard.routes.api.add_file_to_job
+      parameters:
+      - name: id
+        in: path
+        description: the job to add files to
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        description: The file uploaded.
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: path to file
+          content:
+            application/json:
+              schema:
+                properties:
+                  path:
+                    type: string
+                    example: data/mydir_my_file.txt
+        "400":
+          description: bad input parameter
+        "403":
+          description: user not registered
     post:
       tags:
       - developers
@@ -153,26 +274,66 @@ paths:
           description: bad input parameter
         "403":
           description: user not registered
-
-  /jobs:
+  /jobs/{id}/files/download:
     get:
-      tags:
-      - developers
-      summary: searches jobs database
-      description: |
-        Get jobs. By passing parameters you can get jobs fitting a certain criteria.
-      operationId: seamm_dashboard.routes.api.get_jobs
+      summary: downloads job directory as a zip file
+      description: 
+        Get job files.
+      operationId: seamm_dashboard.routes.api.download_job_files
       parameters:
-      - name: limit
-        in: query
-        description: maximum number of records to return
-        required: false
-        style: form
-        explode: true
+      - name: id
+        in: path
+        description: Retrieve files for job by ID.
+        required: true
+        style: simple
+        explode: false
         schema:
-          minimum: 1
           type: integer
-          format: int32
+      - name: filename
+        in: query
+        schema: 
+          type: string
+        description: Retrieve a particular file.
+      responses:
+        "200":
+          description: search results matching criteria
+        "400":
+          description: bad input parameter
+        "401":
+          description: not authorized
+  /flowcharts:
+    get:
+      summary: searches flowcharts database
+      description: 
+        Get flowcharts
+      operationId: seamm_dashboard.routes.api.get_flowcharts
+      parameters:
+            - name: description
+              in: query
+              description: search job description
+              required: false
+              schema:
+                type: string
+            - name: title
+              in: query
+              description: Search job by title
+              required: false
+              schema:
+                type: string
+            - name: limit
+              in: query
+              description: maximum number of records to return.
+              required: false
+              schema:
+                minimum: 1
+                type: integer
+                format: int32
+            - name: order
+              in: query
+              description: How to sort the jobs.
+              schema: 
+                type: string
+                enum: [asc, desc]
       responses:
         "200":
           description: search results matching criteria
@@ -185,95 +346,40 @@ paths:
         "400":
           description: bad input parameter
     post:
-      tags:
-      - developers
-      summary: submit a job
-      description: |
-        Submits a new job to the system
-      operationId: seamm_dashboard.routes.api.add_job
+      summary: add a flowchart to the datastore
+      description: Adds a flowchart to the datastore
+      operationId: seamm_dashboard.routes.api.add_flowchart
       requestBody:
-        description: The job being submitted.
+        description: The flowchart being submitted.
         required: true
         content:
           application/json:
             schema:
               type: object
-              required:
-                - flowchart
-              properties:
-                username:
-                  type: string
-                project:
-                  type: string
-                flowchart:
-                  type: string
-                title:
-                  type: string
-                description:
-                  type: string
       responses:
         "201":
-          description: id of submitted job
-          content:
-            application/json:
-              schema:
-                properties:
-                  id:
-                    type: integer
-                    example: 53
-                  path:
-                    type: string
-                    format: filepath
-                    example: /Users/username/seamm/projects/username/Job000053
+            description: successful
+            content:
+              application/json:
+                schema:
+                  properties:
+                    id:
+                      type: integer
+                      example: 53
+                    path:
+                      type: string
+                      format: filepath
+                      example: /Users/username/seamm/projects/username/Job000053
         "400":
           description: bad input parameter
         "403":
-          description: user not registered
+          description: user doesn't have permission to add flowchart.
         "422":
           description: error validating job data
-
-  /flowcharts:
-    get:
-      tags:
-      - developers
-      summary: searches flowcharts database
-      description: |
-        Get flowcharts
-      operationId: seamm_dashboard.routes.api.get_flowcharts
-      parameters:
-      - name: description
-        in: query
-        schema: 
-          type: string
-        description: Search within flowchart description.
-      - name: limit
-        in: query
-        description: maximum number of records to return
-        required: false
-        style: form
-        explode: true
-        schema:
-          minimum: 1
-          type: integer
-          format: int32
-      responses:
-        "200":
-          description: search results matching criteria
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Flowchart'
-        "400":
-          description: bad input parameter
   /flowcharts/{id}:
     get:
-      tags:
-      - developers
       summary: searches database by flowchart id
-      description: |
-        Get flowchart by ID.
+      description: Get flowchart by ID.
       operationId: seamm_dashboard.routes.api.get_flowchart
       parameters:
       - name: id
@@ -297,11 +403,8 @@ paths:
           description: bad input parameter
   /flowcharts/{id}/cytoscape:
     get:
-      tags:
-      - developers
-      summary: searches database by flowchart id
-      description: |
-        Get flowchart by ID.
+      summary: searches database by flowchart id and retrieves representation for cytoscape
+      description: searches database by flowchart id and retrieves representation for cytoscape
       operationId: seamm_dashboard.routes.api.get_cytoscape
       parameters:
       - name: id
@@ -325,11 +428,8 @@ paths:
           description: bad input parameter
   /projects:
     get:
-      tags:
-      - developers
       summary: searches projects database
-      description: |
-        Get projects
+      description: get projects
       operationId: seamm_dashboard.routes.api.get_projects
       parameters:
       - name: description
@@ -337,6 +437,11 @@ paths:
         schema: 
           type: string
         description: Search within project description.
+      - name: name
+        in: query
+        schema: 
+          type: string
+        description: Search within project name.
       - name: limit
         in: query
         description: maximum number of records to return
@@ -359,11 +464,8 @@ paths:
         "400":
           description: bad input parameter
     post:
-      tags:
-      - developers
       summary: create a new project
-      description: |
-        Creates a new project in the datastore
+      description: Creates a new project in the datastore
       operationId: seamm_dashboard.routes.api.add_project
       requestBody:
         description: The new project
@@ -376,8 +478,6 @@ paths:
                 - name
               properties:
                 name:
-                  type: string
-                owner:
                   type: string
                 description:
                   type: string
@@ -397,32 +497,23 @@ paths:
           description: user not registered
   /projects/list:
     get:
-      tags:
-      - developers
       summary: a list of project names
-      description: |
-        Get list of projects
+      description: get a list of project names
       operationId: seamm_dashboard.routes.api.list_projects
       parameters:
-      - name: action
+      - name: description
         in: query
-        description: whether reading or udpating the project
-        required: false
-        schema:
+        schema: 
           type: string
+        description: Search within project description.
+      - name: name
+        in: query
+        schema: 
+          type: string
+        description: Search within project name.
       - name: limit
         in: query
         description: maximum number of records to return
-        required: false
-        style: form
-        explode: true
-        schema:
-          minimum: 1
-          type: integer
-          format: int32
-      - name: offset
-        in: query
-        description: the offset of records to return, i.e. the first one to return
         required: false
         style: form
         explode: true
@@ -437,15 +528,14 @@ paths:
             application/json:
               schema:
                 type: array
+                items:
+                  type: string
         "400":
           description: bad input parameter
   /projects/{id}:
     get:
-      tags:
-      - developers
       summary: searches database by project id
-      description: |
-        Get project by ID.
+      description: Get project by ID.
       operationId: seamm_dashboard.routes.api.get_project
       parameters:
       - name: id
@@ -467,13 +557,48 @@ paths:
                   $ref: '#/components/schemas/Project'
         "400":
           description: bad input parameter
+    put:
+      operationId: seamm_dashboard.routes.api.update_project
+      parameters:
+      - name: id
+        in: path
+        description: update project by id.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        description: Project values to update
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "201":
+          description: item updated
+        "400":
+          description: invalid input, object invalid
+    delete:
+      operationId: seamm_dashboard.routes.api.delete_project
+      parameters:
+      - name: id
+        in: path
+        description: ID of the project to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Project deleted successfully.
+        "404":
+          description: Project not found.
   /projects/{id}/jobs:
     get:
-      tags:
-      - developers
       summary: retrieves jobs associated with a project
-      description: |
-        Get jobs associated with a project by project ID.
+      description: Get jobs associated with a project by project ID.
       operationId: seamm_dashboard.routes.api.get_project_jobs
       parameters:
       - name: id
@@ -491,6 +616,8 @@ paths:
             application/json:
               schema:
                 type: array
+                items:
+                  $ref: '#/components/schemas/Job'
         "400":
           description: bad input parameter
   /groups:
@@ -502,7 +629,7 @@ paths:
       operationId: seamm_dashboard.routes.api.get_groups
       responses:
         "200":
-          description: users listed
+          description: groups listed
         "403":
           description: permission denied 
   /roles:
@@ -522,8 +649,7 @@ paths:
       tags:
       - admin
       summary: retrieves users of dashboard
-      description: |
-        Get jobs associated with a project by project ID.
+      description: Get jobs associated with a project by project ID.
       operationId: seamm_dashboard.routes.api.get_users
       responses:
         "200":
@@ -534,8 +660,7 @@ paths:
       tags:
       - admins
       summary: create a user
-      description: |
-        Adds a new user to the dashboard
+      description: Adds a new user to the dashboard
       operationId: seamm_dashboard.routes.api.add_user
       requestBody:
         description: The username and password of the new user.
@@ -568,13 +693,10 @@ paths:
           description: user not registered
         "422":
           description: error validating job data
-
   /status:
     get:
       summary: return the status of the dashboard
-      description: |
-        Return the status of the dashboard. Currently 'running' |
-        but in the future may return other status strings.
+      description: Return the status of the dashboard. Currently 'running' but in the future may return other status strings.
       operationId: seamm_dashboard.routes.api.status
       responses:
         "200":
@@ -597,8 +719,7 @@ paths:
   /auth/token:
     post:
       summary: post username and password and get a token for the current user
-      description: |
-        Return a token to be used for authentication
+      description: Return a token to be used for authentication
       operationId: seamm_dashboard.routes.api.get_auth_token
       requestBody:
         description: The username and password of the new user.
@@ -623,8 +744,7 @@ paths:
   /auth/token/refresh:
     post:
       summary: Refresh the access token
-      description: |
-        Return a token to be used for authentication. An old token will be
+      description: Return a token to be used for authentication. An old token will be
       operationId: seamm_dashboard.routes.api.refresh_auth_token
       responses:
         "200":
