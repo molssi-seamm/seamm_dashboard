@@ -47,7 +47,12 @@ function setFileDivSize() {
 
 }
 
-function loadFlow(flowchartID) {
+function loadFlow(href) {
+    // Need to get the flowchart ID
+    // Get info we need for page
+    let url = location.href.split('/');
+    const jobID = url.slice(-1)[0];
+    let flowchartID = getJobData(jobID).flowchart_id;
     let cytoElements = buildFlowchart(`views/flowcharts/${flowchartID}`)
     var cy = window.cy = buildCytoGraph(cytoElements, 'cytoscape')
     cy.nodes('[name = "Join"]').style( {
@@ -63,14 +68,14 @@ function loadFlow(flowchartID) {
         });
 }
 
-function loadGraph(nodeData) {
+function loadGraph(href) {
     let content_div = document.getElementById('file-content');
-    var plotlyData = load_file(nodeData.a_attr.href, 'json')
+    var plotlyData = load_file(href, 'json')
     Plotly.newPlot(content_div, plotlyData.data, plotlyData.layout, 
         {'editable': true, 
         'toImageButtonOptions': {
         format: 'png', // one of png, svg, jpeg, webp
-        filename: nodeData.text,
+        filename: href,
         scale: 10 // Multiply title/legend/axis/canvas sizes by this factor
         }});
 
@@ -132,6 +137,82 @@ function loadDescription(description) {
         
     Prism.highlightAll();
 }
+
+function jobLink(event, filename) {
+    event.preventDefault();
+
+    let location = window.location.href.replace("#", "api")
+
+    // This is the link to the file. Has to have this variable name
+    // let href = window.location.origin + "/api/"
+    let href = location + `/files/download?filename=${filename}`
+
+    // Clear div content before new content loading
+    let divs = document.getElementsByClassName('load-content')
+        
+        for (var i=0; i<divs.length; i++) {
+            divs[i].innerHTML = "";
+        }
+    
+    $('#file-name').html(decodeURIComponent(filename))
+
+    try {
+        table.destroy();
+        $('#csv-data tr').remove();
+        $('#csv-data thead').remove();
+        $('#csv-data tbody').remove();
+    } catch {
+        // Do nothing.
+    }
+    var fileType = filename.split(".").slice(-1);
+    console.log(fileType)
+
+    // Figure out functions to call. If not recognized extension, other
+    if (!(fileType in contentFunctions)) {
+        fileType = "other"
+    }
+
+    //Resize divs appropriately.
+    let resizeDiv = contentFunctions[fileType]["resize"]
+    toggleDivs(contentDivs, resizeDiv)
+
+    // Load function
+    let func = contentFunctions[fileType]["load"]
+    func(href)
+
+    // Remove previous refresh button behavior
+    $("#refresh").unbind()
+
+    // Make file refresh button work.
+    $("#refresh").on("click",
+        function() {
+        func(href)
+    })
+}
+
+function loadHTML(file) {
+    // Load the HTML
+    $("#file-content").load(file, function() {
+
+        // add special behavior to job report classes
+        $(".report-link").on("click", function(event) {
+            // Add file loading behavior
+            jobLink(event, this.getAttribute("href"));
+
+            // Add back button
+            let div = document.createElement("div")
+            div.innerHTML = `<a class="back" href="${file}"><button type="button" class="btn btn-light btn-lg mb-3"><i class="fas fa-chevron-circle-left mr-3"></i>Back to job report</button></a>`
+            document.getElementById("file-content").prepend(div)
+
+            // Fix behavior of back button
+            $(".back").on("click", function(event) {
+                jobLink(event, file.split("=")[1])
+            });
+
+            
+            
+    });
+})}
 
 function loadStructure(URL) {
     
@@ -257,31 +338,35 @@ function toggleDivs(divList, divToShow = null) {
 
 var contentFunctions = {
     "flow" : {
-        "load": [loadFlow, "jobData.flowchart_id"],
+        "load": loadFlow,
         "resize": "cytoscape",
     },
     "graph": {
-        "load": [loadGraph, "data.node"],
+        "load": loadGraph,
         "resize": "file-content",
     },
     "csv": {
-        "load" : [loadTable, "href"],
+        "load" : loadTable,
         "resize": "csv-data",
     },
     "mmcif": {
-        "load" : [loadStructure, "href"],
+        "load" : loadStructure,
         "resize": "structure",
     },
     "cif": {
-        "load" : [loadStructure, "href"],
+        "load" : loadStructure,
         "resize": "structure",
     },
     "pdb": {
-        "load" : [loadStructure, "href"],
+        "load" : loadStructure,
         "resize": "structure",
     },
+    "html": {
+        "load": loadHTML,
+        "resize": "file-content",
+    },
     "other": {
-        "load": [loadOther, "href"],
+        "load": loadOther,
         "resize": "file-content",
     },
 }
@@ -323,48 +408,8 @@ $(document).ready(function() {
     // Code to control loading content into div on button clicks
     $('#js-tree').bind("select_node.jstree", function (e, data) {
         if (data.node.a_attr.href != '#') {
-
-             // Clear div content before new content loading
-             let divs = document.getElementsByClassName('load-content')
-             
-             for (var i=0; i<divs.length; i++) {
-                 divs[i].innerHTML = "";
-             }
-
-            try {
-                table.destroy();
-                $('#csv-data tr').remove();
-                $('#csv-data thead').remove();
-                $('#csv-data tbody').remove();
-            } catch {
-                // Do nothing.
-            }
-
-            $('#file-name').html(data.node.text)
-
-            // Figure out the file type.
-            var href = data.node.a_attr.href;
-            var fileType = href.split(".").slice(-1);
-
-            // Figure out functions to call. If not recognized extension, other
-            if (!(fileType in contentFunctions)) {
-                fileType = "other"
-            }
-
-            //Resize divs appropriately.
-            let resizeDiv = contentFunctions[fileType]["resize"]
-            toggleDivs(contentDivs, resizeDiv)
-
-            // Load function
-            let func = contentFunctions[fileType]["load"][0]
-            let arg = eval(contentFunctions[fileType]["load"][1])
-            func(arg)
-            
-            // Make file refresh button work.
-            $("#refresh").click(
-                function() {
-                func(arg)
-            })
+            //debugger;
+            jobLink(e, data.node.a_attr.href)
         }
     });
 

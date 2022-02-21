@@ -381,7 +381,7 @@ def get_job_files(id):
                     "parent": parent,
                     "text": name,
                     "a_attr": {
-                        "href": f"api/jobs/{id}/files/download?filename={safe_encode}",
+                        "href": f"{safe_encode}",
                         "class": "file",
                     },
                     "icon": [
