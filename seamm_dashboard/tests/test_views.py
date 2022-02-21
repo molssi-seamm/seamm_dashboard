@@ -70,9 +70,9 @@ class TestLiveServer:
 
         if logged_in:
             self.log_in(chrome_driver)
-            # Should have three finished jobs, 1 flowchart, and 1 project when
+            # Should have three finished jobs, 1 flowchart, and 2 projects when
             # logged in.
-            expected_values = "3 0 3 1 1".split()
+            expected_values = "3 0 3 1 2".split()
 
         else:
             # Make sure we are logged out
@@ -81,7 +81,6 @@ class TestLiveServer:
             expected_values = "1 0 1 0 0".split()
 
         chrome_driver.get(self.base_url)
-        # chrome_driver.get_screenshot_as_file(f'main_{logged_in}.png')
         ui_view = chrome_driver.find_element_by_id("ui-view")
         displayed_values = ui_view.find_elements_by_class_name("text-value")
 
@@ -97,7 +96,7 @@ class TestLiveServer:
             ("jobs", 7, 2, False),
             ("flowcharts", 5, 2, True),
             ("flowcharts", 5, 2, False),
-            ("projects", 4, 2, True),
+            ("projects", 4, 3, True),
             ("projects", 4, 2, False),
         ],
     )
@@ -122,7 +121,7 @@ class TestLiveServer:
             button = chrome_driver.find_element_by_id("toggle-list")
             button.click()
 
-        # chrome_driver.get_screenshot_as_file(f'{list_type}_{logged_in}.png')
+        chrome_driver.get_screenshot_as_file(f"{list_type}_{logged_in}.png")
 
         # Get the jobs table. Will want to wait for this to be loaded,
         # of course.
@@ -278,7 +277,7 @@ class TestLiveServer:
         )
         job_link.click()
 
-        time.sleep(0.10)
+        time.sleep(1)
 
         # When clicked, file text should be displayed in the div.
         displayed_text = chrome_driver.find_element_by_id("file-content").text
