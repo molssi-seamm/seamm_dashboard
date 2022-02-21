@@ -182,11 +182,19 @@ function jobLink(event, filename) {
 
     // Remove previous refresh button behavior
     $("#refresh").unbind()
+    $("#download").unbind()
 
     // Make file refresh button work.
     $("#refresh").on("click",
         function() {
         func(href)
+    })
+
+    // Make the download button work
+    // Make file refresh button work.
+    $("#download").on("click",
+        function() {
+        window.open(href, '_blank')
     })
 }
 
