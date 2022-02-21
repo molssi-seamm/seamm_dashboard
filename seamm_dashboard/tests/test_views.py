@@ -122,7 +122,7 @@ class TestLiveServer:
             button = chrome_driver.find_element(By.ID, "toggle-list")
             button.click()
 
-        chrome_driver.get_screenshot_as_file(f"{list_type}_{logged_in}.png")
+        # chrome_driver.get_screenshot_as_file(f"{list_type}_{logged_in}.png")
 
         # Get the jobs table. Will want to wait for this to be loaded,
         # of course.
