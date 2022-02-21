@@ -16,6 +16,7 @@ import urllib.parse
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 # Needed for Python 3.8 since default for OS/X changed to spawn rather than
 # fork.
@@ -43,13 +44,13 @@ class TestLiveServer:
         login_url = f"{self.base_url}/login"
         chrome_driver.get(login_url)
 
-        username_field = chrome_driver.find_element_by_id("username")
+        username_field = chrome_driver.find_element(By.ID, "username")
         username_field.send_keys(username)
 
-        username_field = chrome_driver.find_element_by_id("password")
+        username_field = chrome_driver.find_element(By.ID, "password")
         username_field.send_keys(password)
 
-        button = chrome_driver.find_element_by_id("submit")
+        button = chrome_driver.find_element(By.ID, "submit")
         button.click()
 
         # For some reason we need to navigate away from the main page
@@ -70,9 +71,9 @@ class TestLiveServer:
 
         if logged_in:
             self.log_in(chrome_driver)
-            # Should have three finished jobs, 1 flowchart, and 1 project when
+            # Should have three finished jobs, 1 flowchart, and 2 projects when
             # logged in.
-            expected_values = "3 0 3 1 1".split()
+            expected_values = "3 0 3 1 2".split()
 
         else:
             # Make sure we are logged out
@@ -81,9 +82,8 @@ class TestLiveServer:
             expected_values = "1 0 1 0 0".split()
 
         chrome_driver.get(self.base_url)
-        # chrome_driver.get_screenshot_as_file(f'main_{logged_in}.png')
-        ui_view = chrome_driver.find_element_by_id("ui-view")
-        displayed_values = ui_view.find_elements_by_class_name("text-value")
+        ui_view = chrome_driver.find_element(By.ID, "ui-view")
+        displayed_values = ui_view.find_elements(By.CLASS_NAME, "text-value")
 
         displayed_values = [x for x in displayed_values if x != ""]
 
@@ -97,7 +97,7 @@ class TestLiveServer:
             ("jobs", 7, 2, False),
             ("flowcharts", 5, 2, True),
             ("flowcharts", 5, 2, False),
-            ("projects", 4, 2, True),
+            ("projects", 4, 3, True),
             ("projects", 4, 2, False),
         ],
     )
@@ -119,10 +119,10 @@ class TestLiveServer:
 
         if list_type == "projects":
             # Default view is card - switch to list.
-            button = chrome_driver.find_element_by_id("toggle-list")
+            button = chrome_driver.find_element(By.ID, "toggle-list")
             button.click()
 
-        # chrome_driver.get_screenshot_as_file(f'{list_type}_{logged_in}.png')
+        # chrome_driver.get_screenshot_as_file(f"{list_type}_{logged_in}.png")
 
         # Get the jobs table. Will want to wait for this to be loaded,
         # of course.
@@ -131,14 +131,14 @@ class TestLiveServer:
         )
 
         # Check table dimensions.
-        table_headings = jobs_table.find_elements_by_tag_name("th")
-        table_rows = jobs_table.find_elements_by_tag_name("tr")
+        table_headings = jobs_table.find_elements(By.TAG_NAME, "th")
+        table_rows = jobs_table.find_elements(By.TAG_NAME, "tr")
 
         assert len(table_headings) == num_columns
         assert len(table_rows) == num_rows
 
         # Check the response code of the links in the table.
-        table_links = jobs_table.find_elements_by_class_name("nav-link")
+        table_links = jobs_table.find_elements(By.CLASS_NAME, "nav-link")
         for link in table_links:
             # This is just a thing we have to do because of the way 'nav-links'
             # are handled in the app.
@@ -175,7 +175,7 @@ class TestLiveServer:
 
         # Get the file tree. Wait for a specific element to load so we know the
         # tree is loaded.
-        file_tree = chrome_driver.find_element_by_id("js-tree")
+        file_tree = chrome_driver.find_element(By.ID, "js-tree")
 
         test_file = os.path.realpath(
             os.path.join(project_directory, "Job_000001", "job.out")
@@ -188,7 +188,7 @@ class TestLiveServer:
         )
 
         # Now get components.
-        js_tree_contents = file_tree.find_elements_by_tag_name("li")
+        js_tree_contents = file_tree.find_elements(By.TAG_NAME, "li")
 
         num_files_in_tree = len(js_tree_contents)
 
@@ -232,7 +232,7 @@ class TestLiveServer:
         time.sleep(1.25)
 
         # When clicked, file text should be displayed in the div.
-        displayed_text = chrome_driver.find_element_by_id("file-content").text
+        displayed_text = chrome_driver.find_element(By.ID, "file-content").text
 
         displayed_text_list = displayed_text.split()
 
@@ -278,10 +278,10 @@ class TestLiveServer:
         )
         job_link.click()
 
-        time.sleep(0.10)
+        time.sleep(1)
 
         # When clicked, file text should be displayed in the div.
-        displayed_text = chrome_driver.find_element_by_id("file-content").text
+        displayed_text = chrome_driver.find_element(By.ID, "file-content").text
 
         displayed_text_list = displayed_text.split()
 
@@ -300,12 +300,12 @@ class TestLiveServer:
         file_contents_split += "Appending this line".split()
 
         # Click refresh button
-        refresh_button = chrome_driver.find_element_by_id("refresh")
+        refresh_button = chrome_driver.find_element(By.ID, "refresh")
         refresh_button.click()
-        time.sleep(0.10)
+        time.sleep(1)
 
         # Check the new displayed text
-        new_displayed_text = chrome_driver.find_element_by_id("file-content").text
+        new_displayed_text = chrome_driver.find_element(By.ID, "file-content").text
         new_displayed_list = new_displayed_text.split()
 
         assert " ".join(new_displayed_list) == " ".join(file_contents_split)
@@ -345,7 +345,7 @@ class TestLiveServer:
         flowchart_link.click()
 
         # File content div should not be displayed if another div is clicked on.
-        assert not chrome_driver.find_element_by_id("file-content").is_displayed()
+        assert not chrome_driver.find_element(By.ID, "file-content").is_displayed()
 
     def test_admin_views_logged_out(self, app, chrome_driver):
         """
@@ -358,14 +358,14 @@ class TestLiveServer:
         # Try to access admin views - manage_users page
         chrome_driver.get(f"{self.base_url}/admin/manage_users")
 
-        header = chrome_driver.find_elements_by_tag_name("h1")[0]
+        header = chrome_driver.find_elements(By.TAG_NAME, "h1")[0]
 
         assert header.text == "401"
 
         # Try to access admin views - create users page
         chrome_driver.get(f"{self.base_url}/admin/create_user")
 
-        header = chrome_driver.find_elements_by_tag_name("h1")[0]
+        header = chrome_driver.find_elements(By.TAG_NAME, "h1")[0]
 
         assert header.text == "401"
 
@@ -377,33 +377,33 @@ class TestLiveServer:
         # Try to access admin views - manage_users page
         chrome_driver.get(f"{self.base_url}/admin/create_user")
 
-        username_field = chrome_driver.find_element_by_id("username")
+        username_field = chrome_driver.find_element(By.ID, "username")
         username_field.send_keys("new_user")
 
-        password_field = chrome_driver.find_element_by_id("password")
+        password_field = chrome_driver.find_element(By.ID, "password")
         password_field.send_keys("test_password")
 
-        password2_field = chrome_driver.find_element_by_id("password2")
+        password2_field = chrome_driver.find_element(By.ID, "password2")
         password2_field.send_keys("test_password")
 
-        firstname_field = chrome_driver.find_element_by_id("first_name")
+        firstname_field = chrome_driver.find_element(By.ID, "first_name")
         firstname_field.send_keys("FirstName")
 
-        lastname_field = chrome_driver.find_element_by_id("last_name")
+        lastname_field = chrome_driver.find_element(By.ID, "last_name")
         lastname_field.send_keys("LastName")
 
-        email_field = chrome_driver.find_element_by_id("email")
+        email_field = chrome_driver.find_element(By.ID, "email")
         email_field.send_keys("email@email.com")
 
-        button = chrome_driver.find_element_by_id("submit")
+        button = chrome_driver.find_element(By.ID, "submit")
         button.click()
 
         # Check that alert is found. If not found will result in error.
         chrome_driver.find_element_by_class_name("alert-success")
 
-        table_rows = chrome_driver.find_element_by_id(
-            "users"
-        ).find_elements_by_tag_name("tr")
+        table_rows = chrome_driver.find_element(By.ID, "users").find_elements(
+            By.TAG_NAME, "tr"
+        )
 
         # chrome_driver.get_screenshot_as_file(f'user_table.png')
 
@@ -419,8 +419,8 @@ class TestLiveServer:
 
         # chrome_driver.get_screenshot_as_file(f'updated_user.png')
 
-        edit_button = chrome_driver.find_elements_by_css_selector(
-            "#user-information-button .btn"
+        edit_button = chrome_driver.find_elements(
+            By.CSS_SELECTOR, "#user-information-button .btn"
         )[0]
         edit_button.click()
 
@@ -429,19 +429,19 @@ class TestLiveServer:
         # with open('page_source.html', 'w+') as f:
         #    f.write(chrome_driver.page_source)
 
-        firstname_field = chrome_driver.find_element_by_id("first_name")
+        firstname_field = chrome_driver.find_element(By.ID, "first_name")
         firstname_field.send_keys("FirstName")
 
-        lastname_field = chrome_driver.find_element_by_id("last_name")
+        lastname_field = chrome_driver.find_element(By.ID, "last_name")
         lastname_field.send_keys("LastName")
 
-        email_field = chrome_driver.find_element_by_id("email")
+        email_field = chrome_driver.find_element(By.ID, "email")
         email_field.send_keys("changed_address@email.com")
 
         # chrome_driver.get_screenshot_as_file(f'updated_user.png')
 
-        button = chrome_driver.find_element_by_id("submit")
+        button = chrome_driver.find_element(By.ID, "submit")
         button.click()
 
-        chrome_driver.find_element_by_class_name("alert-success")
+        chrome_driver.find_element(By.CLASS_NAME, "alert-success")
         # chrome_driver.get_screenshot_as_file(f'user_table.png')

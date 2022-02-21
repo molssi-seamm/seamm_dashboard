@@ -165,7 +165,7 @@ def create_app(config_name=None):
     app.config["AUTHORIZE_ALLOW_ANONYMOUS_ACTIONS"] = True
 
     # Set application to store JWTs in cookies.
-    app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
+    app.config["JWT_TOKEN_LOCATION"] = ["cookies", "headers"]
 
     # Set the cookie paths
     # app.config["JWT_ACCESS_COOKIE_PATH"] = "/api"
@@ -184,6 +184,7 @@ def create_app(config_name=None):
         if options["initialize"] or config_name and config_name.lower() == "testing":
             logger.warning("Removing all previous jobs from the database.")
             db.drop_all()
+            logger.info("Tables dropped creating tables")
             db.create_all()
             # Create database using other interface for consistency.
             logger.info("Importing jobs...")

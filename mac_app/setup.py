@@ -22,7 +22,7 @@ OPTIONS = {
         "CFBundleVersion": "1.0",
         "CFBundleShortVersionString": "1.0",
         "NSHumanReadableCopyright": (
-            u"Copyright © 2021, MOLSSI/Virginia Tech, All Rights Reserved"
+            "Copyright © 2021, MOLSSI/Virginia Tech, All Rights Reserved"
         ),
         "PyRuntimeLocations": [
             "@executable_path/../conda-env/lib/libpython3.9.dylib",

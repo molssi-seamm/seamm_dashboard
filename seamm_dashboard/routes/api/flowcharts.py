@@ -11,7 +11,11 @@ from seamm_dashboard import authorize
 
 import json
 
-__all__ = ["get_flowcharts", "get_flowchart", "get_cytoscape"]
+__all__ = ["get_flowcharts", "get_flowchart", "get_cytoscape", "add_flowchart"]
+
+
+def add_flowchart():
+    pass
 
 
 @jwt_required(optional=True)

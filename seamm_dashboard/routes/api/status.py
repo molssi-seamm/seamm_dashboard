@@ -3,13 +3,8 @@ API calls for the status
 """
 import logging
 
-from seamm_dashboard import db
-
-from seamm_datastore import api
 from seamm_datastore.database.models import Project, Job, Flowchart
 from seamm_datastore.database.schema import RoleSchema
-
-from sqlalchemy import and_, func
 
 from flask_jwt_extended import get_current_user, jwt_required
 
@@ -47,14 +42,19 @@ def status():
         user_id = None
 
     # Get information about jobs, projects, flowcharts
-    num_jobs = api.get_jobs(count=True)
-    num_jobs_running = api.get_jobs(count=True, status="running")
-    num_jobs_finished = api.get_jobs(count=True, status="finished")
-    num_jobs_queued = api.get_jobs(count=True, status="submitted")
 
-    flowcharts = api.get_flowcharts()
+    num_jobs = Job.permissions_query("read").count()
+    num_jobs_running = Job.permissions_query("read").filter_by(status="running").count()
+    num_jobs_finished = (
+        Job.permissions_query("read").filter_by(status="finished").count()
+    )
+    num_jobs_queued = (
+        Job.permissions_query("read").filter_by(status="submitted").count()
+    )
+
+    flowcharts = Flowchart.get()
     num_flowcharts = len(flowcharts)
-    num_projects = len(api.get_projects())
+    num_projects = len(Project.get())
 
     # Build return json
     status = {

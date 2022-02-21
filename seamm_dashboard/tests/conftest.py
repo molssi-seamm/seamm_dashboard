@@ -5,7 +5,6 @@ import shutil
 from datetime import datetime
 
 from seamm_dashboard import create_app, db
-from seamm_datastore.util import parse_flowchart
 
 from seamm_datastore.database.models import (
     Job,
@@ -14,6 +13,7 @@ from seamm_datastore.database.models import (
     User,
     Role,
     UserProjectAssociation,
+    Group,
 )
 from selenium import webdriver
 
@@ -47,7 +47,8 @@ def project_directory(tmpdir_factory):
         os.path.join(dir_path, "..", "..", "data", "projects", "MyProject")
     )
 
-    temp_project_path = str(tmpdir_factory.mktemp("fake_project"))
+    temp_projects_path = tmpdir_factory.mktemp("projects")
+    temp_project_path = str(temp_projects_path.mkdir("MyProject"))
 
     return_path = shutil.copytree(
         real_project_path, temp_project_path, dirs_exist_ok=True
@@ -58,6 +59,9 @@ def project_directory(tmpdir_factory):
 
 @pytest.fixture(scope="module")
 def app(project_directory):
+    import seamm_dashboard
+
+    seamm_dashboard.datastore = os.path.split(project_directory)[0]
 
     test_project_path = project_directory
 
@@ -80,11 +84,19 @@ def app(project_directory):
     manager_role = Role.query.filter_by(name="group manager").one_or_none()
     user_role = Role.query.filter_by(name="user").one_or_none()
 
+    # Get groups for the users
+    groups = Group.query.all()
+
     # Create a sample user.
     test_user = User(
-        username="sample_user", password="sample_password", roles=[user_role]
+        username="sample_user",
+        password="sample_password",
+        roles=[user_role],
+        groups=[groups[1]],
     )
-    test_admin = User(username="admin_user", password="iamadmin", roles=[admin_role])
+    test_admin = User(
+        username="admin_user", password="iamadmin", roles=[admin_role], groups=groups
+    )
 
     # Fill in some data
     sub_time = datetime.fromisoformat("2016-08-29T09:12:33.001000+00:00")
@@ -123,7 +135,7 @@ def app(project_directory):
 
     # Load a simple flowchart
     current_location = os.path.dirname(os.path.realpath(__file__))
-    flowchart_data = parse_flowchart(
+    flowchart_data = Flowchart.parse_flowchart_file(
         os.path.join(current_location, "..", "..", "data", "sample.flow")
     )
     # Make the ID easier
