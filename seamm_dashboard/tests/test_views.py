@@ -302,7 +302,7 @@ class TestLiveServer:
         # Click refresh button
         refresh_button = chrome_driver.find_element(By.ID, "refresh")
         refresh_button.click()
-        time.sleep(0.10)
+        time.sleep(1)
 
         # Check the new displayed text
         new_displayed_text = chrome_driver.find_element(By.ID, "file-content").text
