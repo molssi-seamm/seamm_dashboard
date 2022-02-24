@@ -43,15 +43,16 @@ def project_directory(tmpdir_factory):
 
     # Copy our project files to a tmpdir
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    real_project_path = os.path.realpath(
+    real_projects_path = os.path.realpath(
         os.path.join(dir_path, "..", "..", "data", "projects")
     )
+    real_MyProject_path = os.path.join(real_projects_path, "MyProject")
 
     temp_projects_path = tmpdir_factory.mktemp("projects")
-    temp_project_path = str(temp_projects_path.mkdir("MyProject"))
+    myproject_path = str(temp_projects_path.mkdir("MyProject"))
 
     return_path = shutil.copytree(
-        real_project_path, temp_project_path, dirs_exist_ok=True
+        real_MyProject_path, myproject_path, dirs_exist_ok=True
     )
 
     job_lock = os.path.join(temp_projects_path, "job.id")
