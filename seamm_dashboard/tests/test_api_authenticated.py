@@ -164,8 +164,41 @@ def test_add_job(auth_client):
         headers={"X-CSRF-TOKEN": csrf_token},
     )
 
-    assert response.status_code == 200
+    assert response.status_code == 201
     assert response.json["id"] == 12
+
+
+def test_add_job_parameters(auth_client):
+    """Check post method of api/jobs/"""
+    csrf_token = auth_client[1]
+    auth_client = auth_client[0]
+    flowchart_file = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "..", "..", "data", "sample.flow"
+    )
+
+    with open(flowchart_file) as f:
+        flowchart = f.read()
+
+    job_info = {
+        "id": 1000,
+        "flowchart": flowchart,
+        "project": "MyProject",
+        "description": "This is the description.",
+        "title": "Title",
+        "parameters": ["job:data/Users_psaxe_SEAMM_data_anatase.cif"],
+    }
+
+    response = auth_client.post(
+        "api/jobs",
+        data=json.dumps(job_info),
+        content_type="application/json",
+        headers={"X-CSRF-TOKEN": csrf_token},
+    )
+
+    assert response.status_code == 201
+    assert response.json["parameters"] == [
+        "job:data/Users_psaxe_SEAMM_data_anatase.cif"
+    ]
 
 
 def test_add_project(auth_client):
