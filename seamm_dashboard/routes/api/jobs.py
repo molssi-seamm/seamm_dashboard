@@ -218,7 +218,7 @@ def add_job(body):
     db.session.add(job)
     db.session.commit()
 
-    job = JobSchema.dump(job)
+    job = JobSchema(many=False).dump(job)
 
     return job
 
