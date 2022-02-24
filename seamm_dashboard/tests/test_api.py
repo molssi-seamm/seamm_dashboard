@@ -3,8 +3,6 @@ Tests for the API (public user)
 """
 import json
 
-import pytest
-
 
 def test_get_protected_job(client):
 
@@ -66,13 +64,6 @@ def test_update_job_not_authenticated(client):
     )
 
     assert response.status_code == 401
-
-
-@pytest.mark.xfail
-def test_add_job(client):
-    """Check post method of api/jobs/"""
-    # Ask Paul
-    assert False
 
 
 def test_delete_job(client):

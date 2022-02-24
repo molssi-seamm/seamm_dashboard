@@ -160,7 +160,6 @@ def add_job(body):
     logger.debug("Adding a job. Items in the body are:")
     for key, value in body.items():
         logger.debug("  {:15s}: {}".format(key, str(value)[:20]))
-
     flowchart = body["flowchart"]
     project_names = [body["project"]]
     title = body["title"]
@@ -169,7 +168,6 @@ def add_job(body):
         parameters = body["parameters"]
     else:
         parameters = {}
-
     # Get the unique ID for the job...
     if options["job_id_file"] is None:
         job_id_file = os.path.join(datastore, "job.id")
@@ -218,9 +216,9 @@ def add_job(body):
     db.session.add(job)
     db.session.commit()
 
-    job = JobSchema.dump(job)
+    job = JobSchema(many=False).dump(job)
 
-    return job
+    return job, 201
 
 
 @jwt_required(optional=True)
