@@ -169,7 +169,6 @@ def add_job(body):
         parameters = body["parameters"]
     else:
         parameters = {}
-
     # Get the unique ID for the job...
     if options["job_id_file"] is None:
         job_id_file = os.path.join(datastore, "job.id")

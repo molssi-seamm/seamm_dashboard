@@ -44,7 +44,7 @@ def project_directory(tmpdir_factory):
     # Copy our project files to a tmpdir
     dir_path = os.path.dirname(os.path.realpath(__file__))
     real_project_path = os.path.realpath(
-        os.path.join(dir_path, "..", "..", "data", "projects", "MyProject")
+        os.path.join(dir_path, "..", "..", "data", "projects")
     )
 
     temp_projects_path = tmpdir_factory.mktemp("projects")
@@ -53,6 +53,11 @@ def project_directory(tmpdir_factory):
     return_path = shutil.copytree(
         real_project_path, temp_project_path, dirs_exist_ok=True
     )
+
+    job_lock = os.path.join(temp_projects_path, "job.id")
+
+    with open(job_lock, "w") as f:
+        f.write("!MolSSI job_id 1.0\n11")
 
     return return_path
 
