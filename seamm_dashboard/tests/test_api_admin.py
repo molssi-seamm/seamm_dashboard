@@ -9,7 +9,6 @@ import json
 import pytest
 
 
-@pytest.mark.skip
 @pytest.mark.xfail
 def test_delete_job(admin_client, project_directory):
     """Check delete method of api/jobs/{jobID}

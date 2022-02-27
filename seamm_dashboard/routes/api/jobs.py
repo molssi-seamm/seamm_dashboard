@@ -279,7 +279,6 @@ def update_job(id, body):
 
 
 @jwt_required(optional=True)
-@authorize.has_role("admin")
 def delete_job(id):
     """
     Function for delete method of api endpoint api/jobs/{id}
@@ -297,7 +296,6 @@ def delete_job(id):
     status : int
         Response code for operation. 200 = successful, 404 = job not found.
     """
-
     try:
         job = Job.get_by_id(id, permission="delete")
     except NotAuthorizedError:
