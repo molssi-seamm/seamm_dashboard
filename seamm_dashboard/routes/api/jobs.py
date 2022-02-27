@@ -54,7 +54,7 @@ def get_jobs(
     title=None,
     offset=None,
     limit=None,
-    sort_by="id",
+    sortby="id",
     order="asc",
 ):
     """
@@ -67,7 +67,7 @@ def get_jobs(
         title=title,
         offset=offset,
         limit=limit,
-        sort_by=sort_by,
+        sort_by=sortby,
         order=order,
     )
 

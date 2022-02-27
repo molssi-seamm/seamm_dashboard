@@ -35,13 +35,13 @@ paths:
           minimum: 1
           type: integer
           format: int32
-      - name: sort
+      - name: sortby
         in: query
         description: sort by job id or last modified time.
         required: false
         schema:
           type: string
-          enum: [id, last-modified]
+          enum: [id, last_update]
       - name: order
         in: query
         description: How to sort the jobs.
