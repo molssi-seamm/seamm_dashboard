@@ -14,10 +14,10 @@ import urllib.parse
 import tempfile
 
 from flask import send_from_directory, Response, request
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_current_user
 
 from seamm_dashboard import db, datastore, authorize, options
-from seamm_datastore.database.models import Job
+from seamm_datastore.database.models import Job, Role
 from seamm_datastore.database.schema import JobSchema
 
 from seamm_datastore.util import NotAuthorizedError
@@ -301,7 +301,12 @@ def delete_job(id):
     try:
         job = Job.get_by_id(id, permission="delete")
     except NotAuthorizedError:
-        return Response(status=401)
+        admin_role = Role.query.filter(Role.name == "admin").one()
+        current = get_current_user()
+        if current is None or admin_role not in current.roles:
+            return Response(status=401)
+        else:
+            job = Job.query.get(id)
 
     if not job:
         return Response(status=404)
