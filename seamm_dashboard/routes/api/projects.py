@@ -221,7 +221,7 @@ def list_projects(
         limit=limit,
         sort_by=sort_by,
         order=order,
-        only="name",
+        only=["name"],
     )
     project_list = [x.name for x in projects]
     return project_list, 200

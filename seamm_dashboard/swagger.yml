@@ -48,6 +48,13 @@ paths:
         schema: 
           type: string
           enum: [asc, desc]
+      - name: only
+        in: query
+        description: fields to return
+        schema:
+          type: array
+          items:
+            type: string
       responses:
         "200":
           description: search results matching criteria

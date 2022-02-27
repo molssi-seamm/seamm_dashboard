@@ -56,6 +56,7 @@ def get_jobs(
     limit=None,
     sortby="id",
     order="asc",
+    only="all",
 ):
     """
     Function for API endpoint /api/jobs
@@ -69,6 +70,7 @@ def get_jobs(
         limit=limit,
         sort_by=sortby,
         order=order,
+        only=only,
     )
 
     jobs = JobSchema(many=True).dump(jobs)
