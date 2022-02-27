@@ -261,7 +261,6 @@ def update_job(id, body):
     body : json
         The job information to update.
     """
-
     from seamm_datastore.util import NotAuthorizedError
 
     try:
@@ -272,9 +271,11 @@ def update_job(id, body):
     if job is None:
         return Response(status=404)
 
-    job.update(id=id, **body)
+    jobu = job.update(id=id, **body)
+    db.session.add(jobu)
+    db.session.commit()
 
-    return Response(status=201)
+    return Response(status=204)
 
 
 @jwt_required(optional=True)

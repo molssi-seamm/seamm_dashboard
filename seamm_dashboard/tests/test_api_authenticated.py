@@ -107,7 +107,7 @@ def test_update_job(auth_client):
         },
     )
 
-    assert response.status_code == 201
+    assert response.status_code == 204
 
     new_info = auth_client.get("api/jobs/1").json
 

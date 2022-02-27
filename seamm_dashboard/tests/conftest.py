@@ -259,6 +259,7 @@ def admin_client(app):
 def chrome_driver():
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
     # executable_path = os.getenv('EXECUTABLE_PATH')
     driver = webdriver.Chrome(options=chrome_options)
 

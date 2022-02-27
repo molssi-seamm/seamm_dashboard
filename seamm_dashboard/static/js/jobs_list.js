@@ -106,6 +106,9 @@ Do you wish to continue?
                                 'Content-Type': 'application/json' 
                             },
                             data: putData,
+                            complete: function(xhr, status) {
+                                location.reload() 
+                            }
                         });
                     } else if (action === "delete") {
                         $.ajax({
@@ -121,9 +124,7 @@ Do you wish to continue?
                                 }
                             }
                         })
-                    };
-            
-            location.reload()   
+                    };  
          } 
             
          }
