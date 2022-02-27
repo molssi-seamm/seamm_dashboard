@@ -141,7 +141,9 @@ def add_project(body):
 
     project_path.mkdir(parents=True, exist_ok=True)
 
-    Project.create(name=name, description=description, path=project_path)
+    project = Project.create(name=name, description=description, path=str(project_path))
+    db.session.add(project)
+    db.session.commit()
 
     return {"name": name}, 201
 
