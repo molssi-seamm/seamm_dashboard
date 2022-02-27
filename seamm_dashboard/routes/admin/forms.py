@@ -62,7 +62,7 @@ _username = StringField(
     validators=[
         _validate_username,
         DataRequired(),
-        Length(3, 64),
+        Length(1, 64),
         Regexp(
             "^[A-Za-z][A-Za-z0-9_.]*$",
             0,

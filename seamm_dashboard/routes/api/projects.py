@@ -141,7 +141,9 @@ def add_project(body):
 
     project_path.mkdir(parents=True, exist_ok=True)
 
-    Project.create(name=name, description=description, path=project_path)
+    project = Project.create(name=name, description=description, path=str(project_path))
+    db.session.add(project)
+    db.session.commit()
 
     return {"name": name}, 201
 
@@ -219,7 +221,7 @@ def list_projects(
         limit=limit,
         sort_by=sort_by,
         order=order,
-        only="name",
+        only=["name"],
     )
     project_list = [x.name for x in projects]
     return project_list, 200

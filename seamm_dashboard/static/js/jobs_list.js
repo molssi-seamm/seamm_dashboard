@@ -84,17 +84,18 @@ Do you wish to continue?
          if (confirm(`You have chosen to ${action} job(s): ${jobNumbers}. ${actionInformation[action]["description"]}`)) {
                 for (let i=0; i<jobNumbers.length; i++) {
                     let jobID = jobNumbers[i]
+                    
+                    // Placeholder for token.
+                    let csrf_access;
+
+                    // Get the csrf refresh token
+                    document.cookie.split(";").forEach(function(value) { if (value.trim().split("=")[0] == 'csrf_access_token') { csrf_access = value.trim().split('=')[1] } })
+
+                    $.ajaxSetup({
+                        headers: { 'X-CSRF-TOKEN': csrf_access }
+                    })
+
                     if (action === "run" || action === "re-run" ) {
-
-                        // Placeholder for token.
-                        let csrf_access;
-
-                        // Get the csrf refresh token
-                        document.cookie.split(";").forEach(function(value) { if (value.trim().split("=")[0] == 'csrf_access_token') { csrf_access = value.trim().split('=')[1] } })
-
-                        $.ajaxSetup({
-                            headers: { 'X-CSRF-TOKEN': csrf_access }
-                        })
    
                         let putData = JSON.stringify(actionInformation[action]["request"])
                         $.ajax({
@@ -106,6 +107,9 @@ Do you wish to continue?
                                 'Content-Type': 'application/json' 
                             },
                             data: putData,
+                            complete: function(xhr, status) {
+                                location.reload() 
+                            }
                         });
                     } else if (action === "delete") {
                         $.ajax({
@@ -117,13 +121,11 @@ Do you wish to continue?
                                     alert(`You do not have the necessary permission to ${action} job ${jobID}.`) 
                                 }
                                 else if (xhr.status == 200) {
-                                    alert(``)
+                                    alert(`Job ${id} deleted.`)
                                 }
                             }
                         })
-                    };
-            
-            location.reload()   
+                    };  
          } 
             
          }

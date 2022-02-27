@@ -107,7 +107,7 @@ def test_update_job(auth_client):
         },
     )
 
-    assert response.status_code == 201
+    assert response.status_code == 204
 
     new_info = auth_client.get("api/jobs/1").json
 
@@ -240,7 +240,12 @@ def test_get_projects(auth_client):
 
     assert response.status_code == 200
 
-    assert len(response.json) == 2
+    # Get the project names except for the added
+    # project
+
+    projs = [x["name"] for x in response.json if x["name"] != "added_project"]
+
+    assert len(projs) == 2
 
 
 def test_get_project(auth_client):

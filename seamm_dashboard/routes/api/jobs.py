@@ -14,10 +14,10 @@ import urllib.parse
 import tempfile
 
 from flask import send_from_directory, Response, request
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_current_user
 
 from seamm_dashboard import db, datastore, authorize, options
-from seamm_datastore.database.models import Job
+from seamm_datastore.database.models import Job, Role
 from seamm_datastore.database.schema import JobSchema
 
 from seamm_datastore.util import NotAuthorizedError
@@ -54,8 +54,9 @@ def get_jobs(
     title=None,
     offset=None,
     limit=None,
-    sort_by="id",
+    sortby="id",
     order="asc",
+    only="all",
 ):
     """
     Function for API endpoint /api/jobs
@@ -67,8 +68,9 @@ def get_jobs(
         title=title,
         offset=offset,
         limit=limit,
-        sort_by=sort_by,
+        sort_by=sortby,
         order=order,
+        only=only,
     )
 
     jobs = JobSchema(many=True).dump(jobs)
@@ -261,7 +263,6 @@ def update_job(id, body):
     body : json
         The job information to update.
     """
-
     from seamm_datastore.util import NotAuthorizedError
 
     try:
@@ -272,13 +273,14 @@ def update_job(id, body):
     if job is None:
         return Response(status=404)
 
-    job.update(id=id, **body)
+    jobu = job.update(id=id, **body)
+    db.session.add(jobu)
+    db.session.commit()
 
-    return Response(status=201)
+    return Response(status=204)
 
 
 @jwt_required(optional=True)
-@authorize.has_role("admin")
 def delete_job(id):
     """
     Function for delete method of api endpoint api/jobs/{id}
@@ -296,11 +298,15 @@ def delete_job(id):
     status : int
         Response code for operation. 200 = successful, 404 = job not found.
     """
-
     try:
         job = Job.get_by_id(id, permission="delete")
     except NotAuthorizedError:
-        return Response(status=401)
+        admin_role = Role.query.filter(Role.name == "admin").one()
+        current = get_current_user()
+        if current is None or admin_role not in current.roles:
+            return Response(status=401)
+        else:
+            job = Job.query.get(id)
 
     if not job:
         return Response(status=404)
