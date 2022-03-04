@@ -25,6 +25,8 @@ dependencies:
   - sqlalchemy
   - swagger-ui-bundle
   - wtforms
+  - flask-compress
+  - waitress
 
   # For testing:
   - pytest

@@ -18,3 +18,5 @@ six
 sqlalchemy
 swagger-ui-bundle
 wtforms
+flask-compress
+waitress
