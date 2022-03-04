@@ -148,7 +148,7 @@ def logout():
 
     from flask import session
 
-    if "expired=True" in request.environ.get("RAW_URI"):
+    if "expired=True" in request.environ.get("RAW_URI", []):
         flash("You have been logged out due to inactivity.")
     else:
         flash("You have been logged out.")

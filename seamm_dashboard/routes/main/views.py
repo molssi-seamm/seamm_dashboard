@@ -14,7 +14,7 @@ def index():
         flash(
             Markup(
                 "You are currently viewing the dashboard as a public user."
-                + "<a href='login'>Log In</a> to see your jobs."
+                + " <a href='login'>Log In</a> to see your jobs."
             ),
             category="public",
         )
