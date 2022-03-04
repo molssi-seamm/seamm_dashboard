@@ -6,8 +6,6 @@ Tests for the API (admin user)
 import os
 import json
 
-import pytest
-
 
 def test_delete_job(admin_client, project_directory):
     """Check delete method of api/jobs/{jobID}

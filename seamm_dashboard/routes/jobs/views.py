@@ -1,5 +1,7 @@
 import json
 
+import requests
+
 from flask import request, render_template, flash, redirect, url_for
 
 from flask_jwt_extended import jwt_required, get_current_user
@@ -11,10 +13,12 @@ from seamm_dashboard import db, authorize
 from . import jobs
 
 from seamm_dashboard.routes.jobs.forms import EditJob, ImportJob
+from seamm_dashboard.routes.api.auth import refresh_expiring_jwts
 
 
 @jobs.route("/views/jobs/")
 @jobs.route("/views//jobs/")
+@jwt_required(optional=True)
 def jobs_list():
     return render_template("jobs/jobs_list.html", project=False)
 
@@ -42,12 +46,22 @@ def job_details(id):
     base_url = url_for("main.index")
     edit_url = base_url + f"jobs/{id}/edit"
 
+    # Figure out if we can use cdn for plotly
+    plotly_location = "https://cdn.plot.ly/plotly-2.9.0.min.js"
+    found_plotly = requests.get(f"{plotly_location}").status_code == 200
+
+    if not found_plotly:
+        plotly_location = url_for(
+            "static", filename="node_modules/plotly.js-dist-min/plotly.min.js"
+        )
+
     return render_template(
         "jobs/job_report.html",
         edit_job=edit_job,
         job=job,
         edit_url=edit_url,
         own_string=own_string,
+        plotly=plotly_location,
     )
 
 
@@ -119,3 +133,8 @@ def import_job():
         return redirect(url_for("main.index"))
 
     return render_template("jobs/import_job.html", form=form)
+
+
+@jobs.after_request
+def job_refresh(response):
+    return refresh_expiring_jwts(response)

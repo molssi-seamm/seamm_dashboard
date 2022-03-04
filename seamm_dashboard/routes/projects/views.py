@@ -12,6 +12,8 @@ from seamm_datastore.database.models import Project, User, UserProjectAssociatio
 
 from seamm_dashboard import authorize, db
 
+from seamm_dashboard.routes.api.auth import refresh_expiring_jwts
+
 
 def _bind_users_to_form(form, current_user, project_id):
 
@@ -46,6 +48,7 @@ def _bind_users_to_form(form, current_user, project_id):
 
 
 @projects.route("/views/projects")
+@jwt_required(optional=True)
 def project_list():
     return render_template("projects/project_list.html")
 
@@ -190,3 +193,8 @@ def manage_project(project_id):
         project=project,
         back_url=project_url,
     )
+
+
+@projects.after_request
+def project_refresh(response):
+    return refresh_expiring_jwts(response)

@@ -346,6 +346,16 @@ $(document).ready(function() {
             var href = data.node.a_attr.href;
             var fileType = href.split(".").slice(-1);
 
+            var http = new XMLHttpRequest();
+
+            http.open('HEAD', href, false);
+            http.send();
+
+            // If logout is find, the index will be greater than -1
+            if (http.responseURL.indexOf("logout") > -1) { 
+                window.location.assign("/logout") 
+            }
+
             // Figure out functions to call. If not recognized extension, other
             if (!(fileType in contentFunctions)) {
                 fileType = "other"

@@ -16,7 +16,7 @@ import tempfile
 from flask import send_from_directory, Response, request
 from flask_jwt_extended import jwt_required, get_current_user
 
-from seamm_dashboard import db, datastore, authorize, options
+from seamm_dashboard import db, datastore, options
 from seamm_datastore.database.models import Job, Role
 from seamm_datastore.database.schema import JobSchema
 

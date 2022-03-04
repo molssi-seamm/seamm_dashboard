@@ -38,6 +38,8 @@ from seamm_datastore.database.models import (
 )
 from seamm_dashboard.routes.api.users import _process_user_body
 
+from seamm_dashboard.routes.api.auth import refresh_expiring_jwts
+
 
 def _process_user_permissions(filled_form, user):
 
@@ -546,3 +548,8 @@ def delete_group(group_id):
             return render_template("admin/manage_groups.html")
 
     return render_template("admin/delete_group.html", form=form)
+
+
+@admin.after_request
+def admin_refresh(response):
+    return refresh_expiring_jwts(response)

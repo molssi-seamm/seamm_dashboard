@@ -230,6 +230,9 @@ class TestLiveServer:
         # Give time to load
         time.sleep(1.25)
 
+        # screenshot
+        # chrome_driver.get_screenshot_as_file(f"job_report.png")
+
         # When clicked, file text should be displayed in the div.
         displayed_text = chrome_driver.find_element(By.ID, "file-content").text
 

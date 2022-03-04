@@ -1,6 +1,7 @@
 import logging
 import os
 from pathlib import Path
+from datetime import timedelta
 
 import connexion
 
@@ -12,6 +13,7 @@ from flask_mail import Mail
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
+from flask_compress import Compress
 
 from flask_authorize import Authorize
 
@@ -75,6 +77,7 @@ if "debug" in options:
 # continue the setup
 mail = Mail()
 cors = CORS()
+compress = Compress()
 
 bootstrap = Bootstrap()
 
@@ -175,6 +178,8 @@ def create_app(config_name=None):
     app.config["JWT_COOKIE_SECURE"] = False
     app.config["JWT_COOKIE_CSRF_PROTECT"] = True
     app.config["JWT_CSRF_ACCESS_PATH"] = "/api/"
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=1)
+    app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=2)
 
     conn_app.add_api("swagger.yml")
     db.init_app(app)
@@ -238,4 +243,8 @@ def create_app(config_name=None):
     logger.info("")
 
     logger.info(f"{app.url_map}")
+
+    # apply compress
+    compress.init_app(app)
+
     return app

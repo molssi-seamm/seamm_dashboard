@@ -54,11 +54,6 @@ $.ajaxSetup ({
         }
 
         document.getElementById("login-info").innerHTML = loginString
-
-        if (data.username != "Anonymous User") {
-          idleTimer()
-        }
-       
         },
         // error occurs because of expired access token. Remove cookie and reload page
     error: function () {
