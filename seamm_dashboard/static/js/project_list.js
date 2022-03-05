@@ -19,6 +19,8 @@ function cardView(data){
 
     let card_string = ''
     for (var i = 0, len = data.length; i < len; i++) {
+        // Add this back in when we're ready to add deleting the project as an option.
+        //<a class="dropdown-item nav-link delete-button" href="/projects" id="${data[i].id}">Delete Project</a>
         card_string += `<div class="${column_string}">
         <div class="card text-white bg-projects" style="min-height:200px;">
         <div class="card-body pb-0">
@@ -28,7 +30,6 @@ function cardView(data){
             </button>
             <div class="dropdown-menu dropdown-menu-right">
               <a class="dropdown-item" href="projects/${data[i].id}/edit">Edit Title and Description</a>
-              <a class="dropdown-item nav-link delete-button" href="/projects" id="${data[i].id}">Delete Project</a>
             </div>
           </div>
           <div class="text-value-lg"><a class='nav-link' href="projects/${data[i].id}/jobs" style="color:white">${data[i].name}</a></div>
