@@ -49,11 +49,11 @@ def update_project(id, body):
 
 
 @jwt_required(optional=True)
-def delete_project():
+def delete_project(id):
     try:
         project = Project.get_by_id(id, permission="delete")
     except NotAuthorizedError:
-        return Response(status=401)
+        return Response(status=403)
 
     if not project:
         return Response(status=404)

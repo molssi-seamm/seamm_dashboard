@@ -159,9 +159,16 @@ function inittable(data) {
     // Load initial data
     ajaxProjects("card")
 
-    // Activate delete buttons
-    $(".delete-button").on("click", function(){
+    // Set up ajax headers
+    document.cookie.split(";").forEach(function(value) { if (value.trim().split("=")[0] == 'csrf_access_token') { csrf_access = value.trim().split('=')[1] } })
 
+    $.ajaxSetup({
+        headers: { 'X-CSRF-TOKEN': csrf_access }
+    })
+
+    // Activate delete buttons
+    $(".delete-button").on("click", function(event){
+        event.preventDefault()
         if (this.id == 1) {
             alert("You cannot delete the default project")
         }
@@ -174,6 +181,7 @@ function inittable(data) {
     
             Do you wish to proceed?
             `) ) {
+
                 $.ajax({
                     url: `api/projects/${this.id}`,
                     type: 'DELETE',
@@ -183,7 +191,7 @@ function inittable(data) {
                             alert(`You do not have the necessary permission to delete this project.`) 
                         }
                         else if (xhr.status == 200) {
-                            alert(`Project ${id} deleted.`)
+                            alert(`Project ${this.id} deleted.`)
                         }
     
                     }
