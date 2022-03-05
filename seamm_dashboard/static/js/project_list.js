@@ -20,23 +20,33 @@ function cardView(data){
     let card_string = ''
     for (var i = 0, len = data.length; i < len; i++) {
         card_string += `<div class="${column_string}">
-            <div class="card text-white bg-projects" style="min-height:300px;">
-            <div class="card-body pb-0 sidebar-nav">
-                <div class="text-value-lg"><a class="nav-link" href="projects/${data[i].id}/jobs" style="color:white" class="card-title">${data[i].name}</a></div>
-                <div class="card-description fade-text" style="height:100px; overflow:hidden">${data[i].description}</div>
-                <div class="mt-4 px-3">
-                <div class="row">
-                    <div class="col">
-                    <div class="text-value-lg" class="job-number">${data[i].jobs.length}</div> jobs 
-                    </div>
-                    <div class="col">
-                    <div class="text-value-lg" class="flowchart-number">${data[i].flowcharts.length}</div> flowcharts
-                    </div>
-                </div>
-                </div>
+        <div class="card text-white bg-projects" style="min-height:200px;">
+        <div class="card-body pb-0">
+          <div class="btn-group float-right">
+            <button type="button" class="btn btn-transparent dropdown-toggle p-0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="icon-settings"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right">
+              <a class="dropdown-item" href="projects/${data[i].id}/edit">Edit Title and Description</a>
+              <a class="dropdown-item nav-link delete-button" href="/projects" id="${data[i].id}">Delete Project</a>
             </div>
+          </div>
+          <div class="text-value-lg"><a class='nav-link' href="projects/${data[i].id}/jobs" style="color:white">${data[i].name}</a></div>
+        </div>
+        <div class="card-description fade-text pl-3" style="height:100px; overflow:hidden">Project ID: ${data[i].id} <br><br>Description : ${data[i].description}</div>
+        <div class="chart-wrapper mt-3 px-3" style="height:100px;">
+        <div class="row">
+            <div class="col">
+            <div class="text-value-lg" class="job-number">${data[i].jobs.length}</div> jobs 
             </div>
-        </div>`
+            <div class="col">
+            <div class="text-value-lg" class="flowchart-number">${data[i].flowcharts.length}</div> flowcharts
+            </div>
+        </div>
+        </div>
+      </div>
+      
+      </div>`
     }
 
     if (data.length == 0) {
@@ -148,6 +158,40 @@ function inittable(data) {
     
     // Load initial data
     ajaxProjects("card")
+
+    // Activate delete buttons
+    $(".delete-button").on("click", function(){
+
+        if (this.id == 1) {
+            alert("You cannot delete the default project")
+        }
+        else {
+            if (confirm(`You have chosen to delete Project ${this.id}. 
+        
+            This action will result in the deletion of all jobs and files associated with the jobs and project.
+    
+            This action cannot be undone.
+    
+            Do you wish to proceed?
+            `) ) {
+                $.ajax({
+                    url: `api/projects/${this.id}`,
+                    type: 'DELETE',
+                    success: function(data) { location.reload() },
+                    complete: function(xhr, textStatus) { 
+                        if (xhr.status == 401) {
+                            alert(`You do not have the necessary permission to ${action} project ${jobID}.`) 
+                        }
+                        else if (xhr.status == 200) {
+                            alert(`Project ${id} deleted.`)
+                        }
+    
+                    }
+                })
+            }
+        }
+    })   
+            
 
     document.getElementById("view").classList.toggle("hidden")
 
