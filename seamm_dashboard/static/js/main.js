@@ -34,7 +34,6 @@
             "targets": [0]},
         ],
         "autoWidth": true,
-        "order": [[ 0, "desc"]]
     } );
 
     return table
