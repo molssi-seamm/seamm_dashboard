@@ -1,5 +1,6 @@
 <!-- Plugins and scripts required by this view-->
 <!-- <script src="static/js/main.js"></script>-->
+<script src= "{{ url_for('static', filename='js/table_api.js') }}"></script>
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 <div class="animated fadeIn sidebar-nav hidden" id="view">
   <div class="row">
@@ -74,7 +75,7 @@
   </div>
   <div class="row mb-5">
     <div class="col-sm-12">
-          <table id="jobs" class="table table-bordered table-striped table-sm" style="width:100%">
+          <table id="jobs" class="table table-responsive-sm table-bordered table-striped table-sm" style="width:100%">"
             <thead>
               <tr>
                 <th>

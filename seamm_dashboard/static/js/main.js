@@ -5,41 +5,6 @@
  * --------------------------------------------------------------------------
  */
 
- function inittable() {	
-
-    var table = $('#jobs').DataTable( {
-        "responsive": true,
-        "ajax": {
-            url: `api/jobs?order=desc&limit=10&sortby=last_update`,
-            async: false,
-            dataType: 'json',
-            dataSrc: function (data) {
-                let arrayReturn = [];
-                for (var i = 0, len = data.length; i < len; i++) {
-                    arrayReturn.push(
-                        [`<a class="nav-link p-0" href="/jobs/${data[i].id}" title="View Details">`+data[i].id+'</a>', 
-                        data[i].title, 
-                        data[i].status,
-                        data[i].submitted,
-                        data[i].started,
-                        data[i].finished
-                        ]
-                    )
-                }
-                return arrayReturn
-            }
-        },
-        "columnDefs": [
-            { "className": "sidebar-nav", 
-            "targets": [0]},
-        ],
-        "autoWidth": true,
-    } );
-
-    return table
-}
-
-
 
  $(document).ready( function() {
 
@@ -54,10 +19,15 @@
     })
 
     // Load table
-    my_table = inittable()
+    my_table = inittable("jobs?order=desc&limit=10&sortby=last_update")
     
     // Add action to refresh button
     $("#refresh").click(my_table.ajax.reload)
+
+    // Adjust buttons
+    let tableButtons = document.getElementsByClassName("dt-buttons")
+    tableButtons[0].className = "row justify-content-end"
+
 
     // Load info into divs
     document.getElementById('num-jobs-in-dashboard').textContent = dashboardStatus.jobs.total
