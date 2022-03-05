@@ -160,6 +160,8 @@ function inittable(data) {
     // Load initial data
     ajaxProjects("card")
 
+    let csrf_access;
+
     // Set up ajax headers
     document.cookie.split(";").forEach(function(value) { if (value.trim().split("=")[0] == 'csrf_access_token') { csrf_access = value.trim().split('=')[1] } })
 

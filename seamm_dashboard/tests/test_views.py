@@ -86,6 +86,8 @@ class TestLiveServer:
 
         displayed_values = [x for x in displayed_values if x != ""]
 
+        chrome_driver.get_screenshot_as_file(f"main_{logged_in}.png")
+
         for i, value in enumerate(displayed_values):
             assert expected_values[i] == value.get_attribute("innerHTML")
 
@@ -401,7 +403,7 @@ class TestLiveServer:
         button.click()
 
         # Check that alert is found. If not found will result in error.
-        chrome_driver.find_element_by_class_name("alert-success")
+        chrome_driver.find_element(By.CLASS_NAME, "alert-success")
 
         table_rows = chrome_driver.find_element(By.ID, "users").find_elements(
             By.TAG_NAME, "tr"
