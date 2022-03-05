@@ -180,7 +180,7 @@ function inittable(data) {
                     success: function(data) { location.reload() },
                     complete: function(xhr, textStatus) { 
                         if (xhr.status == 401) {
-                            alert(`You do not have the necessary permission to ${action} project ${jobID}.`) 
+                            alert(`You do not have the necessary permission to delete this project.`) 
                         }
                         else if (xhr.status == 200) {
                             alert(`Project ${id} deleted.`)
