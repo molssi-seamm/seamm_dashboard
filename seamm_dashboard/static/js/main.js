@@ -55,7 +55,10 @@
     })
 
     // Load table
-    inittable()
+    my_table = inittable()
+    
+    // Add action to refresh button
+    $("#refresh").click(my_table.ajax.reload)
 
     // Load info into divs
     document.getElementById('num-jobs-in-dashboard').textContent = dashboardStatus.jobs.total
