@@ -1,4 +1,5 @@
 from copy import deepcopy
+import os
 
 from flask import render_template, url_for, request, flash, redirect
 from flask_jwt_extended import jwt_required, get_current_user
@@ -96,6 +97,10 @@ def edit_project(project_id):
     project_url = base_url + f"#projects/{project_id}/jobs"
 
     if form.validate_on_submit():
+        path = project.path
+        new_path = os.path.join(os.path.dirname(path), form.name.data)
+        os.rename(path, new_path)
+        project.path = new_path
         project.name = form.name.data
         project.description = form.notes.data
         db.session.commit()
