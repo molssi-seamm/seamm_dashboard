@@ -4,6 +4,8 @@ import os
 from flask import render_template, url_for, request, flash, redirect
 from flask_jwt_extended import jwt_required, get_current_user
 
+from sqlalchemy import func
+
 from pathlib import Path
 
 from wtforms import BooleanField
@@ -11,7 +13,12 @@ from wtforms import BooleanField
 from . import projects
 from .forms import EditProject, ManageProjectAccessForm, AddProject
 
-from seamm_datastore.database.models import Project, User, UserProjectAssociation
+from seamm_datastore.database.models import (
+    Project,
+    User,
+    UserProjectAssociation,
+    Job,
+)  # noqa: E501
 
 from seamm_dashboard import authorize, db, datastore
 
@@ -97,9 +104,30 @@ def edit_project(project_id):
     project_url = base_url + f"#projects/{project_id}/jobs"
 
     if form.validate_on_submit():
+        # Rename project path
         path = project.path
         new_path = os.path.join(os.path.dirname(path), form.name.data)
+
+        # Make sure project name doesn't exist
+        exists = Project.query.filter(Project.name == form.name.data).one_or_none()
+        if exists is not None:
+            flash(f"A project with the name {form.name.data} already exists.")
+            return redirect(url_for("projects.edit_project", project_id=project_id))
+
+        # Need to change this to query, but this will work
+        # without modifying the DB for now.
+        job_ids = [x.id for x in project.jobs]
+
+        # Update job paths
+        Job.query.filter(Job.id.in_(job_ids)).update(
+            {Job.path: func.replace(Job.path, path, new_path)},
+            synchronize_session=False,
+        )
+
+        # Perform rename
         os.rename(path, new_path)
+
+        # Update project information
         project.path = new_path
         project.name = form.name.data
         project.description = form.notes.data
