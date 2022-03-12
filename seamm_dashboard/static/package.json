@@ -15,7 +15,6 @@
     "acorn-jsx": "^4.1.1",
     "acorn-object-spread": "^1.0.0",
     "bootstrap": "^4.1.3",
-    "buble": "^0.19.3",
     "cytoscape": "^3.12.1",
     "datatables.net": "^1.10.22",
     "datatables.net-bs4": "^1.10.21",
@@ -36,6 +35,5 @@
     "rijs.npm": "^2.0.0",
     "rijs.sync": "^2.3.5",
     "touch": "^3.1.0"
-  },
-  "devDependencies": {}
+  }
 }
