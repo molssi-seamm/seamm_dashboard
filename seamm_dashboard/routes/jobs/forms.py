@@ -14,7 +14,7 @@ class EditJob(FlaskForm):
             Regexp(
                 "^[A-Za-z][A-Za-z0-9_. ]*$",
                 0,
-                "Job titles must have only letters, numbers, ",
+                "Job titles must have only letters, numbers, "+
                 "dots, spaces, or underscores",
             ),
         ],

@@ -13,7 +13,7 @@ class EditProject(FlaskForm):
             Regexp(
                 "^[A-Za-z][A-Za-z0-9_. ]*$",
                 0,
-                "Projects must have only letters, numbers, ",
+                "Projects must have only letters, numbers, " + 
                 "dots, spaces, or underscores",
             ),
         ],
@@ -31,7 +31,7 @@ class AddProject(FlaskForm):
             Regexp(
                 "^[A-Za-z][A-Za-z0-9_. ]*$",
                 0,
-                "Projects must have only letters, numbers, ",
+                "Projects must have only letters, numbers, " + 
                 "dots, spaces, or underscores",
             ),
         ],
