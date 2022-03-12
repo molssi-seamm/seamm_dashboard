@@ -7,6 +7,7 @@ class EditProject(FlaskForm):
     notes = TextAreaField("Description")
     submit = SubmitField("Update Project")
 
+
 class AddProject(FlaskForm):
     name = StringField("Project Title")
     notes = TextAreaField("Description")

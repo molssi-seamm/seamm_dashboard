@@ -196,6 +196,7 @@ def manage_project(project_id):
         back_url=project_url,
     )
 
+
 @projects.route("/projects/add", methods=["GET", "POST"])
 @jwt_required(optional=True)
 def add_project():
@@ -207,14 +208,16 @@ def add_project():
 
     # Build the url ourselves.
     base_url = url_for("main.index")
-    project_url = base_url + f"#projects"
+    project_url = base_url + "#projects"
 
     if form.validate_on_submit():
         # Create a directory for the project
         project_path = Path(datastore).expanduser() / "projects" / form.name.data
 
         project_path.mkdir(parents=True, exist_ok=True)
-        project = Project.create(name=form.name.data, description=form.notes.data, path=str(project_path))
+        project = Project.create(
+            name=form.name.data, description=form.notes.data, path=str(project_path)
+        )
         db.session.add(project)
         db.session.commit()
         flash(f"Project {project.name} added.", "successs")
@@ -223,11 +226,10 @@ def add_project():
 
     return render_template(
         "jobs/edit_job.html",
-        title=f"Add project",
+        title="Add project",
         form=form,
         back_url=project_url,
     )
-    
 
 
 @projects.after_request
