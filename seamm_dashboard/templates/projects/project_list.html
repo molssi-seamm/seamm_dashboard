@@ -2,12 +2,28 @@
 <div class="animated fadeIn sidebar-nav hidden" id="view">
 
   <h1 class="mt-2 mb-3">Projects</h1>
-
-  <button id="toggle-card" type="button" class="btn btn-secondary mb-4">Card View</button>
-  <button id="toggle-list" type="button" class="btn btn-secondary mb-4">List View</button>
+    <div class="row w-100">
+      <div class="col-sm-12 col-md-3">
+        <div class="btn btn-secondary mb-2 mr-3 w-100" id="toggle-card" type="button">
+        Card View
+        </div>
+      </div>
+      <div class="col-sm-12 col-md-3">
+        <div class="btn btn-secondary mb-2 w-100" id="toggle-list" type="button">
+        List View
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-0">
+      </div>
+      <div class="col-md-3 col-sm-12"> 
+        <div class="btn btn-success mb-2 w-100" id="create-new" type="button">
+        <a href="projects/add" style="color:#FFFFFF"><span class="mr-3"><i class="fa fa-plus" aria-hidden="true"></i></span>Create New Project</a>
+        </div>
+      </div>
+    </div>
+  </div>
     <div id='table-holder'></div>
     <div id="project-holder">
       <div class="row w-100" id="project-cards">
       </div>
-    </div>
   </div>

@@ -23,7 +23,7 @@ function cardView(data){
         //<a class="dropdown-item nav-link delete-button" href="/projects" id="${data[i].id}">Delete Project</a>
         card_string += `<div class="${column_string}">
         <div class="card text-white bg-projects" style="min-height:200px;">
-        <div class="card-body pb-0">
+        <div class="card-body pb-0 sidebar-nav">
           <div class="btn-group float-right">
             <button type="button" class="btn btn-transparent dropdown-toggle p-0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               <i class="icon-settings"></i>

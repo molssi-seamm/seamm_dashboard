@@ -3,14 +3,16 @@ from copy import deepcopy
 from flask import render_template, url_for, request, flash, redirect
 from flask_jwt_extended import jwt_required, get_current_user
 
+from pathlib import Path
+
 from wtforms import BooleanField
 
 from . import projects
-from .forms import EditProject, ManageProjectAccessForm
+from .forms import EditProject, ManageProjectAccessForm, AddProject
 
 from seamm_datastore.database.models import Project, User, UserProjectAssociation
 
-from seamm_dashboard import authorize, db
+from seamm_dashboard import authorize, db, datastore
 
 from seamm_dashboard.routes.api.auth import refresh_expiring_jwts
 
@@ -193,6 +195,39 @@ def manage_project(project_id):
         project=project,
         back_url=project_url,
     )
+
+@projects.route("/projects/add", methods=["GET", "POST"])
+@jwt_required(optional=True)
+def add_project():
+
+    if get_current_user() is None:
+        return render_template("404.html")
+
+    form = AddProject()
+
+    # Build the url ourselves.
+    base_url = url_for("main.index")
+    project_url = base_url + f"#projects"
+
+    if form.validate_on_submit():
+        # Create a directory for the project
+        project_path = Path(datastore).expanduser() / "projects" / form.name.data
+
+        project_path.mkdir(parents=True, exist_ok=True)
+        project = Project.create(name=form.name.data, description=form.notes.data, path=str(project_path))
+        db.session.add(project)
+        db.session.commit()
+        flash(f"Project {project.name} added.", "successs")
+
+        return redirect(project_url)
+
+    return render_template(
+        "jobs/edit_job.html",
+        title=f"Add project",
+        form=form,
+        back_url=project_url,
+    )
+    
 
 
 @projects.after_request
