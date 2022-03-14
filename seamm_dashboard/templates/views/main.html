@@ -1,5 +1,6 @@
 <!-- Plugins and scripts required by this view-->
 <!-- <script src="static/js/main.js"></script>-->
+<script src= "{{ url_for('static', filename='js/table_api.js') }}"></script>
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 <div class="animated fadeIn sidebar-nav hidden" id="view">
   <div class="row">
@@ -68,5 +69,37 @@
     </div>
     <!--/.col-->
   </div>
+  <div class="row">
+    <h4>Recently Modified Jobs</h4>
+    <h2 class='pb-1'><span id='page-title'></span><button type="button" id="refresh" class="btn btn-primary ml-4" title="Refresh Table" data-toggle="tooltip" data-placement="top"><i class="fas fa-sync"></i></button></h2>
+  </div>
+  <div class="row mb-5">
+    <div class="col-sm-12">
+          <table id="jobs" class="table table-responsive-sm table-bordered table-striped table-sm" style="width:100%">"
+            <thead>
+              <tr>
+                <th>
+                  Job
+                </th>
+                <th>
+                  Title
+                </th>
+                <th>
+                  Status
+                </th>
+                <th>
+                  Submitted
+                </th>
+                <th>
+                  Started
+                </th>
+                <th>
+                  Finished
+                </th>
+              </tr>
+            </thead>
+          </table>
+      </div>
+    </div>
 </div>
   

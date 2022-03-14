@@ -1,16 +1,28 @@
 from copy import deepcopy
+import os
 
 from flask import render_template, url_for, request, flash, redirect
 from flask_jwt_extended import jwt_required, get_current_user
 
+from sqlalchemy import func
+
+from pathlib import Path
+
 from wtforms import BooleanField
 
 from . import projects
-from .forms import EditProject, ManageProjectAccessForm
+from .forms import EditProject, ManageProjectAccessForm, AddProject
 
-from seamm_datastore.database.models import Project, User, UserProjectAssociation
+from seamm_datastore.database.models import (
+    Project,
+    User,
+    UserProjectAssociation,
+    Job,
+)  # noqa: E501
 
-from seamm_dashboard import authorize, db
+from seamm_dashboard import authorize, db, datastore
+
+from seamm_dashboard.routes.api.auth import refresh_expiring_jwts
 
 
 def _bind_users_to_form(form, current_user, project_id):
@@ -46,6 +58,7 @@ def _bind_users_to_form(form, current_user, project_id):
 
 
 @projects.route("/views/projects")
+@jwt_required(optional=True)
 def project_list():
     return render_template("projects/project_list.html")
 
@@ -91,6 +104,31 @@ def edit_project(project_id):
     project_url = base_url + f"#projects/{project_id}/jobs"
 
     if form.validate_on_submit():
+        # Rename project path
+        path = project.path
+        new_path = os.path.join(os.path.dirname(path), form.name.data)
+
+        # Make sure project name doesn't exist
+        exists = Project.query.filter(Project.name == form.name.data).one_or_none()
+        if exists is not None:
+            flash(f"A project with the name {form.name.data} already exists.")
+            return redirect(url_for("projects.edit_project", project_id=project_id))
+
+        # Need to change this to query, but this will work
+        # without modifying the DB for now.
+        job_ids = [x.id for x in project.jobs]
+
+        # Update job paths
+        Job.query.filter(Job.id.in_(job_ids)).update(
+            {Job.path: func.replace(Job.path, path, new_path)},
+            synchronize_session=False,
+        )
+
+        # Perform rename
+        os.rename(path, new_path)
+
+        # Update project information
+        project.path = new_path
         project.name = form.name.data
         project.description = form.notes.data
         db.session.commit()
@@ -190,3 +228,43 @@ def manage_project(project_id):
         project=project,
         back_url=project_url,
     )
+
+
+@projects.route("/projects/add", methods=["GET", "POST"])
+@jwt_required(optional=True)
+def add_project():
+
+    if get_current_user() is None:
+        return render_template("404.html")
+
+    form = AddProject()
+
+    # Build the url ourselves.
+    base_url = url_for("main.index")
+    project_url = base_url + "#projects"
+
+    if form.validate_on_submit():
+        # Create a directory for the project
+        project_path = Path(datastore).expanduser() / "projects" / form.name.data
+
+        project_path.mkdir(parents=True, exist_ok=True)
+        project = Project.create(
+            name=form.name.data, description=form.notes.data, path=str(project_path)
+        )
+        db.session.add(project)
+        db.session.commit()
+        flash(f"Project {project.name} added.", "successs")
+
+        return redirect(project_url)
+
+    return render_template(
+        "jobs/edit_job.html",
+        title="Add project",
+        form=form,
+        back_url=project_url,
+    )
+
+
+@projects.after_request
+def project_refresh(response):
+    return refresh_expiring_jwts(response)

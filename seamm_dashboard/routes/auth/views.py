@@ -20,7 +20,7 @@ from seamm_datastore.database.schema import UserSchema
 from . import auth
 
 from seamm_dashboard import jwt
-from seamm_dashboard.routes.api.auth import create_tokens
+from seamm_dashboard.routes.api.auth import create_tokens, refresh_expiring_jwts
 
 from seamm_dashboard.routes.admin.forms import _validate_email
 from seamm_dashboard.routes.admin.views import _bind_user_projects_to_form
@@ -44,6 +44,8 @@ def login():
             access_token, refresh_token = create_tokens(user)
             set_access_cookies(response, access_token)
             set_refresh_cookies(response, refresh_token)
+
+            flash(f"You have been logged in as {user.username}.", "success")
 
             return response
         flash("Invalid username or password.")
@@ -143,7 +145,26 @@ def logout():
     Direct to blank page which sets local storage to log out all other tabs and
     redirects to main
     """
-    flash("You have been logged out.")
+
+    from flask import session
+
+    if "expired=True" in request.environ.get("RAW_URI", []):
+        flash("You have been logged out due to inactivity.")
+    else:
+        flash("You have been logged out.")
     response = make_response(render_template("logout.html"))
     unset_jwt_cookies(response)
+
+    flashes = session.get("_flashes", [])
+
+    if len(flashes) > 1:
+        flashes = [x for x in flashes if "inactivity" in flashes[1]]
+
+    session["_flashes"] = flashes
+
     return response
+
+
+@auth.after_request
+def auth_refresh(response):
+    return refresh_expiring_jwts(response)

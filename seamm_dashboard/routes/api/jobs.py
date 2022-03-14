@@ -16,7 +16,7 @@ import tempfile
 from flask import send_from_directory, Response, request
 from flask_jwt_extended import jwt_required, get_current_user
 
-from seamm_dashboard import db, datastore, authorize, options
+from seamm_dashboard import db, datastore, options
 from seamm_datastore.database.models import Job, Role
 from seamm_datastore.database.schema import JobSchema
 
@@ -168,8 +168,10 @@ def add_job(body):
     description = body["description"]
     if "parameters" in body:
         parameters = body["parameters"]
+        if "cmdline" not in parameters:
+            parameters["cmdline"] = []
     else:
-        parameters = {}
+        parameters = {"cmdline": []}
     # Get the unique ID for the job...
     if options["job_id_file"] is None:
         job_id_file = os.path.join(datastore, "job.id")
@@ -191,7 +193,7 @@ def add_job(body):
     # Write the json data file for the job
     data = {
         "data_version": "1.0",
-        "command line": "",
+        "command line": parameters["cmdline"],
         "title": body["title"],
         "working directory": str(directory),
         "state": "submitted",

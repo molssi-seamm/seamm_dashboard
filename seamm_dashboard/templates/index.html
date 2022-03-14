@@ -16,18 +16,17 @@
     <title>SEAMM Dashboard</title>
 
     <!-- Main styles for this application-->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='node_modules/datatables.net-select-dt/css/select.dataTables.min.css') }}"/>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='node_modules/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}"/>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='node_modules/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='node_modules/datatables.net-select-dt/css/select.dataTables.min.css') }}"/> 
     <link href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/prism.css') }}" rel="stylesheet">
-    <script src="{{ url_for('static', filename='js/timer.js') }}"></script>
   </head>
 
   <body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">
     <header class="app-header navbar">
-      
+      <button class="navbar-toggler sidebar-toggler d-lg-none mr-auto" type="button" data-toggle="sidebar-show">
+        <span class="navbar-toggler-icon"></span>
+      </button>
       <a class="navbar-brand" href="#">
         <img class="navbar-brand-full" src="{{ url_for('static', filename='images/MolSSI-Logo-xl.jpg') }}"  height="50" alt="MolSSI">
         <img class="navbar-brand-minimized" src="{{ url_for('static', filename='images/molssi-favicon.jpg') }}" width="30" height="30" alt="MolSSI Logo">
@@ -90,11 +89,22 @@
       </div>
       <main class="main">
         <div class="container-fluid vh-100 mt-3">
-            {% for message in get_flashed_messages() %}
-            <div class="alert alert-warning">
+            {% for message in get_flashed_messages(true) %}
+              {% if message[0] == "public" %}
+                <div class="alert alert-info">
+                    {{ message[1] }}
+                </div>
+              {% elif message[0] == "success" %}
+              <div class="alert alert-success">
                 <button type="button" class="close" data-dismiss="alert">&times;</button>
-                {{ message }}
-            </div>
+                  {{ message[1] }}
+              </div>
+              {% else %}
+                <div class="alert alert-warning">
+                  <button type="button" class="close" data-dismiss="alert">&times;</button>
+                  {{ message[1] }}
+              </div>
+              {% endif %}
             {% endfor %}
           <div id="ui-view" class="vw-100"></div>
       </main>
@@ -115,19 +125,13 @@
     <script src="{{ url_for('static', filename='node_modules/@coreui/coreui/dist/js/coreui.min.js') }}"></script>
     <script src="{{ url_for('static', filename='node_modules/cytoscape/dist/cytoscape.min.js') }}"></script>
     <script src="{{ url_for('static', filename='node_modules/@fortawesome/fontawesome-free/js/all.min.js')}}"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='node_modules/jstree/dist/themes/default/style.css') }}" />
-    <script src="{{ url_for('static', filename='node_modules/jstree/dist/jstree.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='node_modules/plotly.js-dist-min/plotly.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='node_modules/ngl/dist/ngl.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/prism.js') }}"></script>
     
     <!-- extras -->
     <script src="{{ url_for('static', filename='node_modules/datatables.net/js/jquery.dataTables.min.js') }}"></script>
     <script src="{{ url_for('static', filename='node_modules/datatables.net-dt/js/dataTables.dataTables.min.js') }}"></script> 
     <script src="{{ url_for('static', filename='node_modules/datatables.net-bs4/js/dataTables.bootstrap4.min.js') }}"></script> 
-    <script src="{{ url_for('static', filename='node_modules/datatables.net-select/js/dataTables.select.min.js') }}"></script>
     <script src="{{ url_for('static', filename='node_modules/datatables.net-buttons/js/dataTables.buttons.min.js') }}"></script>
-
+    <script src="{{ url_for('static', filename='node_modules/datatables.net-select/js/dataTables.select.min.js') }}"></script>
     <!--Page monitor and status-->
     <script src="{{ url_for('static', filename='js/setup.js') }}"></script>
 

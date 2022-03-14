@@ -1,9 +1,15 @@
 <!-- Plugins and scripts required by this view-->
+<link rel="stylesheet" href="{{ url_for('static', filename='node_modules/jstree/dist/themes/default/style.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='node_modules/jstree/dist/themes/default/style.css') }}" />
+<link href="{{ url_for('static', filename='css/prism.css') }}" rel="stylesheet">
+<script src="{{ url_for('static', filename='js/prism.js') }}"></script>
+<script src="{{ url_for('static', filename='node_modules/jstree/dist/jstree.min.js') }}"></script>
 <script src= "{{ url_for('static', filename='js/util.js') }}"></script>
+<script src="{{ plotly }}"></script>
 <script src= "{{ url_for('static', filename='js/job_report.js') }}"></script>
 <script src= "{{ url_for('static', filename='js/tooltips.js') }}"></script>
+<script src="{{ url_for('static', filename='node_modules/ngl/dist/ngl.js') }}"></script>
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/custom_flowchart.css') }}">
-
 
 <div class="animated fadeIn vh-100 mh-100 hidden" id="view">
     <div class="row">

@@ -2,7 +2,7 @@
 Routes for REST authentication
 """
 
-from datetime import timedelta
+from datetime import timedelta, datetime, timezone
 
 from flask import jsonify, Response, make_response, request, redirect, url_for
 from flask_jwt_extended import (
@@ -10,9 +10,9 @@ from flask_jwt_extended import (
     create_refresh_token,
     set_access_cookies,
     set_refresh_cookies,
-    jwt_required,
     get_jwt_identity,
     unset_jwt_cookies,
+    get_jwt,
 )
 
 from seamm_datastore.database.models import User
@@ -20,7 +20,25 @@ from seamm_datastore.database.schema import UserSchema
 
 from seamm_dashboard import jwt
 
-__all__ = ["get_auth_token", "refresh_auth_token", "remove_auth_token"]
+__all__ = ["get_auth_token", "remove_auth_token", "refresh_expiring_jwts"]
+
+
+def refresh_expiring_jwts(response):
+    """This will automatically refresh tokens that are within 30 minutes of expiring"""
+
+    try:
+        exp_timestamp = get_jwt()["exp"]
+        now = datetime.now(timezone.utc)
+        target_timestamp = datetime.timestamp(now + timedelta(seconds=0))
+        if target_timestamp > exp_timestamp:
+            access_token = create_access_token(identity=get_jwt_identity())
+            set_access_cookies(response, access_token)
+        return response
+    except (RuntimeError, KeyError):
+        # Case where there is not a valid JWT. Just return the original respone
+        return response
+
+    return response
 
 
 def create_tokens(user):
@@ -28,15 +46,10 @@ def create_tokens(user):
     Create a token for a given user object. Not an api endpoint
     """
 
-    # Access tokens expire after an hour.
-    # Refresh tokens expire after a day.
-    exp_time = timedelta(hours=1)
-    exp2_time = timedelta(days=1)
-
     user_schema = UserSchema(many=False)
     user = user_schema.dump(user)
-    access_token = create_access_token(identity=user, expires_delta=exp_time)
-    refresh_token = create_refresh_token(identity=user, expires_delta=exp2_time)
+    access_token = create_access_token(identity=user)
+    refresh_token = create_refresh_token(identity=user)
 
     return access_token, refresh_token
 
@@ -72,26 +85,6 @@ def remove_auth_token():
     return resp, 200
 
 
-@jwt_required(refresh=True)
-def refresh_auth_token():
-    """
-    Route for refreshing the access token.
-    """
-
-    exp_time = timedelta(hours=1)
-
-    # Create the new access token
-    current_user = get_jwt_identity()
-    access_token = create_access_token(
-        identity=current_user, expires_delta=exp_time, fresh=False
-    )
-
-    # Set the JWT access cookie in the response
-    resp = Response({"refresh": True})
-    set_access_cookies(resp, access_token)
-    return resp, 200
-
-
 @jwt.unauthorized_loader
 def needed_token_callback(_):
     if "api" in request.url:
@@ -112,6 +105,10 @@ def needed_token_callback(_):
 
 @jwt.expired_token_loader
 def my_expired_token_callback(jwt_header, expired_token):
+    if (request.environ.get("RAW_URI") == "/") or (
+        request.environ.get("HTTP_HOST") in request.environ.get("HTTP_REFERER", [])
+    ):
+        return redirect(url_for("auth.logout", expired=True))
 
     token_type = expired_token["type"]
     return (

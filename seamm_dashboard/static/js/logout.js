@@ -3,4 +3,4 @@ localStorage.removeItem('timeOfActivity')
 localStorage.removeItem('seammLogin')
 
 localStorage.setItem('seammLogout', 'logout' + Math.random());
-window.location.href = '/'
+window.location.assign(window.location.origin)

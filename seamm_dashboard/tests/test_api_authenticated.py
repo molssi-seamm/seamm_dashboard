@@ -185,7 +185,7 @@ def test_add_job_parameters(auth_client):
         "project": "MyProject",
         "description": "This is the description.",
         "title": "Title",
-        "parameters": ["job:data/Users_psaxe_SEAMM_data_anatase.cif"],
+        "parameters": {"job": "data/Users_psaxe_SEAMM_data_anatase.cif"},
     }
 
     response = auth_client.post(
@@ -196,9 +196,10 @@ def test_add_job_parameters(auth_client):
     )
 
     assert response.status_code == 201
-    assert response.json["parameters"] == [
-        "job:data/Users_psaxe_SEAMM_data_anatase.cif"
-    ]
+    assert response.json["parameters"] == {
+        "job": "data/Users_psaxe_SEAMM_data_anatase.cif",
+        "cmdline": [],
+    }
 
 
 def test_add_project(auth_client):

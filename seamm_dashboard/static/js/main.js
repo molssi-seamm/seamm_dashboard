@@ -5,6 +5,7 @@
  * --------------------------------------------------------------------------
  */
 
+
  $(document).ready( function() {
 
     let dashboardStatus = {};
@@ -16,6 +17,17 @@
         dashboardStatus = data;
         },
     })
+
+    // Load table
+    my_table = inittable("jobs?order=desc&limit=10&sortby=last_update")
+    
+    // Add action to refresh button
+    $("#refresh").click(my_table.ajax.reload)
+
+    // Adjust buttons
+    let tableButtons = document.getElementsByClassName("dt-buttons")
+    tableButtons[0].className = "row justify-content-end"
+
 
     // Load info into divs
     document.getElementById('num-jobs-in-dashboard').textContent = dashboardStatus.jobs.total

@@ -748,16 +748,6 @@ paths:
           description: Login successful.
         "400":
           description: Bad credentials
-  /auth/token/refresh:
-    post:
-      summary: Refresh the access token
-      description: Return a token to be used for authentication. An old token will be
-      operationId: seamm_dashboard.routes.api.refresh_auth_token
-      responses:
-        "200":
-          description: Token refreshed.
-        "400":
-          description: Bad credentials
 components:
   schemas:
     Flowchart:
