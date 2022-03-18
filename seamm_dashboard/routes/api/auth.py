@@ -105,9 +105,17 @@ def needed_token_callback(_):
 
 @jwt.expired_token_loader
 def my_expired_token_callback(jwt_header, expired_token):
-    if (request.environ.get("RAW_URI") == "/") or (
-        request.environ.get("HTTP_HOST") in request.environ.get("HTTP_REFERER", [])
-    ):
+    user_agent = request.environ.get("HTTP_USER_AGENT", [])
+
+    # If we are in a browser we want to redirect to the log out page
+    # If we are not in a browser, we will return a json telling them that
+    # the current token is expired.
+
+    # This check should catch all Mozilla compatible browsers.
+    # Ref: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent/Firefox
+    browser = any(["Mozilla" in user_agent])
+
+    if browser:
         return redirect(url_for("auth.logout", expired=True))
 
     token_type = expired_token["type"]
@@ -116,7 +124,9 @@ def my_expired_token_callback(jwt_header, expired_token):
             {
                 "status": 401,
                 "sub_status": 42,
-                "msg": "The {} token has expired".format(token_type),
+                "msg": "The {} token has expired.".format(token_type)
+                + "If you are in a browser and seeing this message, "
+                + "please clear your browser cookies.",
             }
         ),
         401,
