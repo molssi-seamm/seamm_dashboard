@@ -12,7 +12,6 @@ dependencies:
   - flask-authorize
   - flask-bootstrap
   - flask-cors
-  - flask-debugtoolbar
   - flask-jwt-extended>=4.1.0
   - flask-mail
   - flask-marshmallow

@@ -6,7 +6,6 @@ from datetime import timedelta
 import connexion
 
 # from flask_admin import Admin
-from flask_debugtoolbar import DebugToolbarExtension
 from flask_bootstrap import Bootstrap
 from flask_cors import CORS
 from flask_mail import Mail
@@ -84,7 +83,6 @@ bootstrap = Bootstrap()
 jwt = flask_jwt_extended.JWTManager()
 authorize = Authorize(current_user=flask_jwt_extended.get_current_user)
 moment = Moment()
-toolbar = DebugToolbarExtension()
 
 db = SQLAlchemy()
 ma = Marshmallow()
