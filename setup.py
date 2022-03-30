@@ -11,7 +11,7 @@ with open("requirements.txt") as fd:
     requirements = fd.read()
 
 if __name__ == "__main__":
-    with open("requirements_install.txt") as fd:
+    with open("requirements.txt") as fd:
         requirements = fd.read()
 
     setuptools.setup(
