@@ -1,4 +1,4 @@
--r requirements_install.txt
+-r requirements.txt
 
 # For testing:
 chromedriver-binary==89.0.4389.23
