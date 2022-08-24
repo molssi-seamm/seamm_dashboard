@@ -108,7 +108,12 @@ Do you wish to continue?
                             },
                             data: putData,
                             complete: function(xhr, status) {
-                                location.reload() 
+                                if (xhr.status == 401) {
+                                    alert(`You do not have the necessary permission to ${action} job ${jobID}.`) 
+                                }
+                                else {
+                                    location.reload() 
+                                }
                             }
                         });
                     } else if (action === "delete") {

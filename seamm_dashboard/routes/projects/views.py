@@ -26,6 +26,11 @@ from seamm_dashboard.routes.api.auth import refresh_expiring_jwts
 
 
 def _bind_users_to_form(form, current_user, project_id):
+    """Function to bind current usernames to form
+
+    This has to be done dynamically based on what is in the database. That's why it is in this file and occurs when
+    the page is viewed rather than in the form object.
+    """
 
     actions = ["read", "update", "create", "delete", "manage"]
     users = User.query.all()
@@ -162,9 +167,14 @@ def manage_project(project_id):
 
     form = deepcopy(ManageProjectAccessForm)
 
+    # Add users to form
     form, usernames = _bind_users_to_form(
         form, current_user=get_current_user(), project_id=project.id
     )
+
+    # Add public permissions information to form
+    public = "read" in project.permissions["other"]
+    form.allow_public = BooleanField("Make project publicly readable", default=public)
 
     form = form()
 
@@ -174,6 +184,12 @@ def manage_project(project_id):
 
     if request.method == "POST":
         if form.validate_on_submit():
+
+            if form.allow_public:
+                permissions = deepcopy(project.permissions)
+                permissions["other"] = ["read"]
+                project.permissions = permissions
+                db.session.commit()
 
             user_keys = [
                 x for x in form.data.keys() if "user" in x if form.data[x] is True

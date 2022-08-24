@@ -79,13 +79,14 @@
                 </fieldset>
             </div>
         </div>
+        <div>
+            <span class="ml-3">{{ wtf.form_field(form.allow_public, class="form-control") }}</span>
+        </div>
         <div class="mb-5"> 
             {{ wtf.form_field(form.submit, class="btn btn-primary form-control") }}
         </div>
     </form>
 </div>
 </div>
-
-
 {% endblock %}
 
