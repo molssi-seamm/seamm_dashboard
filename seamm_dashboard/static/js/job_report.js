@@ -147,15 +147,21 @@ function loadStructure(URL) {
         let fileExtension = URL.split(".");
         fileExtension = fileExtension[fileExtension.length - 1]
         let stage = new NGL.Stage("structure", {backgroundColor: "white"} );
-
         if (representation == "default") {
-            stage.loadFile(URL, {defaultRepresentation: true, ext: fileExtension });
+            stage.loadFile(URL, {defaultRepresentation: true, ext: fileExtension }).then(function (component) {
+                // add unit cell if there is one
+                component.addRepresentation("unitcell")
+                // provide a "good" view of the structure
+                component.autoView();
+                });;
         }
 
         else {
             stage.loadFile(URL, {ext: fileExtension }).then(function (component) {
             // add specified representation to the structure component
             component.addRepresentation(representation);
+            // add unit cell if there is one
+            component.addRepresentation("unitcell")
             // provide a "good" view of the structure
             component.autoView();
             });
