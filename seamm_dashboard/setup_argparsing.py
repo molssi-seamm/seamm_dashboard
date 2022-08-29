@@ -1,6 +1,8 @@
 import argparse
 from pathlib import Path
 import sys
+from socket import gethostname
+
 
 import seamm_util
 
@@ -35,6 +37,14 @@ parser.add_argument(
     group="dashboard options",
     action="store_true",
     help="do not check that jobs are in the database",
+)
+
+parser.add_argument(
+    "SEAMM",
+    "--dashboard-name",
+    group="dashboard options",
+    default=gethostname(),
+    help="The name of the dashboard.",
 )
 
 parser.add_argument(
