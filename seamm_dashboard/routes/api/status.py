@@ -3,6 +3,7 @@ API calls for the status
 """
 import logging
 
+from seamm_dashboard.setup_argparsing import options
 from seamm_datastore.database.models import Project, Job, Flowchart
 from seamm_datastore.database.schema import RoleSchema
 
@@ -58,6 +59,7 @@ def status():
 
     # Build return json
     status = {
+        "dashboard": options["dashboard_name"],
         "status": "running",
         "user id": user_id,
         "username": username,

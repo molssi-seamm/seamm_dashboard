@@ -1,9 +1,11 @@
+// Set up the main window - load in appropriate menus for login, user, dashboard name.
+
 // Prevent caching on ajax calls.
 $.ajaxSetup ({
     cache: false
     });
 
-    // Get username and stuff
+    // Get username and dashboard name and stuff
     $.ajax({
     url: `${location.origin}/api/status`,
     dataType: 'json',
@@ -39,7 +41,7 @@ $.ajaxSetup ({
             }
 
             if (data.roles.includes("group manager")) {
-              loginString = loginString.concat(`<h6 class="dropdown-header">Admin Actions</h6>
+              loginString = loginString.concat(`<h6 class="dropdown-header">Manager Actions</h6>
               <a class="dropdown-item" href="/admin/manage_groups">Manage Groups</a>`)
             }
 
@@ -54,6 +56,7 @@ $.ajaxSetup ({
         }
 
         document.getElementById("login-info").innerHTML = loginString
+        document.getElementById("dashboard-name").innerHTML = `<h2>${data.dashboard}</h2>`
         },
         // error occurs because of expired access token. Remove cookie and reload page
     error: function () {
