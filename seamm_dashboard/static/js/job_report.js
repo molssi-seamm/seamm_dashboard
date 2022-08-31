@@ -250,6 +250,83 @@ function loadStructure(URL) {
     }
 }
 
+function loadCube(URL) {
+    
+
+    console.log("Loading cube.")
+    // Inner function for NGL stage - only used in this function
+    function loadStage(URL, representation="default") {
+        
+        // Clear stage if one exists
+        let canvas = document.querySelector("#structure canvas")
+        if (canvas) {
+            canvas.remove()}
+
+        // Figure out the file extension and load the file
+        let fileExtension = URL.split(".");
+        fileExtension = fileExtension[fileExtension.length - 1]
+        let stage = new NGL.Stage("structure", {backgroundColor: "white"} );
+        if (representation == "default") {
+
+            stage.loadFile(URL, {ext: fileExtension }).then(function (component) {
+                console.log(component)
+                // add unit cell if there is one
+                component.addRepresentation("surface", {color: "red"})
+                component.addRepresentation("surface", {color: "blue", negateIsolevel: true})
+                // provide a "good" view of the structure
+                component.autoView();
+                });;
+        }
+        return stage
+    }
+
+    // Put some buttons above the stage
+    $("#structure").html(`
+        <div>
+            <span>
+                <button class="btn btn-primary dropdown-toggle" type="button" id="image-export" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Export Image
+                </button>
+                <div class="dropdown-menu" aria-labelledby="image-export">
+                    <a class="dropdown-item" href="#" id='normal'>Normal Quality</a>
+                    <a class="dropdown-item" href="#" id="high">High Quality</a>
+                    <a class="dropdown-item" href="#" id="ultra-high">Ultra High Quality</a>
+                </div>
+            </span>
+        </div>
+    `)
+
+    // Initial stage load
+    let myStage;
+    myStage = loadStage(URL);
+
+    // Export image buttons
+    let qualities = {
+        "normal": 1,
+        "high": 5,
+        "ultra-high": 10,
+    }
+
+    for (let key in qualities){
+        // Remove previous behavior
+        $(document).off("click", `#${key}`)
+
+        $(document).on("click", `#${key}`, {'stage': myStage}, 
+            function(event){ 
+                event.preventDefault();
+                myStage.makeImage( {
+                    factor: qualities[key],
+                    antialias: true,
+                    trim: false,
+                    transparent: true,
+                } ).then( function( blob ){
+                    NGL.download( blob, `cube-view-${key}.png` );
+                } );
+            } );
+    }
+}
+
+
 function toggleDivs(divList, divToShow = null) {
     for (var i = 0; i < divList.length; i++) {
         if (divList[i] == divToShow) {
@@ -280,6 +357,10 @@ var contentFunctions = {
     },
     "cif": {
         "load" : [loadStructure, "href"],
+        "resize": "structure",
+    },
+    "cube": {
+        "load" : [loadCube, "href"],
         "resize": "structure",
     },
     "pdb": {
