@@ -10,6 +10,9 @@ import versioneer
 with open("requirements.txt") as fd:
     requirements = fd.read()
 
+with open('README.md') as readme_file:
+    readme = readme_file.read()
+
 if __name__ == "__main__":
     with open("requirements.txt") as fd:
         requirements = fd.read()
@@ -19,6 +22,8 @@ if __name__ == "__main__":
         version=versioneer.get_version(),
         cmdclass=versioneer.get_cmdclass(),
         description=__doc__.splitlines()[1],
+        long_description=readme,
+        long_description_content_type='text/markdown',
         author="Jessica Nash",
         author_email="janash@vt.edu",
         url="https://github.com/molssi-seamm/seamm_dashboard.git",

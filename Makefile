@@ -120,6 +120,9 @@ release: clean ## package and upload a release
 	python setup.py sdist bdist_wheel
 	python -m twine upload dist/*
 
+check-release: dist ## check the release for errors
+	python -m twine check dist/*
+
 dist: clean ## builds source and wheel package
 	python setup.py sdist
 	python setup.py bdist_wheel
