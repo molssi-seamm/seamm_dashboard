@@ -378,6 +378,8 @@ def get_job_files(id):
         for name in sorted(files):
 
             extension = name.split(".")[-1]
+            if extension == "gz":
+                extension = name.split(".")[-2]
 
             encoded_path = urllib.parse.quote(os.path.join(root, name), safe="")
             safe_encode = urllib.parse.quote(os.path.join(safe, name), safe="")

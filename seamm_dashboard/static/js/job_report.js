@@ -210,7 +210,7 @@ function loadStructure(URL) {
                     "#licorice-rep": "licorice", 
                     "#cartoon-rep": "cartoon", 
                     "#ball-stick-rep": "ball+stick", 
-                    "#surface-rep": "surace", 
+                    "#surface-rep": "surface", 
                     "#spacefill-rep":"spacefill"
                 }
     
@@ -263,19 +263,25 @@ function loadCube(URL) {
             canvas.remove()}
 
         // Figure out the file extension and load the file
+	let compressed = false;
         let fileExtension = URL.split(".");
         fileExtension = fileExtension[fileExtension.length - 1]
+	if (fileExtension == "gz") {
+	    compressed = "gz"
+	    fileExtension = URL.split(".")
+	    fileExtension = fileExtension[fileExtension.length - 2]
+	}
+	    
         let stage = new NGL.Stage("structure", {backgroundColor: "white"} );
         if (representation == "default") {
-
-            stage.loadFile(URL, {ext: fileExtension }).then(function (component) {
+            stage.loadFile(URL, {ext: fileExtension, compressed: compressed }).then(function (component) {
                 console.log(component)
-                // add unit cell if there is one
+                // add + and - surfaces
                 component.addRepresentation("surface", {color: "red"})
                 component.addRepresentation("surface", {color: "blue", negateIsolevel: true})
                 // provide a "good" view of the structure
                 component.autoView();
-                });;
+            });;
         }
         return stage
     }
@@ -432,6 +438,9 @@ $(document).ready(function() {
             // Figure out the file type.
             var href = data.node.a_attr.href;
             var fileType = href.split(".").slice(-1);
+	    if (fileType == "gz") {
+		fileType = href.split(".").slice(-2, -1)
+	    }
 
             var http = new XMLHttpRequest();
 
