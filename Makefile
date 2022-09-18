@@ -101,35 +101,34 @@ finish_dashboard: ## finish create the environment for running the dashboard
 	@echo 'To use the environment, type'
 	@echo '   conda activate seamm-dashboard'
 
-docs: ## generate Sphinx HTML documentation, including API docs
-	rm -f docs/seamm_dashboard.rst
-	rm -f docs/modules.rst
-	sphinx-apidoc -o docs/ seamm_dashboard
+html: ## generate Sphinx HTML documentation, including API docs
+	rm -f docs/developer/$(MODULE).rst
+	rm -f docs/developer/modules.rst
+	sphinx-apidoc -o docs/developer $(MODULE)
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
+
+docs: html ## Make the html docs and show in the browser
 	$(BROWSER) docs/_build/html/index.html
 
 servedocs: docs ## compile the docs watching for changes
 	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
 
-test-release: clean ## package and upload a release to test PyPi
-	python setup.py sdist bdist_wheel
-	twine upload --repository testpypi dist/*
-
-release: clean ## package and upload a release
-	python setup.py sdist bdist_wheel
+release: dist ## package and upload a release
 	python -m twine upload dist/*
+
+test-release: dist ## package and upload a release to test PyPi
+	twine upload --repository testpypi dist/*
 
 check-release: dist ## check the release for errors
 	python -m twine check dist/*
 
 dist: clean ## builds source and wheel package
-	python setup.py sdist
-	python setup.py bdist_wheel
+	python -m build
 	ls -l dist
 
 install: uninstall nodejs ## install the package to the active Python's site-packages
-	python setup.py install
+	pip install .
 
 uninstall: clean ## uninstall the package
 	pip uninstall --yes seamm-dashboard
