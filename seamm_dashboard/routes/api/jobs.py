@@ -44,7 +44,7 @@ file_icons = {
     "pdb": "fas fa-cubes",
     "mmcif": "fas fa-cubes",
     "cif": "fas fa-cubes",
-    "cube": "fas fa-cube"
+    "cube": "fas fa-cube",
 }
 
 
