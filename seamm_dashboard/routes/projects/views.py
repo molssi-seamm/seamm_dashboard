@@ -28,8 +28,8 @@ from seamm_dashboard.routes.api.auth import refresh_expiring_jwts
 def _bind_users_to_form(form, current_user, project_id):
     """Function to bind current usernames to form
 
-    This has to be done dynamically based on what is in the database. That's why it is in this file and occurs when
-    the page is viewed rather than in the form object.
+    This has to be done dynamically based on what is in the database. That's why it is
+    in this file and occurs when the page is viewed rather than in the form object.
     """
 
     actions = ["read", "update", "create", "delete", "manage"]

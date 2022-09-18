@@ -1,4 +1,5 @@
 import argparse
+import os
 from pathlib import Path
 import sys
 from socket import gethostname
@@ -19,7 +20,7 @@ parser.add_argument(
     "SEAMM",
     "--port",
     group="dashboard options",
-    default=5000,
+    default=55055,
     type=int,
     help="the port to use",
 )
@@ -192,7 +193,7 @@ parser.add_argument(
     "SEAMM",
     "--secret-key",
     group="flask options",
-    default=argparse.SUPPRESS,
+    default=str(os.urandom(16)),
     help=(
         "A secret key that will be used for securely signing the session "
         "cookie and can be used for any other security related needs by "
