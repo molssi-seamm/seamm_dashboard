@@ -202,6 +202,9 @@ class TestLiveServer:
         # Have to log in for this
         self.log_in(chrome_driver)
 
+        # Get page with chromedriver.
+        chrome_driver.get(f"{self.base_url}#jobs/1")
+
         # Set up sample file for comparison.
         test_file = os.path.realpath(
             os.path.join(project_directory, "Job_000001", "job.out")
@@ -211,7 +214,7 @@ class TestLiveServer:
             file_contents = f.read()
             file_contents_split = file_contents.split()
 
-        test_file_id = urllib.parse.quote(test_file, safe="") + "_anchor"
+        test_file_id = "root/job.out_anchor"
 
         chrome_driver.get(f"{self.base_url}#jobs/1")
 
