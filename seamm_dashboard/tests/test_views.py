@@ -216,8 +216,6 @@ class TestLiveServer:
 
         test_file_id = "root/job.out_anchor"
 
-        chrome_driver.get(f"{self.base_url}#jobs/1")
-
         # Initially, there should be nothing in the text box.
 
         initial_displayed_text = (
@@ -256,8 +254,12 @@ class TestLiveServer:
         """
         Test to click file and make sure it is loaded into div.
         """
-        # Have to log in for this
+
+         # Have to log in for this
         self.log_in(chrome_driver)
+
+        # Get page with chromedriver.
+        chrome_driver.get(f"{self.base_url}#jobs/1")
 
         # Set up sample file for comparison.
         test_file = os.path.realpath(
@@ -268,11 +270,10 @@ class TestLiveServer:
             file_contents = f.read()
             file_contents_split = file_contents.split()
 
-        test_file_id = urllib.parse.quote(test_file, safe="") + "_anchor"
-
-        chrome_driver.get(f"{self.base_url}#jobs/1")
+        test_file_id = "root/job.out_anchor"
 
         # Initially, there should be nothing in the text box.
+
         initial_displayed_text = (
             WebDriverWait(chrome_driver, 20)
             .until(EC.presence_of_element_located((By.ID, "file-content")))
@@ -285,7 +286,11 @@ class TestLiveServer:
         )
         job_link.click()
 
-        time.sleep(1)
+        # Give time to load
+        time.sleep(1.25)
+
+        # screenshot
+        # chrome_driver.get_screenshot_as_file(f"job_report.png")
 
         # When clicked, file text should be displayed in the div.
         displayed_text = chrome_driver.find_element(By.ID, "file-content").text
@@ -294,11 +299,11 @@ class TestLiveServer:
 
         # Splitting on whitespace and rejoining let's us compare the file
         # contents without worrying about how whitespace is handled.
-        assert initial_displayed_text == ""
+        assert initial_displayed_text == "", "initial displayed text error"
         assert " ".join(displayed_text_list) == " ".join(
             file_contents_split
-        ), "initial load failed."
-
+        ), "displayed text error"
+        
         # Update file on disk
         with open(test_file, "a+") as f:
             f.write("Appending this line")
@@ -333,10 +338,10 @@ class TestLiveServer:
         )
         second_file = os.path.realpath(
             os.path.join(project_directory, "Job_000001", "flowchart.flow")
-        )
+        )   
 
-        first_file_id = urllib.parse.quote(first_file, safe="") + "_anchor"
-        second_file_id = urllib.parse.quote(second_file, safe="") + "_anchor"
+        first_file_id =  "root/job.out_anchor"
+        second_file_id = "root/flowchart.flow_anchor"
 
         chrome_driver.get(f"{self.base_url}#jobs/1")
 
