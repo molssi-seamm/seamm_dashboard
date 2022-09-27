@@ -1,5 +1,61 @@
 // You must include util.js on any page that uses this javascript file
 
+function populate_div(filename, href, jobID){
+    
+    let decoded = decodeURIComponent(filename);
+    $('#file-name').html(decoded);
+    let fileType = href.split(".").slice(-1);
+   if (fileType == "gz") {
+   fileType = href.split(".").slice(-2, -1)
+   }
+
+   let jobData;
+
+   if (fileType == "flow" ) {
+    jobData = getJobData(jobID)
+   }
+
+       var http = new XMLHttpRequest();
+
+       http.open('HEAD', href, false);
+       http.send();
+
+       // If logout is find, the index will be greater than -1
+       if (http.responseURL.indexOf("logout") > -1) { 
+           window.location.assign("/logout") 
+       }
+
+       // Figure out functions to call. If not recognized extension, other
+       if (!(fileType in contentFunctions)) {
+           fileType = "other"
+       }
+
+       //Resize divs appropriately.
+       let resizeDiv = contentFunctions[fileType]["resize"]
+       toggleDivs(contentDivs, resizeDiv)
+
+       // Load function
+       let func = contentFunctions[fileType]["load"][0]
+       let arg = eval(contentFunctions[fileType]["load"][1])
+       func(arg)
+       
+       // Make file refresh button work.
+       $("#refresh").click(
+           function() {
+           func(arg)
+       })
+
+       // Make permalink button work
+       $("#permalink").click(
+        function() {
+            let current_link = location.href.split("#")[0]
+            let filepath = href.split("=")[1]
+            let permalink = `${current_link}#/jobs/${jobID}?${filepath}`
+            navigator.clipboard.writeText(permalink)
+        }
+       )
+}
+
 function buildTree(jobID) {
     var elements = [];
         $.ajax({
@@ -63,14 +119,15 @@ function loadFlow(flowchartID) {
         });
 }
 
-function loadGraph(nodeData) {
+function loadGraph(href) {
     let content_div = document.getElementById('file-content');
-    var plotlyData = load_file(nodeData.a_attr.href, 'json')
+    var plotlyData = load_file(href, 'json');
+    let output_filename = href.split("=")[1]
     Plotly.newPlot(content_div, plotlyData.data, plotlyData.layout, 
         {'editable': true, 
         'toImageButtonOptions': {
         format: 'png', // one of png, svg, jpeg, webp
-        filename: nodeData.text,
+        filename: output_filename,
         scale: 10 // Multiply title/legend/axis/canvas sizes by this factor
         }});
 
@@ -253,7 +310,6 @@ function loadStructure(URL) {
 function loadCube(URL) {
     
 
-    console.log("Loading cube.")
     // Inner function for NGL stage - only used in this function
     function loadStage(URL, representation="default") {
         
@@ -275,7 +331,6 @@ function loadCube(URL) {
         let stage = new NGL.Stage("structure", {backgroundColor: "white"} );
         if (representation == "default") {
             stage.loadFile(URL, {ext: fileExtension, compressed: compressed }).then(function (component) {
-                console.log(component)
                 // add + and - surfaces
                 component.addRepresentation("surface", {color: "red"})
                 component.addRepresentation("surface", {color: "blue", negateIsolevel: true})
@@ -346,11 +401,12 @@ function toggleDivs(divList, divToShow = null) {
 
 var contentFunctions = {
     "flow" : {
+        // need to rethink this.
         "load": [loadFlow, "jobData.flowchart_id"],
         "resize": "cytoscape",
     },
     "graph": {
-        "load": [loadGraph, "data.node"],
+        "load": [loadGraph, "href"],
         "resize": "file-content",
     },
     "csv": {
@@ -383,7 +439,10 @@ var contentDivs = ["file-content", "structure","cytoscape", "csv-data"]
 
 $(document).ready(function() {
     let url = location.href.split('/');
-    const jobID = url.slice(-1)[0];
+    let loc_string = url.slice(-1)[0]
+    url = loc_string.split('?')
+    const jobID = url[0];
+    const initial_filename = url[1];
 
     // Get info we need for page
     let jobData = getJobData(jobID);
@@ -407,70 +466,44 @@ $(document).ready(function() {
             "case_insensitive": true,
             "show_only_matches" : true
         },
-    })
+    }).on('loaded.jstree', function() {
+        if (initial_filename != null) {
+         
+        decoded = decodeURIComponent(initial_filename)
+        $('#js-tree').jstree('select_node', `root/${decoded}`);
+        }
+      });
 
     $('#search').keyup(function(){
         $('#js-tree').jstree('search', $(this).val());
     });
 
+    
+
     // Code to control loading content into div on button clicks
     $('#js-tree').bind("select_node.jstree", function (e, data) {
+
         if (data.node.a_attr.href != '#') {
 
-             // Clear div content before new content loading
-             let divs = document.getElementsByClassName('load-content')
-             
-             for (var i=0; i<divs.length; i++) {
-                 divs[i].innerHTML = "";
-             }
-
-            try {
-                table.destroy();
-                $('#csv-data tr').remove();
-                $('#csv-data thead').remove();
-                $('#csv-data tbody').remove();
-            } catch {
-                // Do nothing.
-            }
-
-            $('#file-name').html(data.node.text)
-
-            // Figure out the file type.
-            var href = data.node.a_attr.href;
-            var fileType = href.split(".").slice(-1);
-	    if (fileType == "gz") {
-		fileType = href.split(".").slice(-2, -1)
-	    }
-
-            var http = new XMLHttpRequest();
-
-            http.open('HEAD', href, false);
-            http.send();
-
-            // If logout is find, the index will be greater than -1
-            if (http.responseURL.indexOf("logout") > -1) { 
-                window.location.assign("/logout") 
-            }
-
-            // Figure out functions to call. If not recognized extension, other
-            if (!(fileType in contentFunctions)) {
-                fileType = "other"
-            }
-
-            //Resize divs appropriately.
-            let resizeDiv = contentFunctions[fileType]["resize"]
-            toggleDivs(contentDivs, resizeDiv)
-
-            // Load function
-            let func = contentFunctions[fileType]["load"][0]
-            let arg = eval(contentFunctions[fileType]["load"][1])
-            func(arg)
+            // Clear div content before new content loading
+            let divs = document.getElementsByClassName('load-content')
             
-            // Make file refresh button work.
-            $("#refresh").click(
-                function() {
-                func(arg)
-            })
+            for (var i=0; i<divs.length; i++) {
+                divs[i].innerHTML = "";
+            }
+    
+           try {
+               table.destroy();
+               $('#csv-data tr').remove();
+               $('#csv-data thead').remove();
+               $('#csv-data tbody').remove();
+           } catch {
+               // Do nothing.
+           }
+           
+           var href = data.node.a_attr.href;
+           let filename = decodeURIComponent(href.split("=")[1])
+           populate_div(filename, href, jobID)
         }
     });
 
@@ -501,21 +534,26 @@ $(document).ready(function() {
         loadDescription(jobData["description"])
     }
 
-    $("#load-description").click(function() {
-        try {
-            table.destroy();
-            $('#csv-data tr').remove();
-            $('#csv-data thead').remove();
-            $('#csv-data tbody').remove();
-        } catch {
-            // Do nothing.
-        }
-        toggleDivs(contentDivs, "file-content")
-        loadDescription(jobData["description"]);
+    if (initial_filename == null) {
+        $("#load-description").click(function() {
+            try {
+                table.destroy();
+                $('#csv-data tr').remove();
+                $('#csv-data thead').remove();
+                $('#csv-data tbody').remove();
+            } catch {
+                // Do nothing.
+            }
+            toggleDivs(contentDivs, "file-content");
+            loadDescription(jobData["description"]);
 
-    })
+        })
+    }
+    else {
+        let href = `api/jobs/${jobID}/files/download?filename=${initial_filename}`
+        populate_div(initial_filename, href, jobID);
+    }
     
-
 })
 
     

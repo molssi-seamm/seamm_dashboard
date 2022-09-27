@@ -360,7 +360,7 @@ def get_job_files(id):
 
     js_tree.append(
         {
-            "id": path,
+            "id": "root",
             "parent": "#",
             "text": base_dir,
             "state": {
@@ -384,10 +384,11 @@ def get_job_files(id):
             encoded_path = urllib.parse.quote(os.path.join(root, name), safe="")
             safe_encode = urllib.parse.quote(os.path.join(safe, name), safe="")
 
+            # Add files to tree. File nodes do not have children.
             js_tree.append(
                 {
-                    "id": encoded_path,
-                    "parent": parent,
+                    "id": os.path.join(root, name).replace(job.path, "root"),
+                    "parent": parent.replace(job.path, "root"),
                     "text": name,
                     "a_attr": {
                         "href": f"api/jobs/{id}/files/download?filename={safe_encode}",
@@ -401,11 +402,12 @@ def get_job_files(id):
                 }
             )
 
+        # Add directory nodes to tree.
         for name in sorted(dirs):
             js_tree.append(
                 {
-                    "id": os.path.join(root, name),
-                    "parent": parent,
+                    "id": os.path.join(root, name).replace(job.path, "root"),
+                    "parent": parent.replace(job.path, "root"),
                     "text": name,
                     "icon": file_icons["folder"],
                 }

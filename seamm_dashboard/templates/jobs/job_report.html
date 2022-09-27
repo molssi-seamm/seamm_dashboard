@@ -8,7 +8,6 @@
 <script src="{{ plotly }}"></script>
 <script src= "{{ url_for('static', filename='js/job_report.js') }}"></script>
 <script src= "{{ url_for('static', filename='js/tooltips.js') }}"></script>
-<script src="{{ url_for('static', filename='node_modules/ngl/dist/ngl.js') }}"></script>
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/custom_flowchart.css') }}">
 
 <div class="animated fadeIn vh-100 mh-100 hidden" id="view">
@@ -42,6 +41,7 @@
           <div class="card-header btn">
             <span id="file-name">Click Files to view</span>
             <button type="button" id="refresh" class="btn btn-sm btn-outline-primary float-right" title="Refresh File Contents" data-toggle="tooltip" data-placement="top"><i class="fas fa-sync"></i></button>
+            <button type="button" id="permalink" class="btn btn-sm btn-outline-primary float-right mx-2" title="Copy permalink to file" data-toggle="tooltip" data-placement="top"><i class="fas fa-link"></i></button>
           </div>
           <div id ="view-card-content" class="px-2 py-2 h-100">
             <div id='file-content' class="my-0 load-content" style="overflow-y: scroll;"></div>

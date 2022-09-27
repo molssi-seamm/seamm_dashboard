@@ -25,8 +25,9 @@ def jobs_list():
 
 @jobs.route("/views/jobs/<id>")
 @jobs.route("/views//jobs/<id>")
+@jobs.route("/views/jobs/<id>?filename=<filename>")
 @jwt_required(optional=True)
-def job_details(id):
+def job_details(id, filename=None):
 
     from seamm_datastore.util import NotAuthorizedError
 
