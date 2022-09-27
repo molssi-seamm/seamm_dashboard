@@ -4,7 +4,8 @@ Routes for REST authentication
 
 from datetime import timedelta, datetime, timezone
 
-from flask import jsonify, Response, make_response, request, redirect, url_for
+from flask import jsonify, make_response, request, redirect, url_for
+from flask.wrappers import Response
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
@@ -37,8 +38,6 @@ def refresh_expiring_jwts(response):
     except (RuntimeError, KeyError):
         # Case where there is not a valid JWT. Just return the original respone
         return response
-
-    return response
 
 
 def create_tokens(user):
@@ -127,6 +126,35 @@ def my_expired_token_callback(jwt_header, expired_token):
                 "msg": "The {} token has expired.".format(token_type)
                 + "If you are in a browser and seeing this message, "
                 + "please clear your browser cookies.",
+            }
+        ),
+        401,
+    )
+
+
+@jwt.invalid_token_loader
+def my_invalid_token_callback(invalid_str):
+    user_agent = request.environ.get("HTTP_USER_AGENT", [])
+
+    # If we are in a browser we want to redirect to the log out page
+    # If we are not in a browser, we will return a json telling them that
+    # the current token is expired.
+
+    # This check should catch all Mozilla compatible browsers.
+    # Ref: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent/Firefox
+    browser = any(["Mozilla" in user_agent])
+
+    if browser:
+        return redirect(url_for("auth.logout"))
+
+    return (
+        jsonify(
+            {
+                "status": 401,
+                "sub_status": 42,
+                "msg": invalid_str
+                + ". Invalid cookie detected."
+                + " Clear your cookies and try again.",
             }
         ),
         401,
