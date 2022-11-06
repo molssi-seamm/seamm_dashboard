@@ -41,6 +41,4 @@ dependencies:
   - nodejs
   - twine
   
-  - pip:
-    # For testing:
-    - pytest-selenium
+
