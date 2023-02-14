@@ -21,7 +21,7 @@ dependencies:
   - seamm-datastore
   - seamm-util
   - six
-  - sqlalchemy
+  - sqlalchemy<2.0
   - swagger-ui-bundle
   - wtforms
   - flask-compress
