@@ -37,5 +37,6 @@
     document.getElementById('num-flowcharts').textContent = dashboardStatus.flowcharts
 
     document.getElementById("view").classList.toggle("hidden")
+    previous = window.location.href;
  })
 

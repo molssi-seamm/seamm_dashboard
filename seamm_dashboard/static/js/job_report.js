@@ -443,6 +443,7 @@ $(document).ready(function() {
     url = loc_string.split('?')
     const jobID = url[0];
     const initial_filename = url[1];
+    let current, new_url;
 
     // Get info we need for page
     let jobData = getJobData(jobID);
@@ -523,6 +524,30 @@ $(document).ready(function() {
         }
     )
 
+    // Hide the back button if previous doesn't exist
+    // or if it doesn't redirect to current site
+    if (previous == null) {
+        document.getElementById("back").classList.add("hidden")
+    }
+    else {
+        current = new URL(location.href)
+        new_url = new URL(previous)
+
+        if (current.hostname != new_url.hostname) {
+            document.getElementById("back").classList.add("hidden")
+        }
+    }
+
+    // Make the back button work
+    $("#back").click(
+        function() {
+            // Make sure origin is the same
+            if (current.origin == new_url.origin) {
+                window.location = previous;
+                location.reload();
+            }
+        }
+    )
 
     toggleDivs(contentDivs, "file-content")
     

@@ -205,6 +205,5 @@ function inittable(data) {
             
 
     document.getElementById("view").classList.toggle("hidden")
-
     
   })

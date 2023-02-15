@@ -1,3 +1,5 @@
+var previous;
+
 function buildFlowchart(flowchart_url) {
     var elements = [];
     var flowchart_id = flowchart_url.split('/').slice(-1)[0]
