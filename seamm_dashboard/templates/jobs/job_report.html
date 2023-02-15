@@ -13,6 +13,9 @@
 <div class="animated fadeIn vh-100 mh-100 hidden" id="view">
     <div class="row">
       <div class="col-sm-3">
+        <div class="row">
+          <button type = "button"  title="Go back to previous page" id="back" class="btn btn-outline-primary m-3"><i class="fas fa-chevron-circle-left mr-3"></i>Go back to previous page</button>
+        </div>
         <div class="h4 mt-3 row"><span id="root-folder"></span><span><button type="button" id="refresh-file-list" class="btn btn btn-outline-primary float-right mb-3 ml-5" title="Refresh Job Info" data-toggle="tooltip" data-placement="top"><i class="fas fa-sync"></i></button></span></div>
         <div class="row"><strong>Title: </strong> <span id="job-title" class="ml-2">{{ job.title }}</span></div>
         <div class="row"><strong>Status: </strong><span id="job-status" class="ml-2"></span></div>

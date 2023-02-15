@@ -206,5 +206,7 @@ function inittable(data) {
 
     document.getElementById("view").classList.toggle("hidden")
 
+    // for back button
+    previous = window.location
     
   })

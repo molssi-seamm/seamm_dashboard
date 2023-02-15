@@ -49,7 +49,8 @@ function inittable(data) {
 }
 
   $(document).ready(function(){
-    ajaxFlowcharts()
-    document.getElementById("view").classList.toggle("hidden")
+    ajaxFlowcharts();
+    document.getElementById("view").classList.toggle("hidden");
+    previous = window.location;
 
   })

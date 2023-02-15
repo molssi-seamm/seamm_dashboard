@@ -523,6 +523,18 @@ $(document).ready(function() {
         }
     )
 
+    // Make the back button work
+    $("#back").click(
+        function() {
+            window.location = previous;
+            location.reload();
+        }
+    )
+
+    // Hide the back button if previous doesn't exist
+    if (previous == null){
+        document.getElementById("back").classList.add("hidden")
+    }
 
     toggleDivs(contentDivs, "file-content")
     
