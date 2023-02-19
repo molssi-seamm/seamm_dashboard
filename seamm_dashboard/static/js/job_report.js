@@ -176,6 +176,10 @@ function loadOther(file) {
         Prism.highlightAll() });
 }
 
+function loadImage(URL) {
+    $("#file-content").html(`<img src='${URL}' style='max-width:100%'>`)
+}
+
 function loadDescription(description) {
     $("#file-content").html(`<pre style="white-space:pre-wrap;" id="pre-code"><code id="codeBlock" class="language-text animated fadeIn"></code>`)
     
@@ -428,6 +432,10 @@ var contentFunctions = {
     "pdb": {
         "load" : [loadStructure, "href"],
         "resize": "structure",
+    },
+    "png": {
+        "load": [loadImage, "href"],
+        "resize": "file-content",
     },
     "other": {
         "load": [loadOther, "href"],
