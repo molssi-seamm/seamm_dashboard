@@ -137,10 +137,11 @@ Do you wish to continue?
     }
 }
 
-function inittable(api_url) {	
+function inittable(api_url, paging=true) {	
 
     var table = $('#jobs').DataTable( {
         "responsive": true,
+        "paging": paging,
         "ajax": {
             url: `api/${api_url}`,
             async: false,
