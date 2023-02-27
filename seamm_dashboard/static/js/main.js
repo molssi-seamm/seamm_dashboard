@@ -19,7 +19,7 @@
     })
 
     // Load table
-    my_table = inittable("jobs?order=desc&sortby=last_update");
+    my_table = inittable("jobs?order=desc&sortby=last_update&limit=10", paging=false);
     
     // Add action to refresh button
     $("#refresh").click(my_table.ajax.reload);
