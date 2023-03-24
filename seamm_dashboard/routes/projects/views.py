@@ -109,35 +109,38 @@ def edit_project(project_id):
     project_url = base_url + f"#projects/{project_id}/jobs"
 
     if form.validate_on_submit():
-        # Rename project path
-        path = project.path
-        new_path = os.path.join(os.path.dirname(path), form.name.data)
 
         # Make sure project name doesn't exist
         exists = Project.query.filter(Project.name == form.name.data).one_or_none()
-        if exists is not None:
+        if exists is not None and project.name != form.name.data:
             flash(f"A project with the name {form.name.data} already exists.")
             return redirect(url_for("projects.edit_project", project_id=project_id))
 
-        # Need to change this to query, but this will work
-        # without modifying the DB for now.
-        job_ids = [x.id for x in project.jobs]
+         # Rename project path
+        path = project.path
 
-        # Update job paths
-        Job.query.filter(Job.id.in_(job_ids)).update(
-            {Job.path: func.replace(Job.path, path, new_path)},
-            synchronize_session=False,
-        )
+        if path:
+            new_path = os.path.join(os.path.dirname(path), form.name.data)
+            # Need to change this to query, but this will work
+            # without modifying the DB for now.
+            job_ids = [x.id for x in project.jobs]
 
-        # Perform rename
-        os.rename(path, new_path)
+            # Update job paths
+            Job.query.filter(Job.id.in_(job_ids)).update(
+                {Job.path: func.replace(Job.path, path, new_path)},
+                synchronize_session=False,
+            )
 
-        # Update project information
-        project.path = new_path
+            # Perform rename
+            os.rename(path, new_path)
+
+            # Update project information
+            project.path = new_path
+
         project.name = form.name.data
         project.description = form.notes.data
         db.session.commit()
-        flash("Project updated successfully.", "successs")
+        flash("Project updated successfully.", "success")
 
         return redirect(project_url)
 
