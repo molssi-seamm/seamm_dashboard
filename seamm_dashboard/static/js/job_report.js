@@ -156,6 +156,8 @@ function loadTable(href) {
     table = $('#csv-data').DataTable({
         "responsive": true,
         "aaData": data,
+        /* Disable initial sort */
+        "aaSorting": [],
         "columns": headers,
         "initComplete": function (settings, json) {  
             $("#csv-data").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");
