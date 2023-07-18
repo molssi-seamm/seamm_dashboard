@@ -49,7 +49,12 @@ def job_details(id, filename=None):
 
     # Figure out if we can use cdn for plotly
     plotly_location = "https://cdn.plot.ly/plotly-2.9.0.min.js"
-    found_plotly = requests.get(f"{plotly_location}").status_code == 200
+
+    try:
+        found_plotly = requests.get(f"{plotly_location}").status_code == 200
+    except:
+        # if the request doesn't work for some reason, just use the packaged plotly.
+        found_plotly = False
 
     if not found_plotly:
         plotly_location = url_for(
