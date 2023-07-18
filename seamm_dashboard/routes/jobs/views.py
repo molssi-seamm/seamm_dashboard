@@ -28,7 +28,6 @@ def jobs_list():
 @jobs.route("/views/jobs/<id>?filename=<filename>")
 @jwt_required(optional=True)
 def job_details(id, filename=None):
-
     from seamm_datastore.util import NotAuthorizedError
 
     try:
@@ -49,7 +48,12 @@ def job_details(id, filename=None):
 
     # Figure out if we can use cdn for plotly
     plotly_location = "https://cdn.plot.ly/plotly-2.9.0.min.js"
-    found_plotly = requests.get(f"{plotly_location}").status_code == 200
+
+    try:
+        found_plotly = requests.get(f"{plotly_location}").status_code == 200
+    except:
+        # if the request doesn't work for some reason, just use the packaged plotly.
+        found_plotly = False
 
     if not found_plotly:
         plotly_location = url_for(
@@ -69,7 +73,6 @@ def job_details(id, filename=None):
 @jobs.route("/jobs/<job_id>/edit", methods=["GET", "POST"])
 @jwt_required(optional=True)
 def edit_job(job_id):
-
     job = Job.query.get(job_id)
 
     if not authorize.update(job):
