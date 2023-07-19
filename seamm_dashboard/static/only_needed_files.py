@@ -16,6 +16,7 @@ if __name__ == "__main__":
             "node_modules", "jstree", "dist", "themes", "default", "throbber.gif"
         ),
         os.path.join("node_modules", "jstree", "dist", "themes", "default", "32px.png"),
+        os.path.join("node_modules", "plotly.js-dist-min", "plotly.min.js"),
     ]
 
     full_path = os.path.abspath(os.path.join("..", "templates/"))
