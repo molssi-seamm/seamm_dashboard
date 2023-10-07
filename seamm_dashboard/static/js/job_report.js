@@ -338,12 +338,40 @@ function loadCube(URL) {
         if (representation == "default") {
             stage.loadFile(URL, {ext: fileExtension, compressed: compressed }).then(function (component) {
                 // add + and - surfaces
-                component.addRepresentation("surface", {color: "red"})
-                component.addRepresentation("surface", {color: "blue", negateIsolevel: true})
+                component.addRepresentation("surface", {
+		    color: "red",
+		    opacity: 0.7,
+		    opaqueBack: false
+		})
+                component.addRepresentation("surface", {
+		    color: "blue",
+		    negateIsolevel: true,
+		    opacity: 0.7,
+		    opaqueBack: false
+		})
                 // provide a "good" view of the structure
                 component.autoView();
             });;
         }
+
+	// Read in "structure.sdf" to display the molecule
+	let n = URL.lastIndexOf("%2F")
+	let URLsdf = ""
+	if (n > 0) {
+	    URLsdf = URL.slice(0, n + 3)
+	} else {
+	    n = URL.lastIndexOf("=")
+	    URLsdf = URL.slice(0, n + 1)
+	}
+	URLsdf +=  "structure.sdf"
+	try {
+            stage.loadFile(URLsdf, {defaultRepresentation: true, ext: "sdf" }).then(function (component) {
+                component.autoView()
+            })
+	} catch {
+	    console.log("Error in loadCube getting 'structure.sdf'.")
+	}
+
         return stage
     }
 
