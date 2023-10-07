@@ -455,6 +455,10 @@ var contentFunctions = {
         "load" : [loadStructure, "href"],
         "resize": "structure",
     },
+    "sdf": {
+        "load" : [loadStructure, "href"],
+        "resize": "structure",
+    },
     "cube": {
         "load" : [loadCube, "href"],
         "resize": "structure",
