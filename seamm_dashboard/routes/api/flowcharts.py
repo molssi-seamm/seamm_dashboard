@@ -4,7 +4,7 @@ API calls for flowcharts
 
 from seamm_datastore.database.models import Flowchart
 from seamm_datastore.database.schema import FlowchartSchema
-from flask import Response
+from flask import Response, jsonify
 from flask_jwt_extended import jwt_required
 
 from seamm_dashboard import authorize
@@ -44,7 +44,7 @@ def get_flowcharts(description=None, limit=None):
 
     flowcharts_schema = FlowchartSchema(many=True)
 
-    return flowcharts_schema.dump(authorized_flowcharts), 200
+    return jsonify(flowcharts_schema.dump(authorized_flowcharts)), 200
 
 
 @jwt_required(optional=True)
@@ -75,7 +75,7 @@ def get_flowchart(id):
         return Response(status=401)
 
     flowchart_schema = FlowchartSchema(many=False)
-    return flowchart_schema.dump(flowchart), 200
+    return jsonify(flowchart_schema.dump(flowchart)), 200
 
 
 @jwt_required(optional=True)
@@ -140,4 +140,4 @@ def get_cytoscape(id, flowchartKeys=None):
         }
 
         elements.append(edge_data)
-    return elements, 201
+    return jsonify(elements), 201

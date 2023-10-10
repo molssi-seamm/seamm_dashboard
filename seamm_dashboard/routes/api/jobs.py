@@ -13,7 +13,7 @@ import re
 import urllib.parse
 import tempfile
 
-from flask import send_from_directory, Response, request
+from flask import send_from_directory, Response, request, jsonify
 from flask_jwt_extended import jwt_required, get_current_user
 
 from seamm_dashboard import db, datastore, options
@@ -77,7 +77,7 @@ def get_jobs(
 
     jobs = JobSchema(many=True).dump(jobs)
 
-    return jobs
+    return jsonify(jobs), 200
 
 
 def get_job_id(filename):
@@ -224,7 +224,7 @@ def add_job(body):
 
     job = JobSchema(many=False).dump(job)
 
-    return job, 201
+    return jsonify(job), 201
 
 
 @jwt_required(optional=True)
@@ -251,7 +251,7 @@ def get_job(id):
         return Response(status=404)
 
     job_schema = JobSchema(many=False)
-    return job_schema.dump(job), 200
+    return jsonify(job_schema.dump(job)), 200
 
 
 @jwt_required(optional=True)
@@ -413,7 +413,7 @@ def get_job_files(id):
                     "icon": file_icons["folder"],
                 }
             )
-    return js_tree
+    return jsonify(js_tree), 200
 
 
 @jwt_required(optional=True)
