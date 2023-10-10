@@ -2,6 +2,8 @@
 API endpoint for groups
 """
 
+from flask import jsonify
+
 from flask_jwt_extended import jwt_required
 
 from seamm_dashboard import authorize
@@ -24,4 +26,4 @@ def get_groups():
     # for i, group in enumerate(groups):
     #    group["usernames"] = usernames[i]
 
-    return groups, 200
+    return jsonify(groups), 200
