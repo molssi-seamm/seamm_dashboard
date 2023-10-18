@@ -197,120 +197,149 @@ function loadDescription(description) {
 }
 
 function loadStructure(URL) {
-    
-    // Inner function for NGL stage - only used in this function
-    function loadStage(URL, representation="default") {
-        
+    let config = 1;
+    let n_configs;
+    let structureObj;
+    let myStage;
+
+    function loadStage(URL, representation = "default") {
         // Clear stage if one exists
         let canvas = document.querySelector("#structure canvas")
         if (canvas) {
-            canvas.remove()}
+            canvas.remove();
+	}
 
-        // Figure out the file extension and load the file
-        let fileExtension = URL.split(".");
-        fileExtension = fileExtension[fileExtension.length - 1]
-        let stage = new NGL.Stage("structure", {backgroundColor: "white"} );
-        if (representation == "default") {
-            stage.loadFile(URL, {defaultRepresentation: true, ext: fileExtension }).then(function (component) {
-                // add unit cell if there is one
-                component.addRepresentation("unitcell")
-                // provide a "good" view of the structure
-                component.autoView();
-                });;
-        }
+	// if (myStage) {
+	//     myStage.dispose();
+	// }
 
-        else {
-            stage.loadFile(URL, {ext: fileExtension }).then(function (component) {
-            // add specified representation to the structure component
-            component.addRepresentation(representation);
-            // add unit cell if there is one
-            component.addRepresentation("unitcell")
-            // provide a "good" view of the structure
-            component.autoView();
-            });
-        }
+	const fileExtension = URL.split('.').pop();
+	myStage = new NGL.Stage('structure', { backgroundColor: 'white' });
+	myStage.loadFile(URL, { defaultRepresentation: representation === 'default', ext: fileExtension }).then((component) => {
+	    structureObj = component;
+	    n_configs = component.structure.modelStore.count;
+	    component.setSelection(`/${config - 1}`);
+	    if (representation !== 'default') {
+		component.addRepresentation(representation)
+	    }
+	    component.addRepresentation('unitcell');
+	    component.autoView();
+	    
+	    setHTML(n_configs);
 
-        return stage
+	    const smenu = $('#structure_menu')
+	    const scurrent = smenu.find('#current')
+
+	    scurrent.val(config)
+	    scurrent.on('input', function() {
+		let tmp = Number($('#current').val())
+		if (!isNaN(tmp)) {
+		    if (Number.isInteger(tmp)) {
+			config = tmp
+			structureObj.setSelection("/" + (config - 1))
+		    }
+		}
+	    })
+	});
     }
-
-    // Put some buttons above the stage
-    $("#structure").html(`
-        <div>
-            <span>
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Representation Style
-                </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" href="#" id='default-rep'>Default</a>
-                    <a class="dropdown-item" href="#" id="ball-stick-rep">Ball and Stick</a>
-                    <a class="dropdown-item" href="#" id="licorice-rep">Licorice</a>
-                    <a class="dropdown-item" href="#" id="cartoon-rep">Cartoon</a>
-                    <a class="dropdown-item" href="#" id="surface-rep">Surface</a>
-                    <a class="dropdown-item" href="#" id="spacefill-rep">Space Fill</a>
-                </div>
-            </span>
-
-            <span>
-                <button class="btn btn-primary dropdown-toggle" type="button" id="image-export" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Export Image
-                </button>
-                <div class="dropdown-menu" aria-labelledby="image-export">
-                    <a class="dropdown-item" href="#" id='normal'>Normal Quality</a>
-                    <a class="dropdown-item" href="#" id="high">High Quality</a>
-                    <a class="dropdown-item" href="#" id="ultra-high">Ultra High Quality</a>
-                </div>
-            </span>
-        </div>
-    `)
-
-    // Initial stage load
-    let myStage;
-    myStage = loadStage(URL);
-
-    // Add behavior for representation buttons.
-    let representations = {
-                    "#default-rep": "default",
-                    "#licorice-rep": "licorice", 
-                    "#cartoon-rep": "cartoon", 
-                    "#ball-stick-rep": "ball+stick", 
-                    "#surface-rep": "surface", 
-                    "#spacefill-rep":"spacefill"
-                }
     
-    for (let key in representations){
-
-        let rep = representations[key]
-        $(document).on("click", `${key}`, {'URL': URL, 'rep': rep},
-        function(event){ 
-        event.preventDefault();
-        myStage = loadStage(event.data.URL, event.data.rep);
-        });
+    function setImageExportQuality(quality) {
+	$(`#${quality}`).off('click');
+	$(`#${quality}`).on('click', () => {
+	    myStage.makeImage({
+		factor: quality === 'ultra-high' ? 10 : (quality === 'high' ? 5 : 1),
+		antialias: true,
+		trim: false,
+		transparent: true,
+	    }).then((blob) => {
+		NGL.download(blob, `molecule-view-${quality}.png`);
+	    });
+	});
     }
 
-    // Export image buttons
-    let qualities = {
-        "normal": 1,
-        "high": 5,
-        "ultra-high": 10,
+    function setHTML(n) {
+	if (n > 1) {
+	    $('#structure_menu').html(`
+                Structure (1 to ${n}):
+		<input type="number" name="current" id="current" maxlength="4" min="1" max="${n}"/>
+
+		<span>
+		  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Representation Style
+		  </button>
+		  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+		    <a class="dropdown-item" href="#" id='default-rep'>Default</a>
+		    <a class="dropdown-item" href="#" id="ball-stick-rep">Ball and Stick</a>
+		    <a class="dropdown-item" href="#" id="licorice-rep">Licorice</a>
+		    <a class a="dropdown-item" href="#" id="cartoon-rep">Cartoon</a>
+		    <a class="dropdown-item" href="#" id="surface-rep">Surface</a>
+		    <a class="dropdown-item" href="#" id="spacefill-rep">Space Fill</a>
+		  </div>
+		</span>
+
+		<span>
+		  <button class="btn btn-primary dropdown-toggle" type="button" id="image-export" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Export Image
+		  </button>
+		  <div class="dropdown-menu" aria-labelledby="image-export">
+		    <a class="dropdown-item" href="#" id='normal'>Normal Quality</a>
+		    <a class="dropdown-item" href="#" id="high">High Quality</a>
+		    <a class="dropdown-item" href="#" id="ultra-high">Ultra High Quality</a>
+		  </div>
+		</span>
+	     `)
+	} else {
+	    $('#structure_menu').html(`
+		<div>
+		  <span>
+		    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		      Representation Style
+		    </button>
+		    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+		      <a class="dropdown-item" href="#" id='default-rep'>Default</a>
+		      <a class="dropdown-item" href="#" id="ball-stick-rep">Ball and Stick</a>
+		      <a class="dropdown-item" href="#" id="licorice-rep">Licorice</a>
+		      <a class a="dropdown-item" href="#" id="cartoon-rep">Cartoon</a>
+		      <a class="dropdown-item" href="#" id="surface-rep">Surface</a>
+		      <a class="dropdown-item" href="#" id="spacefill-rep">Space Fill</a>
+		    </div>
+		  </span>
+
+		  <span>
+		    <button class="btn btn-primary dropdown-toggle" type="button" id="image-export" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		      Export Image
+		    </button>
+		    <div class="dropdown-menu" aria-labelledby="image-export">
+		      <a class="dropdown-item" href="#" id='normal'>Normal Quality</a>
+		      <a class="dropdown-item" href="#" id="high">High Quality</a>
+		      <a class="dropdown-item" href="#" id="ultra-high">Ultra High Quality</a>
+		    </div>
+		  </span>
+		</div>
+	    `)
+	}	
     }
 
-    for (let key in qualities){
-        // Remove previous behavior
-        $(document).off("click", `#${key}`)
-
-        $(document).on("click", `#${key}`, {'stage': myStage}, 
-            function(event){ 
-                event.preventDefault();
-                myStage.makeImage( {
-                    factor: qualities[key],
-                    antialias: true,
-                    trim: false,
-                    transparent: true,
-                } ).then( function( blob ){
-                    NGL.download( blob, `molecule-view-${key}.png` );
-                } );
-            } );
+    loadStage(URL);
+    
+    const representations = {
+	'#default-rep': 'default',
+	'#licorice-rep': 'licorice',
+	'#cartoon-rep': 'cartoon',
+	'#ball-stick-rep': 'ball+stick',
+	'#surface-rep': 'surface',
+	'#spacefill-rep': 'spacefill',
+    };
+    
+    for (const key in representations) {
+	$(document).on('click', key, (event) => {
+	    event.preventDefault();
+	    loadStage(URL, representations[key]);
+	});
     }
+    
+    const qualities = ['normal', 'high', 'ultra-high'];
+    qualities.forEach((quality) => setImageExportQuality(quality));
 }
 
 function loadCube(URL) {
