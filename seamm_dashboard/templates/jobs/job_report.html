@@ -28,6 +28,12 @@
           {% else %}
           <button type="button" id="edit-job" class="btn btn-lg btn-primary float-left mx-1" title="You do not have permission to edit this job" data-toggle="tooltip" data-placement="top" disabled><i class="fas fa-edit"></i></button>
           {% endif %}
+          <a href="{{ submit_url }}">
+	    <button type="button" id="submit-job" class="btn btn-lg btn-primary float-left mx-1"
+		    title="Submit This Job with New Parameters" data-toggle="tooltip" data-placement="top">
+	      <i class="fas fa-play"></i>
+	    </button>
+	  </a>
 
         </div>
         <div class='h5 mt-3'>Browse files for job</div>

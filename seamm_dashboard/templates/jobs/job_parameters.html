@@ -1,0 +1,13 @@
+{% extends "auth/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Submit Job</h1>
+</div>
+<div class="col-md-12">
+    {{ wtf.quick_form(form) }}
+    <br>
+</div>
+{% endblock %}

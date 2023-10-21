@@ -5,7 +5,6 @@ API calls for jobs.
 import os
 import shutil
 from datetime import datetime, timezone
-import fasteners
 import json
 import logging
 from pathlib import Path
@@ -17,6 +16,7 @@ from flask import send_from_directory, Response, request
 from flask_jwt_extended import jwt_required, get_current_user
 
 from seamm_dashboard import db, datastore, options
+from seamm_dashboard.util import get_job_id
 from seamm_datastore.database.models import Job, Role
 from seamm_datastore.database.schema import JobSchema
 
@@ -78,62 +78,6 @@ def get_jobs(
     jobs = JobSchema(many=True).dump(jobs)
 
     return jobs
-
-
-def get_job_id(filename):
-    """Get the next job id from the given file.
-
-    This uses the fasteners module to provide locking so that
-    only one job at a time can access the file, so that the job
-    ids are unique and monotonically increasing.
-    """
-
-    filename = os.path.expanduser(filename)
-
-    lock_file = filename + ".lock"
-    lock = fasteners.InterProcessLock(lock_file)
-    locked = lock.acquire(blocking=True, timeout=5)
-
-    if locked:
-        if not os.path.isfile(filename):
-            job_id = 1
-            with open(filename, "w") as fd:
-                fd.write("!MolSSI job_id 1.0\n")
-                fd.write("1\n")
-            lock.release()
-        else:
-            with open(filename, "r+") as fd:
-                line = fd.readline()
-                pos = fd.tell()
-                if line == "":
-                    lock.release()
-                    raise EOFError("job_id file '{}' is empty".format(filename))
-                line = line.strip()
-                match = re.fullmatch(r"!MolSSI job_id ([0-9]+(?:\.[0-9]+)*)", line)
-                if match is None:
-                    lock.release()
-                    raise RuntimeError(
-                        "The job_id file has an incorrect header: {}".format(line)
-                    )
-                line = fd.readline()
-                if line == "":
-                    lock.release()
-                    raise EOFError("job_id file '{}' is truncated".format(filename))
-                try:
-                    job_id = int(line)
-                except TypeError:
-                    raise TypeError(
-                        "The job_id in file '{}' is not an integer: {}".format(
-                            filename, line
-                        )
-                    )
-                job_id += 1
-                fd.seek(pos)
-                fd.write("{:d}\n".format(job_id))
-    else:
-        raise RuntimeError("Could not lock the job_id file '{}'".format(filename))
-
-    return job_id
 
 
 @jwt_required(optional=True)
