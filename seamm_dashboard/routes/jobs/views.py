@@ -199,7 +199,7 @@ def submit_job():
 
 @jobs.route("/jobs/parameters", methods=["GET", "POST"])
 @jwt_required()
-def job_parameters():
+def job_parameters(template_job=None):
     """Handle the dialogs for submitting a job by uploading a flowchart.
 
     This is step 2: setting up the page to get the parameters
@@ -308,8 +308,18 @@ def job_parameters():
             form = JP()
 
     if request.method == "GET":
+        values = {}
+        if template_job is not None:
+            tmp = template_job.parameters
+            if "control parameters" in tmp:
+                values = tmp["control parameters"]
+
         for key, tmp in widgets.items():
-            form[key].data = tmp["default"]
+            name = tmp["name"]
+            if name in values:
+                form[key].data = values[name]
+            else:
+                form[key].data = tmp["default"]
 
             if tmp["help"] != "":
                 form[key].description = tmp["help"]
@@ -324,14 +334,18 @@ def job_parameters():
                 "maxlength": 100,
                 "placeholder": "A short (< 100 chars) description of this job",
             }
-            if data["title"] != "":
+            if template_job is not None and template_job.title != "":
+                form.title.data = template_job.title
+            elif data["title"] != "":
                 form.title.data = data["title"]
 
             form.description.render_kw = {
                 "rows": 8,
                 "placeholder": "A longer description of this job",
             }
-            if data["description"] != "":
+            if template_job is not None and template_job.description != "":
+                form.description.data = template_job.description
+            elif data["description"] != "":
                 form.description.data = data["description"]
         if len(project_names) > 0:
             form.project.data = project_names[0]
@@ -340,6 +354,7 @@ def job_parameters():
 
         # Prepare the command line arguments, transforming and remembering files
         files = {}
+        control_parameters = {}
         if len(widgets) == 0:
             cmdline = []
         else:
@@ -350,6 +365,7 @@ def job_parameters():
                 name = values["name"]
                 if values["optional"] == "Yes":
                     if values["type"] == "bool":
+                        control_parameters[name] = result[key]
                         if result[key] == "Yes":
                             optional.append(f"--{name}")
                     elif values["type"] == "file":
@@ -381,6 +397,7 @@ def job_parameters():
                                 files[filename] = file_storage
                                 optional.append(f"job:data/{filename}")
                     else:
+                        control_parameters[name] = result[key]
                         optional.append(f"--{name}")
                         if values["nargs"] == "a single value":
                             optional.append(result[key])
@@ -414,6 +431,7 @@ def job_parameters():
                                 files[filename] = file_storage
                                 required.append(f"job:data/{filename}")
                     else:
+                        control_parameters[name] = result[key]
                         if values["nargs"] == "a single value":
                             required.append(result[key])
                         else:
@@ -431,7 +449,7 @@ def job_parameters():
             result["project"],
             result["title"],
             result["description"],
-            {"cmdline": cmdline},
+            {"cmdline": cmdline, "control parameters": control_parameters},
         )
         job_id = job.id
 
@@ -440,6 +458,9 @@ def job_parameters():
         for filename, file_storage in files.items():
             file_storage.save(path / filename)
             file_storage.close()
+
+        # Let the user know the job was actually submitted.
+        flash(f"Submitted as job {job_id}.")
 
         # If just submitting one job go to its page
         if result["submit"]:
@@ -466,6 +487,7 @@ def resubmit_job(id=None):
     # Get the flowchart   TODO permissions???
     job = Job.get_by_id(id)
 
+    # The flowchart
     path = Path(job.path) / "flowchart.flow"
     try:
         text = path.read_text()
@@ -477,7 +499,7 @@ def resubmit_job(id=None):
 
     flowchart_text = text
 
-    return job_parameters()
+    return job_parameters(template_job=job)
 
 @jobs.after_request
 def job_refresh(response):
