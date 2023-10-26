@@ -370,7 +370,7 @@ def job_parameters(template_job=None):
                             optional.append(f"--{name}")
                     elif values["type"] == "file":
                         if values["nargs"] == "a single value":
-                            file_storage = result[key].data
+                            file_storage = form[key].data
                             filename = file_storage.filename
                             if filename in files:
                                 c = 2
@@ -384,8 +384,8 @@ def job_parameters(template_job=None):
                             optional.append(f"job:data/{filename}")
                         else:
                             optional.append(f"--{name}")
-                            for _file in result[key]:
-                                file_storage = _file.data
+                            for _file in form[key].data:
+                                file_storage = _file
                                 filename = file_storage.filename
                                 if filename in files:
                                     c = 2
@@ -406,7 +406,7 @@ def job_parameters(template_job=None):
                 else:
                     if values["type"] == "file":
                         if values["nargs"] == "a single value":
-                            file_storage = result[key].data
+                            file_storage = form[key].data
                             filename = file_storage.filename
                             if filename in files:
                                 c = 2
@@ -418,8 +418,8 @@ def job_parameters(template_job=None):
                             files[filename] = file_storage
                             required.append(f"job:data/{filename}")
                         else:
-                            for _file in result[key]:
-                                file_storage = _file.data
+                            for _file in form[key].data:
+                                file_storage = _file
                                 filename = file_storage.filename
                                 if filename in files:
                                     c = 2
@@ -454,7 +454,8 @@ def job_parameters(template_job=None):
         job_id = job.id
 
         # Save any files transferred with the job
-        path = Path(job.path)
+        path = Path(job.path) / "data"
+        path.mkdir(exist_ok=True)
         for filename, file_storage in files.items():
             file_storage.save(path / filename)
             file_storage.close()
