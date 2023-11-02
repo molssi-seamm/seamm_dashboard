@@ -383,10 +383,12 @@ def job_parameters(template_job=None):
                             optional.append(f"--{name}")
                             optional.append(f"job:data/{filename}")
                         else:
-                            optional.append(f"--{name}")
+                            first = True
                             for _file in form[key].data:
                                 file_storage = _file
                                 filename = file_storage.filename
+                                if filename == "":
+                                    continue
                                 if filename in files:
                                     c = 2
                                     tmp_name = f"{c}__{filename}"
@@ -395,6 +397,9 @@ def job_parameters(template_job=None):
                                         tmp_name = f"{c}__{filename}"
                                     filename = tmp_name
                                 files[filename] = file_storage
+                                if first:
+                                    optional.append(f"--{name}")
+                                    first = False
                                 optional.append(f"job:data/{filename}")
                     else:
                         control_parameters[name] = result[key]
@@ -454,11 +459,12 @@ def job_parameters(template_job=None):
         job_id = job.id
 
         # Save any files transferred with the job
-        path = Path(job.path) / "data"
-        path.mkdir(exist_ok=True)
-        for filename, file_storage in files.items():
-            file_storage.save(path / filename)
-            file_storage.close()
+        if len(files) > 0:
+            path = Path(job.path) / "data"
+            path.mkdir(exist_ok=True)
+            for filename, file_storage in files.items():
+                file_storage.save(path / filename)
+                file_storage.close()
 
         # Let the user know the job was actually submitted.
         flash(f"Submitted as job {job_id}.")
