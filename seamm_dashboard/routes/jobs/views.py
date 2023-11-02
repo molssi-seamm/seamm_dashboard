@@ -426,6 +426,8 @@ def job_parameters(template_job=None):
                             for _file in form[key].data:
                                 file_storage = _file
                                 filename = file_storage.filename
+                                if filename == "":
+                                    continue
                                 if filename in files:
                                     c = 2
                                     tmp_name = f"{c}__{filename}"
