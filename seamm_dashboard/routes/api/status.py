@@ -3,6 +3,8 @@ API calls for the status
 """
 import logging
 
+from flask import jsonify
+
 from seamm_dashboard.setup_argparsing import options
 from seamm_datastore.database.models import Project, Job, Flowchart
 from seamm_datastore.database.schema import RoleSchema
@@ -74,4 +76,4 @@ def status():
         "projects": num_projects,
     }
 
-    return status, 200
+    return jsonify(status), 200

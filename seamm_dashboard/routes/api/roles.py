@@ -2,6 +2,8 @@
 API endpoint for groups
 """
 
+from flask import jsonify
+
 from flask_jwt_extended import jwt_required
 
 from seamm_dashboard import authorize
@@ -19,4 +21,4 @@ def get_roles():
 
     roles = role_schema.dump(roles)
 
-    return roles, 200
+    return jsonify(roles), 200
