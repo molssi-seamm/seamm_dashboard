@@ -24,7 +24,6 @@ if sys.version_info >= (3, 8) and platform.system() == "Darwin":
 
     multiprocessing.set_start_method("fork")
 
-
 @pytest.mark.usefixtures("live_server")
 class TestLiveServer:
     """
@@ -86,7 +85,7 @@ class TestLiveServer:
 
         displayed_values = [x for x in displayed_values if x != ""]
 
-        chrome_driver.get_screenshot_as_file(f"main_{logged_in}.png")
+        #chrome_driver.get_screenshot_as_file(f"main_{logged_in}.png")
 
         for i, value in enumerate(displayed_values):
             assert expected_values[i] == value.get_attribute("innerHTML")
@@ -114,9 +113,9 @@ class TestLiveServer:
 
         get_url = f"{self.base_url}#{list_type}"
 
-        # Get twice just to make sure this request goes through.
+        # Get once and refresh - just to make sure it goes through.
         chrome_driver.get(get_url)
-        chrome_driver.get(get_url)
+        chrome_driver.refresh()
 
         if list_type == "projects":
             # Default view is card - switch to list.
