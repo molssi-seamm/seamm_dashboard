@@ -25,22 +25,7 @@ def get_flowcharts(description=None, limit=None):
     if limit is None:
         limit = Flowchart.query.count()
 
-    if description is not None:
-        flowcharts = Flowchart.query.filter(
-            Flowchart.description.contains(description)
-        ).limit(limit)
-    else:
-        flowcharts = Flowchart.query.limit(limit)
-
-    authorized_flowcharts = []
-    for flowchart in flowcharts:
-        if authorize.read(flowchart):
-            authorized_flowcharts.append(flowchart)
-        else:
-            for project in flowchart.projects:
-                if authorize.read(project):
-                    authorized_flowcharts.append(flowchart)
-                    break
+    authorized_flowcharts = Flowchart.get(description=description, limit=limit, permission="read")
 
     flowcharts_schema = FlowchartSchema(many=True)
 
