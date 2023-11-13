@@ -159,10 +159,10 @@ update-nodejs: ## reinstall the node.js files
 	@cd seamm_dashboard/static && python only_needed_files.py
 
 run-demo: ## run a demo dashboard
-	@echo "Running as user:" `whoami`
-	@echo "Running in directory:" `pwd`
-	@echo "Directory Contents:" `ls -lthr data/`
-	seamm_dashboard/./results_dashboard.py --initialize --datastore $(shell pwd)/data --jwt-secret-key 'super-secret' --secret-key 'another-super-secret'
+	seamm_dashboard/./results_dashboard.py --initialize --datastore $(shell pwd)/data --jwt-secret-key 'super-secret' --secret-key 'another-super-secret' 
+
+run-dev: ## run a demo in dev/debug mode dashboard
+	seamm_dashboard/./results_dashboard.py --initialize --datastore $(shell pwd)/data --jwt-secret-key 'super-secret' --secret-key 'another-super-secret' --debug True
 
 tags:
 	rm -f TAGS
