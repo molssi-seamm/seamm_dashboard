@@ -56,9 +56,16 @@ If you do not have SEAMM installed, you can view a demo dashboard by using the d
 make run-demo
 ```
 
-If you are running the dashboard in production, you should use better secrets.
+Open a browser and navigate to `http://localhost:5505/` to  view the sample dashboard. Running the sample dashboard will create a user in the database with the same username you use on your computer the default password is `default`.
 
-Open a browser and navigate to `http://localhost:5000/` to  view the sample dashboard. Running the sample dashboard will create a user in the database with the same username you use on your computer the default password is `default`.
+If you would like to run the same demo dashboard in development/debug mode, use the command
+
+```bash
+make run-dev
+```
+
+This will run the demo dashboard in debug mode, which will allow you to make changes to the code and see the changes reflected in the dashboard. Note that the dashboard will restart when you make changes to the code. 
+The development dashboard will be available at `http://localhost:5000/`.
 
 ### Running with SEAMM installed
 

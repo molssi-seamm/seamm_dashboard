@@ -5,10 +5,12 @@ from waitress import serve
 
 def run():
     app = create_app()
-    # app.run(debug=True, use_reloader=True)
 
-    # serve using waitress
-    serve(app, port=options["port"])
+    if options["debug"]:
+        app.run(debug=True, use_reloader=True)  
+    else:   
+        # serve using waitress
+        serve(app, port=options["port"])
 
 
 if __name__ == "__main__":
