@@ -158,6 +158,12 @@ update-nodejs: ## reinstall the node.js files
 	@ rm -f seamm_dashboard/static/package-lock.json
 	@cd seamm_dashboard/static && python only_needed_files.py
 
+run-demo: ## run a demo dashboard
+	@echo "Running as user:" `whoami`
+	@echo "Running in directory:" `pwd`
+	@echo "Directory Contents:" `ls -lthr data/`
+	seamm_dashboard/./results_dashboard.py --initialize --datastore $(shell pwd)/data --jwt-secret-key 'super-secret' --secret-key 'another-super-secret'
+
 tags:
 	rm -f TAGS
 	find $(MODULE) -type f -name '*.py' -print0 | xargs -0 etags -a	
