@@ -6,7 +6,7 @@ from waitress import serve
 def run():
     app = create_app()
 
-    if options["debug"]:
+    if "debug" in options:
         app.run(debug=True, use_reloader=True)  
     else:   
         # serve using waitress
