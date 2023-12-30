@@ -201,7 +201,7 @@ parser.add_argument(
     "SEAMM",
     "--secret-key",
     group="flask options",
-    default=str(os.urandom(16)),
+    default=str(os.urandom(16)).replace("$", "_"),
     help=(
         "A secret key that will be used for securely signing the session "
         "cookie and can be used for any other security related needs by "
