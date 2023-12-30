@@ -1,75 +1,71 @@
 # MolSSI Dashboard (Flask-coreUI)
-This application is a results Dashboard for MolSSI projects.
+This application is a results Dashboard for the [SEAMM](https://molssi-seamm.github.io/) project. It is built using the [Flask](https://flask.palletsprojects.com/en/1.1.x/) web framework and the [CoreUI](https://coreui.io/) template. The dashboard is designed to be used with the [SEAMM Datastore](https://github.com/molssi-seamm/seamm_datastore).
 
-The server runs Flask on Passenger and Apache, or can run flask testing server.
+## Install the SEAMM dashboard
 
-### Install the SEAMM dashboard
+To install the SEAMM dashboard, it is recommended that you it install it, along with SEAMM using the [installation instructions](https://molssi-seamm.github.io/getting_started/installation/index.html).
 
-#### Install from PyPi
+The SEAMM installation tutorial will walk you through installing and running the SEAMM dashboard. If you are interested in developing the SEAMM dashboard, you can install it from this repository using the directions below.
 
-You can install the SEAMM Dashboard from PyPi. First create a conda environment for the dashboard.
+## Development Install from this Repository
 
-~~~bash
-conda create -n seamm-dashboard python=3.9
-conda activate seamm-dashboard
-~~~
-
-Next, install from conda
+To install the dashboard for development, you should first fork this repository to your own GitHub account. Then clone the forked repository to your computer. For example, if you are using SSH, type
 
 ~~~bash
-pip install seamm-dashboard
-~~~
-
-#### Install from this repository
-
-To get the most up-to-date version of the dashboard, install the package from this repository.
-
-~~~bash
-git clone https://github.com/molssi-seamm/seamm_dashboard.git
+git clone git@github.com/YOUR_FORK/seamm_dashboard.git
 cd seamm_dashboard
 ~~~
 
 To create the `seamm-dashboard` environment and install the necessary packages, type
 
 ~~~bash
-$ make environment
+make environment
 ~~~
 
 in the top level of your directory.
 
 After the script is finished running, activate the SEAMM Dashboard conda environment:
 
-~~~
+~~~bash
 conda activate seamm-dashboard
 ~~~
 
-### Installing the Datastore (Required)
+Next, do a development install of the package:
 
-You must also install the [SEAMM Datastore](https://github.com/molssi-seamm/seamm_datastore). This is the package that manages the database connection. We are working on getting it on PyPi. For now, navigate to the repository. You should clone this repository and install the package. Make sure you are not in the SEAMM dashboard directory if you installed from GitHub in the previous step.
+~~~bash
+make dev-install
+~~~
+
+## Installing the Datastore (Required)
+
+For a development install, you must all install the SEAMM Datastore.
+
+You must also install the [SEAMM Datastore](https://github.com/molssi-seamm/seamm_datastore). This is the package that manages the database connection. If you are developing for SEAMM, you might find it useful to install the SEAMM Datastore in development mode. To do this, clone the repository and install it in development mode:
 
 ~~~bash
 git clone https://github.com/molssi-seamm/seamm_datastore.git
 cd seamm_datstore
-pip install .
+pip install -e .
 ~~~
-
-If your conda environment is activated, you're ready to start running the dashboard.
-
-## Running the dashboard
-
-You can then run the dashboard after you have installed and activated the dashboard environment. 
 
 ### Run a demo dashboard
 
 If you do not have SEAMM installed, you can view a demo dashboard by using the data in this repository. Use the command
 
-```
-./results_dashboard.py --initialize --datastore $(pwd)/data --jwt-secret-key 'super-secret' --secret-key 'another-super-secret'
+```bash
+make run-demo
 ```
 
-If you are running the dashboard in production, you should use better secrets.
+Open a browser and navigate to `http://localhost:5505/` to  view the sample dashboard. Running the sample dashboard will create a user in the database with the same username you use on your computer the default password is `default`.
 
-Open a browser and navigate to `http://localhost:5000/` to  view the sample dashboard. Running the sample dashboard will create a user in the database with the same username you use on your computer the default password is `default`.
+If you would like to run the same demo dashboard in development/debug mode, use the command
+
+```bash
+make run-dev
+```
+
+This will run the demo dashboard in debug mode, which will allow you to make changes to the code and see the changes reflected in the dashboard. Note that the dashboard will restart when you make changes to the code. 
+The development dashboard will be available at `http://localhost:5000/`.
 
 ### Running with SEAMM installed
 
