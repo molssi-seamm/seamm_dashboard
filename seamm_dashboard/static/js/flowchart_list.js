@@ -6,11 +6,10 @@ var arrayReturn = [];
         dataType: 'json',
         success: function (data) {
             for (var i = 0, len = data.length; i < len; i++) {
-                var job_links = ''
-                for (var j = 0, jlen = data[i].jobs.length; j < jlen; j++) {
-                    var retrieved_link = ajaxJobs(data[i].jobs[j])
-                    job_links = job_links + retrieved_link
-                }
+                job_links = data[i].jobs.map(function(item) {
+                    return `<a class="nav-link p-0" href="/jobs/${item}" title="View Details">${item}</a>`;
+                });
+                job_links = job_links.join('');
                 arrayReturn.push([data[i].title, 
                 data[i].description,
                 job_links,

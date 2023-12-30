@@ -27,6 +27,14 @@ parser.add_argument(
 
 parser.add_argument(
     "SEAMM",
+    "--localhost",
+    group="dashboard options",
+    action="store_true",
+    help="listen only on localhost, not general network",
+)
+
+parser.add_argument(
+    "SEAMM",
     "--initialize",
     group="dashboard options",
     action="store_true",
