@@ -23,6 +23,12 @@ import flask_jwt_extended
 
 
 def _decode_jwt_from_cookies(refresh):
+
+    try:
+        csrf_protect = config.csrf_protect
+    except AttributeError:
+        csrf_protect = config.cookie_csrf_protect
+        
     if refresh:
         cookie_key = config.refresh_cookie_name
         csrf_header_key = config.refresh_csrf_header_name
@@ -37,7 +43,7 @@ def _decode_jwt_from_cookies(refresh):
         raise NoAuthorizationError('Missing cookie "{}"'.format(cookie_key))
 
     if (
-        config.csrf_protect
+        csrf_protect
         and request.method in config.csrf_request_methods
         and current_app.config["JWT_CSRF_ACCESS_PATH"] in request.url
     ):
