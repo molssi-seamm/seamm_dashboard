@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField
-from wtforms import StringField, TextAreaField, SubmitField
+from wtforms import StringField, TextAreaField, SubmitField, SelectMultipleField
+
 
 from wtforms.validators import DataRequired, Length, Regexp
 
@@ -27,3 +28,8 @@ class ImportJob(FlaskForm):
     outfile = FileField("job_data.json File", validators=[DataRequired()])
     title = StringField("Job Title")
     submit = SubmitField("Import Job")
+
+
+class GetFlowchart(FlaskForm):
+    outfile = FileField("File (*.flow)", validators=[DataRequired()])
+    submit = SubmitField("Upload flowchart")
