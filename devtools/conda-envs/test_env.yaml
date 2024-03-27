@@ -5,10 +5,11 @@ dependencies:
   - pip
   - python<3.12
 
+  - a2wsgi >=1.7
   - connexion
   - email-validator
   - fasteners
-  - flask>2.0
+  - flask>2.2
   - flask-authorize
   - flask-bootstrap
   - flask-cors
