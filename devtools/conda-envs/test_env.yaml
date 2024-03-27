@@ -5,8 +5,6 @@ dependencies:
   - pip
   - python<3.12
 
-  - a2wsgi >=1.7
-  - connexion
   - email-validator
   - fasteners
   - flask>2.2
@@ -42,4 +40,5 @@ dependencies:
   - nodejs
   - twine
   
-
+  - pip:
+      - connexion[flask,swagger-ui]
