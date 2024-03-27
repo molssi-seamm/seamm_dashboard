@@ -150,13 +150,19 @@ def create_app(config_name=None):
 
     logger.info("")
 
-    logger.info(
-        "Running in "
-        + app.config["ENV"]
-        + " mode with database "
-        + app.config["SQLALCHEMY_DATABASE_URI"]
-    )
-
+    if "ENV" in app.config:
+        logger.info(
+            "Running in "
+            + app.config["ENV"]
+            + " mode with database "
+            + app.config["SQLALCHEMY_DATABASE_URI"]
+        )
+    else:
+        logger.info(
+            "Running with database "
+            + app.config["SQLALCHEMY_DATABASE_URI"]
+        )
+        
     # Authorization configuration
     app.config["AUTHORIZE_DEFAULT_PERMISSIONS"] = dict(
         owner=["read", "update", "delete", "create", "manage"],

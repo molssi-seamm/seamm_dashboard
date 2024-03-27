@@ -410,7 +410,15 @@ def add_file_to_job(body, id=None):
     -------
     The job id (integer)
     """
-    job_info, status = get_job(id)
+    response, status = get_job(id)
+    if status != 200:
+        return response
+
+    logger.debug(f"response from get_job: {type(response)}")
+    logger.debug(response)
+    job_info = response.get_json()
+    logger.debug(job_info)
+
     root = Path(job_info["path"])
 
     file_data = request.files["file"]
