@@ -8,7 +8,7 @@ dependencies:
   - connexion<3.0
   - email-validator
   - fasteners
-  - flask>2.2<3.0
+  - flask<3.0
   - flask-authorize
   - flask-bootstrap
   - flask-cors
