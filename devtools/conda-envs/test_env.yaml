@@ -5,9 +5,10 @@ dependencies:
   - pip
   - python<3.12
 
+  - connexion<3.0
   - email-validator
   - fasteners
-  - flask>2.2
+  - flask>2.2<3.0
   - flask-authorize
   - flask-bootstrap
   - flask-cors
@@ -40,5 +41,5 @@ dependencies:
   - nodejs
   - twine
   
-  - pip:
-      - connexion[flask,swagger-ui]
+  # - pip:
+  #     - connexion[flask,swagger-ui]
