@@ -34,7 +34,6 @@ jobs:
         uname -a
         df -h
         ulimit -a
-    # More info on options: https://github.com/conda-incubator/setup-miniconda
     - uses: mamba-org/setup-micromamba@v1
       with:
         python-version: ${{ matrix.python-version }}
@@ -45,7 +44,6 @@ jobs:
         auto-activate-base: false
         show-channel-urls: true
     - name: Install package
-      # conda setup requires this special shell
       shell: bash -l {0}
       run: |
         cd seamm_dashboard/static
@@ -55,7 +53,7 @@ jobs:
         du -hs node_modules
         cd ../../
         python -m pip install . --no-deps
-        conda list
+        micromamba list
     
     - name: Install chromedriver binary and run tests
       if: matrix.os == 'ubuntu-latest'
@@ -70,7 +68,6 @@ jobs:
     - name: Run tests for API only for MacOS
       if: matrix.os == 'macOS-latest'
 
-      # conda setup requires this special shell
       shell: bash -l {0}
 
       run: |
