@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - "main"
+      - "update-ci"
   pull_request:
     branches:
       - "main"
@@ -22,10 +23,10 @@ jobs:
     strategy:
       matrix:
         os: [macOS-latest, ubuntu-latest]
-        python-version: [ 3.8, 3.9 ]
+        python-version: [ 3.10, 3.11, 3.12 ]
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v4
 
     - name: Additional info about the build
       shell: bash
@@ -34,7 +35,7 @@ jobs:
         df -h
         ulimit -a
     # More info on options: https://github.com/conda-incubator/setup-miniconda
-    - uses: conda-incubator/setup-miniconda@v2
+    - uses: mamba-org/setup-micromamba@v1
       with:
         python-version: ${{ matrix.python-version }}
         environment-file: devtools/conda-envs/test_env.yaml
