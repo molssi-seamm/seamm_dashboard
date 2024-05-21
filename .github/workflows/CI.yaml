@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - "main"
-      - "update-ci"
   pull_request:
     branches:
       - "main"
@@ -43,6 +42,7 @@ jobs:
             - conda-forge
         create-args: >- 
           python=${{ matrix.python-version }}
+
     - name: Install package
       shell: bash -l {0}
       run: |
