@@ -36,13 +36,13 @@ jobs:
         ulimit -a
     - uses: mamba-org/setup-micromamba@v1
       with:
-        python-version: ${{ matrix.python-version }}
         environment-file: devtools/conda-envs/test_env.yaml
-        channels: conda-forge,defaults
-        activate-environment: test
-        auto-update-conda: false
-        auto-activate-base: false
-        show-channel-urls: true
+        environment-name: test
+        condarc: |
+          channels:
+            - conda-forge
+        create-args: >- 
+          python=${{ matrix.python-version }}
     - name: Install package
       shell: bash -l {0}
       run: |
@@ -63,7 +63,7 @@ jobs:
         export chrome_version=$(google-chrome --version | cut -d ' ' -f 3 | cut -d . -f 1)
         export chrome_version_max=$(($chrome_version+1))
         pip install "chromedriver-binary<=$chrome_version_max"
-        pytest -v --cov=seamm_dashboard seamm_dashboard/tests/
+        pytest -v --cov=seamm_dashboard --cov-report=xml --color=yes seamm_dashboard/tests/
 
     - name: Run tests for API only for MacOS
       if: matrix.os == 'macOS-latest'
@@ -77,7 +77,7 @@ jobs:
 
     - name: CodeCov
       if: matrix.os == 'ubuntu-latest'
-      uses: codecov/codecov-action@v1
+      uses: codecov/codecov-action@v4
       with:
         file: ./coverage.xml
         flags: unittests
