@@ -188,9 +188,14 @@ def manage_project(project_id):
     if request.method == "POST":
         if form.validate_on_submit():
 
-            if form.allow_public:
+            if form.allow_public.data:
                 permissions = deepcopy(project.permissions)
                 permissions["other"] = ["read"]
+                project.permissions = permissions
+                db.session.commit()
+            else:
+                permissions = deepcopy(project.permissions)
+                permissions["other"] = []
                 project.permissions = permissions
                 db.session.commit()
 
