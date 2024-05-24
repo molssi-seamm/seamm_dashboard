@@ -64,13 +64,13 @@ jobs:
         python -m build --sdist --wheel --outdir dist/
         ls -l dist/
     - name: Publish distribution 📦 to Test PyPI
-      uses: pypa/gh-action-pypi-publish@v1
+      uses: pypa/gh-action-pypi-publish@release/v1
       with:
         password: ${{ secrets.test_pypi_password }}
         repository_url: https://test.pypi.org/legacy/
         skip_existing: true
     - name: Publish distribution 📦 to PyPI
       if: contains(github.ref, 'dev') == false && contains(github.ref, 'rc') == false
-      uses: pypa/gh-action-pypi-publish@v1
+      uses: pypa/gh-action-pypi-publish@release/v1
       with:
         password: ${{ secrets.pypi_password }}
