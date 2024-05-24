@@ -16,7 +16,7 @@ on:
     # Scheduled tests once a week
     #   Scheduled workflows run on the latest commit on the default or base branch.
     #   (from https://help.github.com/en/actions/reference/events-that-trigger-workflows#scheduled-events-schedule)
-    - cron: "0 0 * * 0"
+    #    - cron: "0 0 * * 0"
 
 jobs:
   test:
@@ -25,10 +25,10 @@ jobs:
     strategy:
       matrix:
         os: [macOS-latest, ubuntu-latest]
-        python-version: [ 3.8, 3.9 ]
+        python-version: [ "3.11", "3.12" ]
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v4
 
     - name: Additional info about the build
       shell: bash
@@ -39,7 +39,7 @@ jobs:
 
 
     # More info on options: https://github.com/conda-incubator/setup-miniconda
-    - uses: conda-incubator/setup-miniconda@v2
+    - uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: ${{ matrix.python-version }}
         environment-file: devtools/conda-envs/test_env.yaml
@@ -94,7 +94,7 @@ jobs:
 
     - name: CodeCov
       if: matrix.os == 'ubuntu-latest'
-      uses: codecov/codecov-action@v1
+      uses: codecov/codecov-action@v4
       with:
         file: ./coverage.xml
         flags: unittests
