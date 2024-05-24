@@ -4,10 +4,10 @@ channels:
 dependencies:
   - pip
   - python
-  - connexion<3.0
+  - connexion>2.7,<3.0
   - email-validator
   - fasteners
-  - flask<3.0
+  - flask>2.0,<3.0
   - flask-authorize
   - flask-bootstrap
   - flask-cors
